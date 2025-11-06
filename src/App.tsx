@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { useKV } from '@github/spark/hooks'
 import { Toaster } from '@/components/ui/sonner'
 import { Button } from '@/components/ui/button'
@@ -10,7 +10,9 @@ import { AlbumPage } from '@/components/AlbumPage'
 import { AdminDashboard } from '@/components/AdminDashboard'
 import { LeaderProfileModal } from '@/components/LeaderProfileModal'
 import { PeerEvaluationModal } from '@/components/PeerEvaluationModal'
-import type { User, Leader, Task, Activity, PeerEvaluation } from '@/lib/types'
+import type { User, Leader, Task, Activity, ScoreHistory } from '@/lib/types'
+import { calculateOverallScore, calculateConsistencyScore, calculateMomentum, calculateTrend, calculateRankChange } from '@/lib/scoring'
+import { createSampleLeaders } from '@/lib/sampleData'
 
 type Page = 'dashboard' | 'ranking' | 'album' | 'admin'
 
@@ -42,6 +44,38 @@ function App() {
     return leaders?.find(l => l.email === currentUser.email)
   }
 
+  const updateLeaderScores = () => {
+    setLeaders(currentLeaders => {
+      if (!currentLeaders) return []
+      
+      return currentLeaders.map(leader => {
+        const consistency = calculateConsistencyScore(leader.history || [])
+        const momentum = calculateMomentum(leader.history || [])
+        const trend = calculateTrend(momentum)
+        const overall = calculateOverallScore({
+          ...leader,
+          consistencyScore: consistency
+        })
+        const rankChange = calculateRankChange(currentLeaders, leader)
+        
+        return {
+          ...leader,
+          overall,
+          consistencyScore: consistency,
+          momentum,
+          trend,
+          rankChange
+        }
+      })
+    })
+  }
+
+  useEffect(() => {
+    if (leaders && leaders.length > 0) {
+      updateLeaderScores()
+    }
+  }, [])
+
   const handleTaskComplete = (taskId: string) => {
     setTasks(currentTasks => {
       if (!currentTasks) return []
@@ -56,15 +90,33 @@ function App() {
     if (task && leader) {
       setLeaders(currentLeaders => {
         if (!currentLeaders) return []
-        return currentLeaders.map(l =>
-          l.id === leader.id
-            ? {
-                ...l,
-                taskPoints: l.taskPoints + task.points,
-                overall: l.overall + task.points
-              }
-            : l
-        )
+        return currentLeaders.map(l => {
+          if (l.id === leader.id) {
+            const newTaskPoints = l.taskPoints + task.points
+            const updatedLeader = {
+              ...l,
+              taskPoints: newTaskPoints
+            }
+            const newOverall = calculateOverallScore(updatedLeader)
+            
+            const newHistory: ScoreHistory = {
+              week: `Semana ${(l.history?.length || 0) + 1}`,
+              overall: newOverall,
+              taskPoints: newTaskPoints,
+              fanScore: l.fanScore,
+              assistPoints: l.assistPoints,
+              ritualPoints: l.ritualPoints,
+              timestamp: new Date().toISOString()
+            }
+            
+            return {
+              ...updatedLeader,
+              overall: newOverall,
+              history: [...(l.history || []), newHistory]
+            }
+          }
+          return l
+        })
       })
 
       setActivities(currentActivities => [
@@ -78,6 +130,8 @@ function App() {
         },
         ...(currentActivities || [])
       ])
+      
+      setTimeout(updateLeaderScores, 100)
     }
   }
 
@@ -88,15 +142,22 @@ function App() {
     if (fromLeader && toLeader) {
       setLeaders(currentLeaders => {
         if (!currentLeaders) return []
-        return currentLeaders.map(l =>
-          l.id === leaderId
-            ? {
-                ...l,
-                assistPoints: l.assistPoints + 10,
-                overall: l.overall + 10
-              }
-            : l
-        )
+        return currentLeaders.map(l => {
+          if (l.id === leaderId) {
+            const newAssistPoints = l.assistPoints + 10
+            const updatedLeader = {
+              ...l,
+              assistPoints: newAssistPoints
+            }
+            const newOverall = calculateOverallScore(updatedLeader)
+            
+            return {
+              ...updatedLeader,
+              overall: newOverall
+            }
+          }
+          return l
+        })
       })
 
       setActivities(currentActivities => [
@@ -110,6 +171,8 @@ function App() {
         },
         ...(currentActivities || [])
       ])
+      
+      setTimeout(updateLeaderScores, 100)
     }
 
     setEvaluatingLeader(null)
@@ -143,6 +206,11 @@ function App() {
       if (!currentTasks) return []
       return currentTasks.filter(t => t.id !== taskId)
     })
+  }
+  
+  const handleInitializeSampleData = () => {
+    const sampleLeaders = createSampleLeaders()
+    setLeaders(sampleLeaders)
   }
 
   const openLeaderProfile = (leader: Leader) => {
@@ -243,6 +311,7 @@ function App() {
             onUpdateLeader={handleUpdateLeader}
             onCreateTask={handleCreateTask}
             onDeleteTask={handleDeleteTask}
+            onInitializeSampleData={handleInitializeSampleData}
           />
         ) : (
           <div className="text-center py-12">

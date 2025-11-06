@@ -20,16 +20,24 @@ export interface Leader {
   taskPoints: number
   fanScore: number
   assistPoints: number
+  ritualPoints: number
   attributes: {
     communication: number
     technique: number
     management: number
     pace: number
+    leadership: number
+    development: number
   }
   strengths: string[]
   improvements: string[]
   trophies: Trophy[]
   badges: Badge[]
+  history: ScoreHistory[]
+  momentum: number
+  trend: 'rising' | 'falling' | 'stable'
+  rankChange: number
+  consistencyScore: number
 }
 
 export interface Task {
@@ -95,4 +103,29 @@ export interface Activity {
   leaderName: string
   description: string
   timestamp: string
+}
+
+export interface ScoreHistory {
+  week: string
+  overall: number
+  taskPoints: number
+  fanScore: number
+  assistPoints: number
+  ritualPoints: number
+  timestamp: string
+}
+
+export interface ScoreWeights {
+  tasks: number
+  fanScore: number
+  assists: number
+  rituals: number
+  consistency: number
+}
+
+export interface Insight {
+  type: 'positive' | 'warning' | 'neutral'
+  category: string
+  message: string
+  actionable?: string
 }

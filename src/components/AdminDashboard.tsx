@@ -9,8 +9,9 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@
 import { Checkbox } from '@/components/ui/checkbox'
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog'
 import { Badge } from '@/components/ui/badge'
-import { Users, SoccerBall, CalendarCheck, Plus, Pencil, Trash } from '@phosphor-icons/react'
+import { Users, SoccerBall, CalendarCheck, Plus, Pencil, Trash, Database } from '@phosphor-icons/react'
 import type { Leader, Task, Ritual } from '@/lib/types'
+import { createSampleLeaders } from '@/lib/sampleData'
 import { toast } from 'sonner'
 
 interface AdminDashboardProps {
@@ -19,9 +20,10 @@ interface AdminDashboardProps {
   onUpdateLeader: (leader: Leader) => void
   onCreateTask: (task: Omit<Task, 'id' | 'leaderId' | 'completed'>) => void
   onDeleteTask: (taskId: string) => void
+  onInitializeSampleData?: () => void
 }
 
-export function AdminDashboard({ leaders, tasks, onUpdateLeader, onCreateTask, onDeleteTask }: AdminDashboardProps) {
+export function AdminDashboard({ leaders, tasks, onUpdateLeader, onCreateTask, onDeleteTask, onInitializeSampleData }: AdminDashboardProps) {
   const [editingLeader, setEditingLeader] = useState<Leader | null>(null)
   const [newTask, setNewTask] = useState({ title: '', description: '', points: 0 })
 
@@ -52,14 +54,30 @@ export function AdminDashboard({ leaders, tasks, onUpdateLeader, onCreateTask, o
     setEditingLeader(null)
     toast.success('Líder atualizado com sucesso!')
   }
+  
+  const handleInitializeData = () => {
+    if (onInitializeSampleData) {
+      onInitializeSampleData()
+      toast.success('Dados de exemplo carregados com sucesso!')
+    }
+  }
 
   return (
     <div className="space-y-6">
-      <div>
-        <h1 className="text-3xl font-bold mb-2">Painel do Administrador</h1>
-        <p className="text-muted-foreground">
-          Gerencie líderes, tarefas e registre os rituais
-        </p>
+      <div className="flex items-start justify-between">
+        <div>
+          <h1 className="text-3xl font-bold mb-2">Painel do Administrador</h1>
+          <p className="text-muted-foreground">
+            Gerencie líderes, tarefas e registre os rituais
+          </p>
+        </div>
+        
+        {leaders.length === 0 && onInitializeSampleData && (
+          <Button onClick={handleInitializeData} variant="outline" className="gap-2">
+            <Database size={20} />
+            Carregar Dados de Exemplo
+          </Button>
+        )}
       </div>
 
       <Tabs defaultValue="leaders" className="space-y-6">

@@ -1,16 +1,72 @@
 # Planning Guide
 
-A World Cup-themed gamification platform that transforms leadership performance evaluation into an engaging championship experience, where managers compete through management tasks, team feedback, and peer recognition.
+A World Cup-themed gamification platform that transforms leadership performance evaluation into an engaging championship experience, featuring intelligent multi-dimensional scoring, predictive analytics, personalized insights, and data-driven performance comparisons.
 
 **Experience Qualities**: 
-1. **Playful yet Professional** - Balances competitive sports excitement with serious performance metrics
-2. **Visually Rich** - Trading card aesthetics with shiny effects, stadium imagery, and trophy presentations
-3. **Immediately Rewarding** - Every action triggers visual feedback like confetti, goal celebrations, and score updates
+1. **Intelligently Insightful** - Provides meaningful, actionable feedback through AI-powered analysis and predictive modeling
+2. **Visually Rich & Data-Driven** - Beautiful visualizations that reveal patterns, trends, and comparative performance metrics
+3. **Immediately Rewarding** - Every action triggers visual feedback, score calculations, and real-time insights showing impact
 
 **Complexity Level**: Complex Application (advanced functionality, accounts)
-  - Requires user authentication, role-based access (leaders vs admin), real-time scoring system, CRUD operations for multiple entities, and sophisticated data visualization across multiple interconnected views.
+  - Requires user authentication, role-based access, sophisticated multi-dimensional scoring algorithm with weighted categories, historical performance tracking, predictive analytics, comparative benchmarking, real-time score calculations, and advanced data visualizations.
 
 ## Essential Features
+
+### 0. Intelligent Scoring Engine (NEW - 100x Enhancement)
+- **Functionality**: Multi-dimensional weighted scoring system that calculates overall score based on 5 components: Tasks (40%), Fan Score (25%), Assists (15%), Rituals (15%), Consistency Bonus (5%)
+- **Purpose**: Provide fair, balanced, and game-resistant evaluation that rewards consistent performance
+- **Trigger**: Automatically recalculates whenever any score component changes
+- **Progression**: Score change detected → Historical data analyzed → Consistency calculated → Momentum computed → Trend identified → Overall recalculated → UI updates with animations
+- **Success criteria**: Accurate weighted calculations, proper handling of edge cases, visible score breakdown
+
+### 0.1. Performance Analytics Dashboard (NEW - 100x Enhancement)
+- **Functionality**: Multi-tab dashboard with Overview, Analytics, Insights, and Score Breakdown tabs featuring charts, comparisons, and predictions
+- **Purpose**: Give leaders deep visibility into their performance with actionable intelligence
+- **Trigger**: Leader navigates between dashboard tabs
+- **Progression**: Tab selected → Data fetched → Charts rendered → Animations play → Insights generated
+- **Success criteria**: All visualizations load smoothly, data is accurate, insights are relevant
+
+### 0.2. Personalized Insights Engine (NEW - 100x Enhancement)  
+- **Functionality**: AI-powered insight generation comparing leader performance to averages, identifying strengths/weaknesses, and providing actionable recommendations
+- **Purpose**: Guide leaders toward improvement with specific, data-driven suggestions
+- **Trigger**: Dashboard loads or scores update
+- **Progression**: Performance data analyzed → Benchmarks calculated → Insights generated → Categorized by type (positive/warning/neutral) → Displayed with icons and actions
+- **Success criteria**: Insights are accurate, relevant, and actionable; update in real-time
+
+### 0.3. Comparative Analytics (NEW - 100x Enhancement)
+- **Functionality**: Visual comparison of leader performance vs company average and team benchmarks with percentile ranking
+- **Purpose**: Provide context for performance scores through peer comparison
+- **Trigger**: Analytics tab accessed
+- **Progression**: Load leader data → Calculate averages → Generate team benchmarks → Render comparison bars → Show percentile position
+- **Success criteria**: Accurate calculations, smooth bar animations, clear visual hierarchy
+
+### 0.4. Performance Trend Visualization (NEW - 100x Enhancement)
+- **Functionality**: Historical line chart showing overall score evolution across weeks with peak/current/minimum indicators
+- **Purpose**: Help leaders see patterns, momentum, and trajectory over time
+- **Trigger**: Analytics tab accessed
+- **Progression**: Historical data loaded → Chart data formatted → Area chart rendered with gradient → Key metrics highlighted
+- **Success criteria**: Chart is responsive, data is accurate, trend is clearly visible
+
+### 0.5. Score Breakdown & Impact Analysis (NEW - 100x Enhancement)
+- **Functionality**: Detailed breakdown showing how each component contributes to overall score with weights, tooltips, and improvement suggestions
+- **Purpose**: Demystify scoring algorithm and show leaders exactly where to focus effort
+- **Trigger**: Breakdown tab accessed
+- **Progression**: Score components calculated → Contribution percentages computed → Bars animated → Tooltips provide context → Suggestions generated
+- **Success criteria**: All math is accurate, suggestions are relevant, tooltips are informative
+
+### 0.6. Momentum & Trend Tracking (NEW - 100x Enhancement)
+- **Functionality**: Automatic calculation of performance momentum (average weekly change) and trend classification (rising/falling/stable)
+- **Purpose**: Surface performance direction and velocity to motivate improvement
+- **Trigger**: Score history updates
+- **Progression**: Recent history analyzed → Average change calculated → Trend classified → Icons and colors assigned → Displayed in insights panel
+- **Success criteria**: Accurate momentum calculation, proper trend classification, clear visual indicators
+
+### 0.7. Predictive Score Modeling (NEW - 100x Enhancement)
+- **Functionality**: Machine learning-inspired prediction of next week's score based on momentum and consistency with confidence interval
+- **Purpose**: Help leaders understand trajectory and set realistic goals
+- **Trigger**: Sufficient historical data available (3+ weeks)
+- **Progression**: History analyzed → Trend calculated → Prediction computed → Confidence assessed → Displayed with badge
+- **Success criteria**: Predictions are reasonable, confidence metrics are accurate
 
 ### 1. Authentication & Role Management
 - **Functionality**: Login system with role-based routing (Leader vs Admin)
