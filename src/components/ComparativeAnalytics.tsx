@@ -13,44 +13,44 @@ interface ComparativeAnalyticsProps {
 
 export function ComparativeAnalytics({ leader, leaders }: ComparativeAnalyticsProps) {
   const allLeadersAvg = {
-    overall: leaders.reduce((sum, l) => sum + l.overall, 0) / leaders.length,
-    taskPoints: leaders.reduce((sum, l) => sum + l.taskPoints, 0) / leaders.length,
-    fanScore: leaders.reduce((sum, l) => sum + l.fanScore, 0) / leaders.length,
-    assistPoints: leaders.reduce((sum, l) => sum + l.assistPoints, 0) / leaders.length,
-    ritualPoints: leaders.reduce((sum, l) => sum + l.ritualPoints, 0) / leaders.length
+    overall: leaders.reduce((sum, l) => sum + (l.overall ?? 0), 0) / leaders.length,
+    taskPoints: leaders.reduce((sum, l) => sum + (l.taskPoints ?? 0), 0) / leaders.length,
+    fanScore: leaders.reduce((sum, l) => sum + (l.fanScore ?? 0), 0) / leaders.length,
+    assistPoints: leaders.reduce((sum, l) => sum + (l.assistPoints ?? 0), 0) / leaders.length,
+    ritualPoints: leaders.reduce((sum, l) => sum + (l.ritualPoints ?? 0), 0) / leaders.length
   }
   
   const teamBenchmarks = getTeamBenchmarks(leaders, leader.team)
   
-  const sortedLeaders = [...leaders].sort((a, b) => b.overall - a.overall)
+  const sortedLeaders = [...leaders].sort((a, b) => (b.overall ?? 0) - (a.overall ?? 0))
   const currentRank = sortedLeaders.findIndex(l => l.id === leader.id) + 1
   const percentile = Math.round((1 - (currentRank - 1) / leaders.length) * 100)
   
   const categories = [
     {
       name: 'Tarefas',
-      value: leader.taskPoints,
+      value: leader.taskPoints ?? 0,
       avg: allLeadersAvg.taskPoints,
       teamAvg: teamBenchmarks?.avgTaskPoints || 0,
       color: 'bg-primary'
     },
     {
       name: 'Nota da Torcida',
-      value: leader.fanScore * 10,
+      value: (leader.fanScore ?? 0) * 10,
       avg: allLeadersAvg.fanScore * 10,
       teamAvg: teamBenchmarks ? teamBenchmarks.avgFanScore * 10 : 0,
       color: 'bg-accent'
     },
     {
       name: 'Assistências',
-      value: leader.assistPoints,
+      value: leader.assistPoints ?? 0,
       avg: allLeadersAvg.assistPoints,
       teamAvg: teamBenchmarks?.avgTaskPoints || 0,
       color: 'bg-secondary'
     },
     {
       name: 'Rituais',
-      value: leader.ritualPoints,
+      value: leader.ritualPoints ?? 0,
       avg: allLeadersAvg.ritualPoints,
       teamAvg: 0,
       color: 'bg-primary/70'
@@ -183,10 +183,10 @@ export function ComparativeAnalytics({ leader, leaders }: ComparativeAnalyticsPr
                 <div className="p-3 rounded-lg bg-accent/5 border border-accent/20">
                   <div className="text-sm">
                     <span className="font-medium">{teamBenchmarks.topPerformer.name}</span>
-                    {' '}é o líder do seu time com {teamBenchmarks.topPerformer.overall} pontos
+                    {' '}é o líder do seu time com {teamBenchmarks.topPerformer.overall ?? 0} pontos
                   </div>
                   <div className="text-xs text-muted-foreground mt-1">
-                    Você está {teamBenchmarks.topPerformer.overall - leader.overall} pontos atrás
+                    Você está {(teamBenchmarks.topPerformer.overall ?? 0) - (leader.overall ?? 0)} pontos atrás
                   </div>
                 </div>
               )}

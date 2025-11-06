@@ -55,8 +55,8 @@ export function TradingCard({ leader, onClick }: TradingCardProps) {
                 <div className="text-xs text-muted-foreground uppercase tracking-wide mb-1">
                   Overall
                 </div>
-                <div className={`text-4xl font-bold ${getOverallColor(leader.overall)}`}>
-                  {leader.overall}
+                <div className={`text-4xl font-bold ${getOverallColor(leader.overall ?? 0)}`}>
+                  {leader.overall ?? 0}
                 </div>
               </div>
             </div>

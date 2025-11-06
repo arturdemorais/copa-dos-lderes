@@ -46,7 +46,7 @@ export function InsightsPanel({ leader, leaders }: InsightsPanelProps) {
               <div className="flex items-center gap-2">
                 {getMomentumIcon()}
                 <span className="font-bold text-lg">
-                  {leader.momentum > 0 ? '+' : ''}{Math.round(leader.momentum)}/sem
+                  {(leader.momentum ?? 0) > 0 ? '+' : ''}{Math.round(leader.momentum ?? 0)}/sem
                 </span>
               </div>
             </div>
@@ -57,13 +57,13 @@ export function InsightsPanel({ leader, leaders }: InsightsPanelProps) {
                 <div className="h-2 w-full bg-muted rounded-full overflow-hidden">
                   <motion.div
                     initial={{ width: 0 }}
-                    animate={{ width: `${leader.consistencyScore * 100}%` }}
+                    animate={{ width: `${(leader.consistencyScore ?? 0) * 100}%` }}
                     transition={{ duration: 1, ease: "easeOut" }}
                     className="h-full bg-primary"
                   />
                 </div>
                 <span className="font-bold text-sm whitespace-nowrap">
-                  {Math.round(leader.consistencyScore * 100)}%
+                  {Math.round((leader.consistencyScore ?? 0) * 100)}%
                 </span>
               </div>
             </div>

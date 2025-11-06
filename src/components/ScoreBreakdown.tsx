@@ -14,41 +14,41 @@ export function ScoreBreakdown({ leader }: ScoreBreakdownProps) {
   const components = [
     {
       name: 'Tarefas Completadas',
-      value: leader.taskPoints,
+      value: leader.taskPoints ?? 0,
       weight: DEFAULT_WEIGHTS.tasks,
-      contribution: leader.taskPoints * DEFAULT_WEIGHTS.tasks,
+      contribution: (leader.taskPoints ?? 0) * DEFAULT_WEIGHTS.tasks,
       color: 'bg-primary',
       description: 'Pontos ganhos completando tarefas semanais (Gols de Placa)'
     },
     {
       name: 'Nota da Torcida',
-      value: leader.fanScore * 10,
+      value: (leader.fanScore ?? 0) * 10,
       weight: DEFAULT_WEIGHTS.fanScore,
-      contribution: (leader.fanScore * 10) * DEFAULT_WEIGHTS.fanScore,
+      contribution: ((leader.fanScore ?? 0) * 10) * DEFAULT_WEIGHTS.fanScore,
       color: 'bg-accent',
       description: 'Feedback do seu time sobre liderança e suporte'
     },
     {
       name: 'Assistências',
-      value: leader.assistPoints,
+      value: leader.assistPoints ?? 0,
       weight: DEFAULT_WEIGHTS.assists,
-      contribution: leader.assistPoints * DEFAULT_WEIGHTS.assists,
+      contribution: (leader.assistPoints ?? 0) * DEFAULT_WEIGHTS.assists,
       color: 'bg-secondary',
       description: 'Pontos por reconhecer e avaliar outros técnicos'
     },
     {
       name: 'Presença em Rituais',
-      value: leader.ritualPoints,
+      value: leader.ritualPoints ?? 0,
       weight: DEFAULT_WEIGHTS.rituals,
-      contribution: leader.ritualPoints * DEFAULT_WEIGHTS.rituals,
+      contribution: (leader.ritualPoints ?? 0) * DEFAULT_WEIGHTS.rituals,
       color: 'bg-primary/70',
       description: 'Participação em Dailies, Weeklies e RMR'
     },
     {
       name: 'Bônus de Consistência',
-      value: leader.consistencyScore * 100,
+      value: (leader.consistencyScore ?? 0) * 100,
       weight: DEFAULT_WEIGHTS.consistency,
-      contribution: leader.consistencyScore * DEFAULT_WEIGHTS.consistency * 100,
+      contribution: (leader.consistencyScore ?? 0) * DEFAULT_WEIGHTS.consistency * 100,
       color: 'bg-muted-foreground/50',
       description: 'Recompensa por manter performance estável ao longo do tempo'
     }
@@ -69,7 +69,7 @@ export function ScoreBreakdown({ leader }: ScoreBreakdownProps) {
           <div className="flex items-center justify-between p-4 rounded-lg bg-gradient-to-r from-primary/10 to-accent/10 border-2 border-primary/20">
             <div>
               <div className="text-sm text-muted-foreground mb-1">Overall Score</div>
-              <div className="text-4xl font-bold">{leader.overall}</div>
+              <div className="text-4xl font-bold">{leader.overall ?? 0}</div>
             </div>
             <Badge variant="outline" className="text-sm">
               Total de Pontos
@@ -132,19 +132,19 @@ export function ScoreBreakdown({ leader }: ScoreBreakdownProps) {
                 <strong>Como melhorar seu score:</strong>
               </p>
               <ul className="list-disc list-inside space-y-1 ml-2">
-                {leader.taskPoints < 100 && (
+                {(leader.taskPoints ?? 0) < 100 && (
                   <li>Complete mais tarefas semanais (maior peso: 40%)</li>
                 )}
-                {leader.fanScore < 7 && (
+                {(leader.fanScore ?? 0) < 7 && (
                   <li>Trabalhe no feedback do time (peso: 25%)</li>
                 )}
-                {leader.assistPoints < 30 && (
+                {(leader.assistPoints ?? 0) < 30 && (
                   <li>Avalie outros técnicos para ganhar assistências (peso: 15%)</li>
                 )}
-                {leader.ritualPoints < 50 && (
+                {(leader.ritualPoints ?? 0) < 50 && (
                   <li>Participe de mais rituais da empresa (peso: 15%)</li>
                 )}
-                {leader.consistencyScore < 0.7 && (
+                {(leader.consistencyScore ?? 0) < 0.7 && (
                   <li>Mantenha performance consistente para bônus extra (peso: 5%)</li>
                 )}
               </ul>

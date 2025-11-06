@@ -26,7 +26,7 @@ export function RankingPage({ leaders, activities, onLeaderClick }: RankingPageP
       .slice(0, 2)
   }
 
-  const sortedLeaders = [...leaders].sort((a, b) => b.overall - a.overall)
+  const sortedLeaders = [...leaders].sort((a, b) => (b.overall ?? 0) - (a.overall ?? 0))
 
   const filteredLeaders = sortedLeaders.filter(
     leader =>
@@ -72,7 +72,7 @@ export function RankingPage({ leaders, activities, onLeaderClick }: RankingPageP
                 <div className="text-center mb-2">
                   <p className="font-semibold text-sm">{topThree[1].name}</p>
                   <p className="text-xs text-muted-foreground">{topThree[1].team}</p>
-                  <p className="text-lg font-bold">{topThree[1].overall}</p>
+                  <p className="text-lg font-bold">{topThree[1].overall ?? 0}</p>
                 </div>
                 <div className="bg-muted-foreground/20 h-24 w-24 rounded-t-lg flex items-center justify-center">
                   <span className="text-3xl font-bold text-muted-foreground">2</span>
@@ -92,7 +92,7 @@ export function RankingPage({ leaders, activities, onLeaderClick }: RankingPageP
                 <div className="text-center mb-2">
                   <p className="font-bold">{topThree[0].name}</p>
                   <p className="text-xs text-muted-foreground">{topThree[0].team}</p>
-                  <p className="text-2xl font-bold text-accent">{topThree[0].overall}</p>
+                  <p className="text-2xl font-bold text-accent">{topThree[0].overall ?? 0}</p>
                 </div>
                 <div className="bg-accent h-32 w-24 rounded-t-lg flex items-center justify-center">
                   <span className="text-4xl font-bold text-accent-foreground">1</span>
@@ -111,7 +111,7 @@ export function RankingPage({ leaders, activities, onLeaderClick }: RankingPageP
                 <div className="text-center mb-2">
                   <p className="font-semibold text-sm">{topThree[2].name}</p>
                   <p className="text-xs text-muted-foreground">{topThree[2].team}</p>
-                  <p className="text-lg font-bold">{topThree[2].overall}</p>
+                  <p className="text-lg font-bold">{topThree[2].overall ?? 0}</p>
                 </div>
                 <div className="bg-primary/20 h-20 w-24 rounded-t-lg flex items-center justify-center">
                   <span className="text-3xl font-bold text-primary">3</span>
@@ -196,13 +196,13 @@ export function RankingPage({ leaders, activities, onLeaderClick }: RankingPageP
                               <Badge variant="secondary">{leader.team}</Badge>
                             </TableCell>
                             <TableCell className="text-center">
-                              <span className="font-bold text-lg">{leader.overall}</span>
+                              <span className="font-bold text-lg">{leader.overall ?? 0}</span>
                             </TableCell>
                             <TableCell className="text-center">
                               {getVariationIcon(change)}
                             </TableCell>
                             <TableCell className="text-right">
-                              <span className="font-medium">{leader.weeklyPoints}</span>
+                              <span className="font-medium">{leader.weeklyPoints ?? 0}</span>
                             </TableCell>
                           </TableRow>
                         )

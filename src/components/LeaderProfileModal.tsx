@@ -26,10 +26,10 @@ export function LeaderProfileModal({ leader, open, onOpenChange, onEvaluate }: L
   }
 
   const radarData = [
-    { attribute: 'Comunicação', value: leader.attributes.communication },
-    { attribute: 'Técnica', value: leader.attributes.technique },
-    { attribute: 'Gestão', value: leader.attributes.management },
-    { attribute: 'Ritmo', value: leader.attributes.pace }
+    { attribute: 'Comunicação', value: leader.attributes?.communication ?? 0 },
+    { attribute: 'Técnica', value: leader.attributes?.technique ?? 0 },
+    { attribute: 'Gestão', value: leader.attributes?.management ?? 0 },
+    { attribute: 'Ritmo', value: leader.attributes?.pace ?? 0 }
   ]
 
   const getTrophyIcon = (type: string) => {
@@ -69,7 +69,7 @@ export function LeaderProfileModal({ leader, open, onOpenChange, onEvaluate }: L
                         Overall
                       </div>
                       <div className="text-5xl font-bold text-accent">
-                        {leader.overall}
+                        {leader.overall ?? 0}
                       </div>
                     </div>
                   </div>
@@ -83,9 +83,9 @@ export function LeaderProfileModal({ leader, open, onOpenChange, onEvaluate }: L
                   <Trophy size={20} className="text-accent" />
                   Troféus
                 </h4>
-                {leader.trophies.length > 0 ? (
+                {(leader.trophies ?? []).length > 0 ? (
                   <div className="flex flex-wrap gap-3">
-                    {leader.trophies.map(trophy => (
+                    {(leader.trophies ?? []).map(trophy => (
                       <div key={trophy.id} className="flex flex-col items-center gap-1">
                         {getTrophyIcon(trophy.type)}
                         <span className="text-xs text-center">{trophy.name}</span>
@@ -103,9 +103,9 @@ export function LeaderProfileModal({ leader, open, onOpenChange, onEvaluate }: L
                   <Medal size={20} className="text-secondary" />
                   Figurinhas
                 </h4>
-                {leader.badges.length > 0 ? (
+                {(leader.badges ?? []).length > 0 ? (
                   <div className="flex flex-wrap gap-2">
-                    {leader.badges.map(badge => (
+                    {(leader.badges ?? []).map(badge => (
                       <Badge key={badge.id} variant="outline" className="gap-1">
                         <Star weight="fill" size={14} className="text-accent" />
                         {badge.name}
@@ -145,9 +145,9 @@ export function LeaderProfileModal({ leader, open, onOpenChange, onEvaluate }: L
 
             <div>
               <h4 className="font-semibold mb-3 text-primary">Pontos Fortes</h4>
-              {leader.strengths.length > 0 ? (
+              {(leader.strengths ?? []).length > 0 ? (
                 <ul className="space-y-2">
-                  {leader.strengths.map((strength, idx) => (
+                  {(leader.strengths ?? []).map((strength, idx) => (
                     <li key={idx} className="text-sm flex items-start gap-2">
                       <span className="text-primary mt-1">✓</span>
                       <span>{strength}</span>
@@ -161,9 +161,9 @@ export function LeaderProfileModal({ leader, open, onOpenChange, onEvaluate }: L
 
             <div>
               <h4 className="font-semibold mb-3 text-secondary">Pontos a Desenvolver</h4>
-              {leader.improvements.length > 0 ? (
+              {(leader.improvements ?? []).length > 0 ? (
                 <ul className="space-y-2">
-                  {leader.improvements.map((improvement, idx) => (
+                  {(leader.improvements ?? []).map((improvement, idx) => (
                     <li key={idx} className="text-sm flex items-start gap-2">
                       <span className="text-secondary mt-1">→</span>
                       <span>{improvement}</span>

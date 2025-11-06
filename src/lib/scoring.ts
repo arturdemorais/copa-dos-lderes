@@ -9,16 +9,16 @@ export const DEFAULT_WEIGHTS: ScoreWeights = {
 }
 
 export function calculateOverallScore(leader: Leader, weights: ScoreWeights = DEFAULT_WEIGHTS): number {
-  const normalizedFanScore = leader.fanScore * 10
-  const normalizedRitualScore = leader.ritualPoints
+  const normalizedFanScore = (leader.fanScore ?? 0) * 10
+  const normalizedRitualScore = leader.ritualPoints ?? 0
   
   const baseScore = 
-    (leader.taskPoints * weights.tasks) +
+    ((leader.taskPoints ?? 0) * weights.tasks) +
     (normalizedFanScore * weights.fanScore) +
-    (leader.assistPoints * weights.assists) +
+    ((leader.assistPoints ?? 0) * weights.assists) +
     (normalizedRitualScore * weights.rituals)
   
-  const consistencyBonus = leader.consistencyScore * weights.consistency * 100
+  const consistencyBonus = (leader.consistencyScore ?? 0) * weights.consistency * 100
   
   return Math.round(baseScore + consistencyBonus)
 }
@@ -59,7 +59,7 @@ export function calculateTrend(momentum: number): 'rising' | 'falling' | 'stable
 }
 
 export function calculateRankChange(leaders: Leader[], currentLeader: Leader): number {
-  const sortedCurrent = [...leaders].sort((a, b) => b.overall - a.overall)
+  const sortedCurrent = [...leaders].sort((a, b) => (b.overall ?? 0) - (a.overall ?? 0))
   const currentRank = sortedCurrent.findIndex(l => l.id === currentLeader.id)
   
   if (!currentLeader.history || currentLeader.history.length < 2) return 0
@@ -67,7 +67,7 @@ export function calculateRankChange(leaders: Leader[], currentLeader: Leader): n
   const previousWeekScore = currentLeader.history[currentLeader.history.length - 2].overall
   const leadersWithPreviousScores = leaders.map(l => ({
     id: l.id,
-    score: l.history && l.history.length >= 2 ? l.history[l.history.length - 2].overall : l.overall
+    score: l.history && l.history.length >= 2 ? l.history[l.history.length - 2].overall : (l.overall ?? 0)
   }))
   
   const sortedPrevious = leadersWithPreviousScores.sort((a, b) => b.score - a.score)
@@ -79,34 +79,38 @@ export function calculateRankChange(leaders: Leader[], currentLeader: Leader): n
 export function generateInsights(leader: Leader, leaders: Leader[]): Insight[] {
   const insights: Insight[] = []
   
-  const avgTaskPoints = leaders.reduce((sum, l) => sum + l.taskPoints, 0) / leaders.length
-  const avgFanScore = leaders.reduce((sum, l) => sum + l.fanScore, 0) / leaders.length
-  const avgAssistPoints = leaders.reduce((sum, l) => sum + l.assistPoints, 0) / leaders.length
+  const avgTaskPoints = leaders.reduce((sum, l) => sum + (l.taskPoints ?? 0), 0) / leaders.length
+  const avgFanScore = leaders.reduce((sum, l) => sum + (l.fanScore ?? 0), 0) / leaders.length
+  const avgAssistPoints = leaders.reduce((sum, l) => sum + (l.assistPoints ?? 0), 0) / leaders.length
   
-  if (leader.taskPoints > avgTaskPoints * 1.2) {
+  const leaderTaskPoints = leader.taskPoints ?? 0
+  const leaderFanScore = leader.fanScore ?? 0
+  const leaderAssistPoints = leader.assistPoints ?? 0
+  
+  if (leaderTaskPoints > avgTaskPoints * 1.2) {
     insights.push({
       type: 'positive',
       category: 'Tarefas',
-      message: `Você está ${Math.round(((leader.taskPoints / avgTaskPoints) - 1) * 100)}% acima da média em tarefas completadas!`,
+      message: `Você está ${Math.round(((leaderTaskPoints / avgTaskPoints) - 1) * 100)}% acima da média em tarefas completadas!`,
       actionable: 'Continue mantendo esse ritmo de execução'
     })
-  } else if (leader.taskPoints < avgTaskPoints * 0.8) {
+  } else if (leaderTaskPoints < avgTaskPoints * 0.8) {
     insights.push({
       type: 'warning',
       category: 'Tarefas',
-      message: `Suas tarefas estão ${Math.round((1 - (leader.taskPoints / avgTaskPoints)) * 100)}% abaixo da média`,
+      message: `Suas tarefas estão ${Math.round((1 - (leaderTaskPoints / avgTaskPoints)) * 100)}% abaixo da média`,
       actionable: 'Priorize completar as tarefas pendentes desta semana'
     })
   }
   
-  if (leader.fanScore > avgFanScore * 1.15) {
+  if (leaderFanScore > avgFanScore * 1.15) {
     insights.push({
       type: 'positive',
       category: 'Nota da Torcida',
       message: 'Seu time está muito satisfeito! Nota acima da média geral',
       actionable: 'Compartilhe suas práticas com outros técnicos'
     })
-  } else if (leader.fanScore < avgFanScore * 0.85) {
+  } else if (leaderFanScore < avgFanScore * 0.85) {
     insights.push({
       type: 'warning',
       category: 'Nota da Torcida',
@@ -115,7 +119,7 @@ export function generateInsights(leader: Leader, leaders: Leader[]): Insight[] {
     })
   }
   
-  if (leader.assistPoints < 10) {
+  if (leaderAssistPoints < 10) {
     insights.push({
       type: 'neutral',
       category: 'Colaboração',
@@ -124,23 +128,25 @@ export function generateInsights(leader: Leader, leaders: Leader[]): Insight[] {
     })
   }
   
-  if (leader.momentum > 20) {
+  const leaderMomentum = leader.momentum ?? 0
+  if (leaderMomentum > 20) {
     insights.push({
       type: 'positive',
       category: 'Momentum',
-      message: 'Em alta! Você está ganhando +' + Math.round(leader.momentum) + ' pontos por semana',
+      message: 'Em alta! Você está ganhando +' + Math.round(leaderMomentum) + ' pontos por semana',
       actionable: 'Mantenha o ritmo para subir no ranking'
     })
-  } else if (leader.momentum < -20) {
+  } else if (leaderMomentum < -20) {
     insights.push({
       type: 'warning',
       category: 'Momentum',
-      message: 'Cuidado: você está perdendo -' + Math.abs(Math.round(leader.momentum)) + ' pontos por semana',
+      message: 'Cuidado: você está perdendo -' + Math.abs(Math.round(leaderMomentum)) + ' pontos por semana',
       actionable: 'Revise suas prioridades e foque nas áreas principais'
     })
   }
   
-  if (leader.consistencyScore > 0.8) {
+  const leaderConsistencyScore = leader.consistencyScore ?? 0
+  if (leaderConsistencyScore > 0.8) {
     insights.push({
       type: 'positive',
       category: 'Consistência',
@@ -198,22 +204,22 @@ export function getTeamBenchmarks(leaders: Leader[], team: string) {
   if (teamLeaders.length === 0) return null
   
   return {
-    avgOverall: teamLeaders.reduce((sum, l) => sum + l.overall, 0) / teamLeaders.length,
-    avgFanScore: teamLeaders.reduce((sum, l) => sum + l.fanScore, 0) / teamLeaders.length,
-    avgTaskPoints: teamLeaders.reduce((sum, l) => sum + l.taskPoints, 0) / teamLeaders.length,
-    topPerformer: teamLeaders.reduce((top, l) => l.overall > top.overall ? l : top, teamLeaders[0])
+    avgOverall: teamLeaders.reduce((sum, l) => sum + (l.overall ?? 0), 0) / teamLeaders.length,
+    avgFanScore: teamLeaders.reduce((sum, l) => sum + (l.fanScore ?? 0), 0) / teamLeaders.length,
+    avgTaskPoints: teamLeaders.reduce((sum, l) => sum + (l.taskPoints ?? 0), 0) / teamLeaders.length,
+    topPerformer: teamLeaders.reduce((top, l) => (l.overall ?? 0) > (top.overall ?? 0) ? l : top, teamLeaders[0])
   }
 }
 
 export function predictNextWeekScore(leader: Leader): { predicted: number, confidence: number } {
   if (!leader.history || leader.history.length < 3) {
-    return { predicted: leader.overall, confidence: 0.3 }
+    return { predicted: leader.overall ?? 0, confidence: 0.3 }
   }
   
-  const trend = leader.momentum
-  const predicted = Math.round(leader.overall + trend)
+  const trend = leader.momentum ?? 0
+  const predicted = Math.round((leader.overall ?? 0) + trend)
   
-  const confidence = Math.min(0.9, leader.consistencyScore * 0.8 + 0.2)
+  const confidence = Math.min(0.9, (leader.consistencyScore ?? 0) * 0.8 + 0.2)
   
   return { predicted, confidence }
 }

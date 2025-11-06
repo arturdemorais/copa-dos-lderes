@@ -29,11 +29,11 @@ export function LeaderDashboard({ currentLeader, tasks, leaders, onTaskComplete 
   }
 
   const topThreeLeaders = leaders
-    .sort((a, b) => b.overall - a.overall)
+    .sort((a, b) => (b.overall ?? 0) - (a.overall ?? 0))
     .slice(0, 3)
 
   const getRankPosition = () => {
-    const sorted = [...leaders].sort((a, b) => b.overall - a.overall)
+    const sorted = [...leaders].sort((a, b) => (b.overall ?? 0) - (a.overall ?? 0))
     return sorted.findIndex(l => l.id === currentLeader.id) + 1
   }
 
@@ -96,7 +96,7 @@ export function LeaderDashboard({ currentLeader, tasks, leaders, onTaskComplete 
                     )}
                     <div className="mt-4 pt-4 border-t">
                       <div className="text-3xl font-bold text-primary">
-                        {currentLeader.overall}
+                        {currentLeader.overall ?? 0}
                       </div>
                       <p className="text-xs text-muted-foreground">Overall</p>
                     </div>
@@ -145,10 +145,10 @@ export function LeaderDashboard({ currentLeader, tasks, leaders, onTaskComplete 
               <CardContent>
                 <div className="text-center">
                   <div className="text-5xl font-bold text-accent mb-2">
-                    {currentLeader.fanScore.toFixed(1)}
+                    {(currentLeader.fanScore ?? 0).toFixed(1)}
                   </div>
                   <p className="text-sm text-muted-foreground mb-4">de 10.0</p>
-                  <Progress value={currentLeader.fanScore * 10} className="h-2" />
+                  <Progress value={(currentLeader.fanScore ?? 0) * 10} className="h-2" />
                   <p className="text-xs text-muted-foreground mt-2">
                     Baseado na avaliação do seu time
                   </p>
@@ -240,7 +240,7 @@ export function LeaderDashboard({ currentLeader, tasks, leaders, onTaskComplete 
                           <p className="text-xs text-muted-foreground">{leader.team}</p>
                         </div>
                         <div className="text-right">
-                          <p className="font-bold text-lg">{leader.overall}</p>
+                          <p className="font-bold text-lg">{leader.overall ?? 0}</p>
                           <p className="text-xs text-muted-foreground">pts</p>
                         </div>
                       </div>
