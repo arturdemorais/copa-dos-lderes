@@ -10,26 +10,27 @@ import { AdminDashboard } from "@/components/AdminDashboard";
 import { LeaderProfileModal } from "@/components/LeaderProfileModal";
 import { PeerEvaluationModal } from "@/components/PeerEvaluationModal";
 import { useLeaders } from "@/hooks/useLeaders";
-import { leaderService } from "@/lib/services";
-import type { User, Leader, Task, Activity, ScoreHistory } from "@/lib/types";
 import {
-  calculateOverallScore,
-  calculateConsistencyScore,
-  calculateMomentum,
-  calculateTrend,
-  calculateRankChange,
-} from "@/lib/scoring";
+  taskService,
+  activityService,
+  peerEvaluationService,
+} from "@/lib/services";
+import type { User, Leader, Task, Activity } from "@/lib/types";
+import { calculateOverallScore } from "@/lib/scoring";
 import { toast } from "sonner";
 
 type Page = "dashboard" | "ranking" | "album" | "admin";
 
 function App() {
-  const [currentUser, setCurrentUser] = useState<User | null>(null);
+  const [currentUser, setCurrentUser] = useState<User | null>(() => {
+    // Recuperar sessão do localStorage
+    const saved = localStorage.getItem("currentUser");
+    return saved ? JSON.parse(saved) : null;
+  });
   const {
     leaders,
     loading: leadersLoading,
     updateLeader,
-    createLeader,
     refetch: refetchLeaders,
   } = useLeaders();
   const [tasks, setTasks] = useState<Task[]>([]);
@@ -38,8 +39,71 @@ function App() {
   const [selectedLeader, setSelectedLeader] = useState<Leader | null>(null);
   const [evaluatingLeader, setEvaluatingLeader] = useState<Leader | null>(null);
 
+  // Carregar tasks e activities do Supabase
+  useEffect(() => {
+    if (currentUser && currentUser.role === "leader") {
+      const leader = getCurrentLeader();
+      if (leader) {
+        loadLeaderTasks(leader.id);
+      }
+    } else if (currentUser && currentUser.role === "admin") {
+      loadAllTasks();
+    }
+
+    loadActivities();
+
+    // Subscribe to real-time
+    const unsubscribeTasks = taskService.subscribeToChanges(() => {
+      if (currentUser?.role === "admin") loadAllTasks();
+      else if (currentUser?.role === "leader") {
+        const leader = getCurrentLeader();
+        if (leader) loadLeaderTasks(leader.id);
+      }
+    });
+
+    const unsubscribeActivities = activityService.subscribeToChanges(
+      (newActivities) => {
+        setActivities(newActivities);
+      }
+    );
+
+    return () => {
+      unsubscribeTasks();
+      unsubscribeActivities();
+    };
+  }, [currentUser]);
+
+  const loadLeaderTasks = async (leaderId: string) => {
+    try {
+      const leaderTasks = await taskService.getByLeader(leaderId);
+      setTasks(leaderTasks);
+    } catch (error) {
+      console.error("Error loading tasks:", error);
+    }
+  };
+
+  const loadAllTasks = async () => {
+    try {
+      const allTasks = await taskService.getAll();
+      setTasks(allTasks);
+    } catch (error) {
+      console.error("Error loading tasks:", error);
+    }
+  };
+
+  const loadActivities = async () => {
+    try {
+      const allActivities = await activityService.getAll(50);
+      setActivities(allActivities);
+    } catch (error) {
+      console.error("Error loading activities:", error);
+    }
+  };
+
   const handleLogin = (user: User) => {
     setCurrentUser(user);
+    // Salvar no localStorage
+    localStorage.setItem("currentUser", JSON.stringify(user));
     if (user.role === "admin") {
       setCurrentPage("admin");
     } else {
@@ -49,6 +113,8 @@ function App() {
 
   const handleLogout = () => {
     setCurrentUser(null);
+    // Remover do localStorage
+    localStorage.removeItem("currentUser");
     setCurrentPage("dashboard");
   };
 
@@ -58,7 +124,6 @@ function App() {
   };
 
   const updateLeaderScores = async () => {
-    // Scores são recalculados automaticamente no hook useLeaders
     await refetchLeaders();
   };
 
@@ -69,7 +134,10 @@ function App() {
     if (!task || !leader) return;
 
     try {
-      // Atualizar task como completada
+      // Marcar task como completada no Supabase
+      await taskService.complete(taskId, leader.id);
+
+      // Atualizar UI localmente
       setTasks((currentTasks) =>
         currentTasks.map((t) =>
           t.id === taskId ? { ...t, completed: true } : t
@@ -89,21 +157,17 @@ function App() {
         overall: newOverall,
       });
 
-      // Adicionar atividade
-      setActivities((currentActivities) => [
-        {
-          id: `activity-${Date.now()}`,
-          type: "task",
-          leaderId: leader.id,
-          leaderName: leader.name,
-          description: `Concluiu: ${task.title}`,
-          timestamp: new Date().toISOString(),
-        },
-        ...(currentActivities || []),
-      ]);
+      // Criar atividade no Supabase
+      await activityService.create({
+        type: "task",
+        leaderId: leader.id,
+        leaderName: leader.name,
+        description: `Concluiu: ${task.title}`,
+        timestamp: new Date().toISOString(),
+      });
 
       await updateLeaderScores();
-      toast.success("Task completada! +" + task.points + " pontos");
+      toast.success("Task completada! +" + task.points + " pontos ⚽");
     } catch (error) {
       console.error("Error completing task:", error);
       toast.error("Erro ao completar task");
@@ -121,6 +185,15 @@ function App() {
     if (!fromLeader || !toLeader) return;
 
     try {
+      // Salvar avaliação no Supabase
+      await peerEvaluationService.create(
+        fromLeader.id,
+        toLeader.id,
+        description,
+        qualities
+      );
+
+      // Atualizar pontos
       const newAssistPoints = toLeader.assistPoints + 10;
       const updatedLeader = {
         ...toLeader,
@@ -133,22 +206,21 @@ function App() {
         overall: newOverall,
       });
 
-      setActivities((currentActivities) => [
-        {
-          id: `activity-${Date.now()}`,
-          type: "kudos",
-          leaderId: toLeader.id,
-          leaderName: toLeader.name,
-          description: `Recebeu assistência de ${
-            fromLeader.name
-          }: ${qualities.join(", ")}`,
-          timestamp: new Date().toISOString(),
-        },
-        ...(currentActivities || []),
-      ]);
+      // Criar atividade no Supabase
+      await activityService.create({
+        type: "kudos",
+        leaderId: toLeader.id,
+        leaderName: toLeader.name,
+        description: `Recebeu assistência de ${
+          fromLeader.name
+        }: ${qualities.join(", ")}`,
+        timestamp: new Date().toISOString(),
+      });
 
       await updateLeaderScores();
-      toast.success("Avaliação enviada! +10 pontos para " + toLeader.name);
+      toast.success(
+        "Avaliação enviada! +10 pontos para " + toLeader.name + " 🎖️"
+      );
     } catch (error) {
       console.error("Error submitting evaluation:", error);
       toast.error("Erro ao enviar avaliação");
@@ -167,29 +239,28 @@ function App() {
     }
   };
 
-  const handleCreateTask = (
+  const handleCreateTask = async (
     newTask: Omit<Task, "id" | "leaderId" | "completed">
   ) => {
-    const taskId = `task-${Date.now()}`;
-    const allLeaders = leaders || [];
-    allLeaders.forEach((leader) => {
-      setTasks((currentTasks) => [
-        ...(currentTasks || []),
-        {
-          ...newTask,
-          id: `${taskId}-${leader.id}`,
-          leaderId: leader.id,
-          completed: false,
-        },
-      ]);
-    });
+    try {
+      await taskService.create(newTask, currentUser?.id);
+      await loadAllTasks();
+      toast.success("Task criada com sucesso!");
+    } catch (error) {
+      console.error("Error creating task:", error);
+      toast.error("Erro ao criar task");
+    }
   };
 
-  const handleDeleteTask = (taskId: string) => {
-    setTasks((currentTasks) => {
-      if (!currentTasks) return [];
-      return currentTasks.filter((t) => t.id !== taskId);
-    });
+  const handleDeleteTask = async (taskId: string) => {
+    try {
+      await taskService.delete(taskId);
+      setTasks((currentTasks) => currentTasks.filter((t) => t.id !== taskId));
+      toast.success("Task removida");
+    } catch (error) {
+      console.error("Error deleting task:", error);
+      toast.error("Erro ao deletar task");
+    }
   };
 
   const handleInitializeSampleData = async () => {
