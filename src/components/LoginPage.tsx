@@ -11,6 +11,7 @@ import {
 } from "@/components/ui/card";
 import { Trophy } from "@phosphor-icons/react";
 import { toast } from "sonner";
+import { leaderService } from "@/lib/services";
 import type { User } from "@/lib/types";
 
 interface LoginPageProps {
@@ -21,15 +22,13 @@ export function LoginPage({ onLogin }: LoginPageProps) {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
-  const [isSignUp, setIsSignUp] = useState(false);
-  const [name, setName] = useState("");
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
 
     try {
-      // Mock login ainda funciona para admin e demo
+      // Login como Admin
       if (email === "admin@copa.com" && password === "admin") {
         onLogin({
           id: "admin-1",
@@ -37,23 +36,42 @@ export function LoginPage({ onLogin }: LoginPageProps) {
           email: "admin@copa.com",
           role: "admin",
         });
-        toast.success("Login como Admin realizado!");
+        toast.success("Bem-vindo, Administrador!");
         return;
       }
 
-      // Para outros emails, usar mock também (Supabase auth virá depois)
-      const mockUser: User = {
-        id: `user-${Date.now()}`,
-        name: name || email.split("@")[0],
-        email,
+      // Login como Líder - verificar se existe no banco
+      const leader = await leaderService.getByEmail(email);
+
+      if (!leader) {
+        toast.error(
+          "Email não encontrado. Entre em contato com o administrador."
+        );
+        setLoading(false);
+        return;
+      }
+
+      // Mock de validação de senha (futuramente será Supabase Auth real)
+      if (!password || password.length < 3) {
+        toast.error("Senha inválida");
+        setLoading(false);
+        return;
+      }
+
+      // Login bem-sucedido
+      const user: User = {
+        id: leader.id,
+        name: leader.name,
+        email: leader.email,
         role: "leader",
+        photo: leader.photo,
       };
 
-      onLogin(mockUser);
-      toast.success("Login realizado com sucesso!");
+      onLogin(user);
+      toast.success(`Bem-vindo, ${leader.name}! ⚽`);
     } catch (error: any) {
       console.error("Login error:", error);
-      toast.error(error.message || "Erro ao fazer login");
+      toast.error("Erro ao fazer login. Tente novamente.");
     } finally {
       setLoading(false);
     }
@@ -81,20 +99,6 @@ export function LoginPage({ onLogin }: LoginPageProps) {
           </CardHeader>
           <CardContent>
             <form onSubmit={handleSubmit} className="space-y-4">
-              {isSignUp && (
-                <div>
-                  <Label htmlFor="name">Nome Completo</Label>
-                  <Input
-                    id="name"
-                    type="text"
-                    placeholder="Seu nome"
-                    value={name}
-                    onChange={(e) => setName(e.target.value)}
-                    required={isSignUp}
-                  />
-                </div>
-              )}
-
               <div>
                 <Label htmlFor="email">Email</Label>
                 <Input
@@ -127,30 +131,38 @@ export function LoginPage({ onLogin }: LoginPageProps) {
                 size="lg"
                 disabled={loading}
               >
-                {loading
-                  ? "Carregando..."
-                  : isSignUp
-                  ? "Criar Conta"
-                  : "Entrar"}
+                {loading ? "Verificando..." : "Entrar"}
               </Button>
 
-              <div className="text-center">
-                <button
-                  type="button"
-                  onClick={() => setIsSignUp(!isSignUp)}
-                  className="text-sm text-primary hover:underline"
-                  disabled={loading}
-                >
-                  {isSignUp ? "Já tem conta? Entrar" : "Criar nova conta"}
-                </button>
-              </div>
-
-              <div className="text-xs text-center text-muted-foreground pt-4 space-y-1">
+              <div className="text-xs text-center text-muted-foreground pt-4 space-y-2">
                 <p>
-                  💡 Dica: Use <strong>admin@copa.com</strong> + senha{" "}
-                  <strong>admin</strong>
+                  💡 <strong>Para Admins:</strong>
                 </p>
-                <p>para acessar como Administrador</p>
+                <p>
+                  Email:{" "}
+                  <code className="bg-muted px-2 py-1 rounded">
+                    admin@copa.com
+                  </code>
+                </p>
+                <p>
+                  Senha:{" "}
+                  <code className="bg-muted px-2 py-1 rounded">admin</code>
+                </p>
+
+                <div className="pt-3 border-t mt-3">
+                  <p>
+                    ⚽ <strong>Para Líderes:</strong>
+                  </p>
+                  <p className="text-xs">Use um dos emails cadastrados:</p>
+                  <div className="text-xs space-y-1 mt-2">
+                    <p>• ana.silva@vorp.com</p>
+                    <p>• beatriz.costa@vorp.com</p>
+                    <p>• carlos.mendes@vorp.com</p>
+                    <p className="text-muted-foreground">
+                      (qualquer senha com 3+ caracteres)
+                    </p>
+                  </div>
+                </div>
               </div>
             </form>
           </CardContent>
