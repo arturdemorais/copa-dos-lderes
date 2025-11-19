@@ -6,16 +6,16 @@ import {
   ChartLine,
   Target,
 } from "@phosphor-icons/react";
-import { Confetti } from "@/components/Confetti";
-import { InsightsPanel } from "@/components/InsightsPanel";
-import { ComparativeAnalytics } from "@/components/ComparativeAnalytics";
-import { ScoreBreakdown } from "@/components/ScoreBreakdown";
+import { Confetti } from "@/components/gamification/Confetti";
+import { InsightsPanel } from "@/components/analytics/InsightsPanel";
+import { ComparativeAnalytics } from "@/components/analytics/ComparativeAnalytics";
+import { ScoreBreakdown } from "@/components/analytics/ScoreBreakdown";
 import type { Leader, Task } from "@/lib/types";
-import { LeaderHeroCard } from "./dashboard/LeaderHeroCard";
-import { LeaderStatsRadar } from "./dashboard/LeaderStatsRadar";
-import { WeeklyMatches } from "./dashboard/WeeklyMatches";
-import { LeaderPodium } from "./dashboard/LeaderPodium";
-import { LeaderInterview } from "./dashboard/LeaderInterview";
+import { LeaderHeroCard } from "@/components/dashboard/LeaderHeroCard";
+import { LeaderStatsRadar } from "@/components/dashboard/LeaderStatsRadar";
+import { WeeklyMatches } from "@/components/dashboard/WeeklyMatches";
+import { LeaderPodium } from "@/components/dashboard/LeaderPodium";
+import { LeaderInterview } from "@/components/dashboard/LeaderInterview";
 
 interface LeaderDashboardProps {
   currentLeader: Leader;

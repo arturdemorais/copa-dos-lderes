@@ -7,7 +7,7 @@ import {
 } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
-import { TradingCard } from "@/components/TradingCard";
+import { TradingCard } from "@/components/gamification/TradingCard";
 import {
   Books,
   MagnifyingGlass,

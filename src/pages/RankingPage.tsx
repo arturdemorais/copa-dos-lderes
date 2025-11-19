@@ -30,7 +30,7 @@ import {
   Star,
   TrendUp,
 } from "@phosphor-icons/react";
-import { ActivityFeed } from "@/components/ActivityFeed";
+import { ActivityFeed } from "@/components/feed/ActivityFeed";
 import type { Leader, Activity } from "@/lib/types";
 import { motion, AnimatePresence } from "framer-motion";
 import { getPerformanceCategory } from "@/lib/scoring";
