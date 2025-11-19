@@ -1,5 +1,6 @@
-export { authService } from "./authService";
-export { leaderService } from "./leaderService";
-export { taskService } from "./taskService";
-export { activityService } from "./activityService";
-export { peerEvaluationService } from "./peerEvaluationService";
+export { authService } from './authService'
+export { leaderService } from './leaderService'
+export { taskService } from './taskService'
+export { activityService } from './activityService'
+export { peerEvaluationService } from './peerEvaluationService'
+export { ritualService } from './ritualService'
