@@ -89,7 +89,7 @@ export function useGameData() {
       unsubscribeTasks();
       unsubscribeActivities();
     };
-  }, [currentUser]);
+  }, [currentUser, leaders]);
 
   const handleLogin = (user: User) => {
     setCurrentUser(user);
