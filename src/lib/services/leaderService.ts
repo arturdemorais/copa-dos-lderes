@@ -137,16 +137,30 @@ export const leaderService = {
         updateData.attr_development = updates.attributes.development;
     }
 
+    console.log("Updating leader with ID:", id);
+    console.log("Update data:", updateData);
+
     const { data, error } = await supabase
       .from("leaders")
       .update(updateData)
       .eq("id", id)
-      .select()
-      .single();
+      .select("*");
 
-    if (error) throw error;
+    console.log("Update response:", { data, error });
 
-    return this.mapToLeader(data);
+    if (error) {
+      console.error("Supabase update error:", error);
+      throw error;
+    }
+
+    if (!data || data.length === 0) {
+      console.error("No leader found with ID:", id);
+      throw new Error(
+        `Leader not found with ID: ${id}. This might be a Row Level Security (RLS) issue.`
+      );
+    }
+
+    return this.mapToLeader(data[0]);
   },
 
   /**
@@ -155,7 +169,10 @@ export const leaderService = {
   async delete(id: string): Promise<void> {
     const { error } = await supabase.from("leaders").delete().eq("id", id);
 
-    if (error) throw error;
+    // Ignore error if no rows found
+    if (error && error.code !== "PGRST116") {
+      throw error;
+    }
   },
 
   /**

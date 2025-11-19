@@ -1,11 +1,6 @@
 import { useState, useEffect } from "react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import {
-  Trophy,
-  TrendUp,
-  ChartLine,
-  Target,
-} from "@phosphor-icons/react";
+import { Trophy, TrendUp, ChartLine, Target } from "@phosphor-icons/react";
 import { Confetti } from "@/components/gamification/Confetti";
 import { InsightsPanel } from "@/components/analytics/InsightsPanel";
 import { ComparativeAnalytics } from "@/components/analytics/ComparativeAnalytics";
@@ -52,13 +47,15 @@ export function LeaderDashboard({
     const timer = setTimeout(() => {
       checkFeedbackSuggestion();
     }, 3000); // 3 seconds after login
-    
+
     return () => clearTimeout(timer);
   }, []);
 
   const checkEnergyCheckIn = async () => {
     try {
-      const todayCheckIn = await energyService.getTodayCheckIn(currentLeader.id);
+      const todayCheckIn = await energyService.getTodayCheckIn(
+        currentLeader.id
+      );
       if (!todayCheckIn) {
         // Wait a bit before showing modal
         setTimeout(() => setShowEnergyModal(true), 1500);
@@ -70,7 +67,9 @@ export function LeaderDashboard({
 
   const checkFeedbackSuggestion = async () => {
     try {
-      const shouldShow = await feedbackSuggestionService.shouldShowToday(currentLeader.id);
+      const shouldShow = await feedbackSuggestionService.shouldShowToday(
+        currentLeader.id
+      );
       if (shouldShow) {
         setShowFeedbackModal(true);
       }
@@ -138,7 +137,7 @@ export function LeaderDashboard({
         <TabsContent value="overview" className="space-y-6">
           {/* Sprint 2: Engagement Cards */}
           <div className="grid md:grid-cols-2 gap-6">
-            <EnergyCard 
+            <EnergyCard
               leaderId={currentLeader.id}
               onCheckInClick={() => setShowEnergyModal(true)}
             />
@@ -162,10 +161,7 @@ export function LeaderDashboard({
         </TabsContent>
 
         <TabsContent value="analytics">
-          <ComparativeAnalytics
-            leader={currentLeader}
-            leaders={leaders}
-          />
+          <ComparativeAnalytics leader={currentLeader} leaders={leaders} />
         </TabsContent>
 
         <TabsContent value="insights">
@@ -200,7 +196,7 @@ export function LeaderDashboard({
         isOpen={showFeedbackModal}
         onClose={() => setShowFeedbackModal(false)}
         fromLeader={currentLeader}
-        leaders={leaders.filter(l => l.id !== currentLeader.id)}
+        leaders={leaders.filter((l) => l.id !== currentLeader.id)}
         onSuccess={() => {
           // Refresh data
         }}

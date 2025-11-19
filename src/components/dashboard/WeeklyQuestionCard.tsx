@@ -1,73 +1,86 @@
-import { useState, useEffect } from "react"
-import { Card } from "@/components/ui/card"
-import { Button } from "@/components/ui/button"
-import { Textarea } from "@/components/ui/textarea"
-import { ChatCircleDots, Heart, PaperPlaneTilt } from "@phosphor-icons/react"
-import { toast } from "sonner"
-import { weeklyQuestionService, WeeklyQuestion, QuestionAnswer } from "@/lib/services/weeklyQuestionService"
-import { motion, AnimatePresence } from "framer-motion"
+import { useState, useEffect } from "react";
+import { Card } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { Textarea } from "@/components/ui/textarea";
+import { ChatCircleDots, Heart, PaperPlaneTilt } from "@phosphor-icons/react";
+import { toast } from "sonner";
+import {
+  weeklyQuestionService,
+  WeeklyQuestion,
+  QuestionAnswer,
+} from "@/lib/services/weeklyQuestionService";
+import { motion, AnimatePresence } from "framer-motion";
 
 interface WeeklyQuestionCardProps {
-  leaderId: string
+  leaderId: string;
 }
 
 export function WeeklyQuestionCard({ leaderId }: WeeklyQuestionCardProps) {
-  const [question, setQuestion] = useState<WeeklyQuestion | null>(null)
-  const [answer, setAnswer] = useState("")
-  const [hasAnswered, setHasAnswered] = useState(false)
-  const [answers, setAnswers] = useState<QuestionAnswer[]>([])
-  const [loading, setLoading] = useState(false)
-  const [showAnswers, setShowAnswers] = useState(false)
+  const [question, setQuestion] = useState<WeeklyQuestion | null>(null);
+  const [answer, setAnswer] = useState("");
+  const [hasAnswered, setHasAnswered] = useState(false);
+  const [answers, setAnswers] = useState<QuestionAnswer[]>([]);
+  const [loading, setLoading] = useState(false);
+  const [showAnswers, setShowAnswers] = useState(false);
 
   useEffect(() => {
-    loadQuestion()
-  }, [])
+    loadQuestion();
+  }, []);
 
   const loadQuestion = async () => {
     try {
-      const q = await weeklyQuestionService.getCurrentQuestion()
-      setQuestion(q)
-      
+      const q = await weeklyQuestionService.getCurrentQuestion();
+      setQuestion(q);
+
       if (q) {
-        const answered = await weeklyQuestionService.hasAnswered(q.id, leaderId)
-        setHasAnswered(answered)
-        
-        const ans = await weeklyQuestionService.getAnswers(q.id)
-        setAnswers(ans)
+        const answered = await weeklyQuestionService.hasAnswered(
+          q.id,
+          leaderId
+        );
+        setHasAnswered(answered);
+
+        const ans = await weeklyQuestionService.getAnswers(q.id);
+        setAnswers(ans);
       }
     } catch (error) {
-      console.error("Error loading question:", error)
+      console.error("Error loading question:", error);
     }
-  }
+  };
 
   const handleSubmit = async () => {
-    if (!question || !answer.trim()) return
+    if (!question || !answer.trim()) return;
 
-    setLoading(true)
+    setLoading(true);
     try {
-      await weeklyQuestionService.answerQuestion(question.id, leaderId, answer, undefined, false)
-      toast.success("Resposta enviada! +5 pontos 💡")
-      setHasAnswered(true)
-      setAnswer("")
-      await loadQuestion()
+      await weeklyQuestionService.answerQuestion(
+        question.id,
+        leaderId,
+        answer,
+        undefined,
+        false
+      );
+      toast.success("Resposta enviada! +5 pontos 💡");
+      setHasAnswered(true);
+      setAnswer("");
+      await loadQuestion();
     } catch (error) {
-      console.error("Error submitting answer:", error)
-      toast.error("Erro ao enviar resposta")
+      console.error("Error submitting answer:", error);
+      toast.error("Erro ao enviar resposta");
     } finally {
-      setLoading(false)
+      setLoading(false);
     }
-  }
+  };
 
   const handleLike = async (answerId: string) => {
     try {
-      await weeklyQuestionService.likeAnswer(answerId, leaderId)
-      await loadQuestion()
+      await weeklyQuestionService.likeAnswer(answerId, leaderId);
+      await loadQuestion();
     } catch (error) {
-      console.error("Error liking answer:", error)
+      console.error("Error liking answer:", error);
     }
-  }
+  };
 
-  if (!question) return null
+  if (!question) return null;
 
   return (
     <Card className="p-6 space-y-4">
@@ -77,7 +90,9 @@ export function WeeklyQuestionCard({ leaderId }: WeeklyQuestionCardProps) {
         </div>
         <div className="flex-1">
           <h3 className="font-bold text-lg">Pergunta da Semana</h3>
-          <p className="text-sm text-muted-foreground">Semana {question.weekNumber} • {question.year}</p>
+          <p className="text-sm text-muted-foreground">
+            Semana {question.weekNumber} • {question.year}
+          </p>
         </div>
       </div>
 
@@ -106,9 +121,15 @@ export function WeeklyQuestionCard({ leaderId }: WeeklyQuestionCardProps) {
         <div className="space-y-3">
           <div className="flex items-center gap-2 text-green-600 dark:text-green-400">
             <Heart size={20} weight="fill" />
-            <span className="text-sm font-medium">Você já respondeu esta pergunta!</span>
+            <span className="text-sm font-medium">
+              Você já respondeu esta pergunta!
+            </span>
           </div>
-          <Button variant="outline" onClick={() => setShowAnswers(!showAnswers)} className="w-full">
+          <Button
+            variant="outline"
+            onClick={() => setShowAnswers(!showAnswers)}
+            className="w-full"
+          >
             {showAnswers ? "Ocultar" : "Ver"} Respostas ({answers.length})
           </Button>
         </div>
@@ -141,5 +162,5 @@ export function WeeklyQuestionCard({ leaderId }: WeeklyQuestionCardProps) {
         )}
       </AnimatePresence>
     </Card>
-  )
+  );
 }

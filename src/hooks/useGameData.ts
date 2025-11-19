@@ -107,6 +107,39 @@ export function useGameData() {
 
     if (!task || !leader) return;
 
+    // Se já está completada, desmarcar
+    if (task.completed) {
+      try {
+        await taskService.uncomplete(taskId, leader.id);
+
+        setTasks((currentTasks) =>
+          currentTasks.map((t) =>
+            t.id === taskId ? { ...t, completed: false } : t
+          )
+        );
+
+        const newTaskPoints = Math.max(0, leader.taskPoints - task.points);
+        const updatedLeader = {
+          ...leader,
+          taskPoints: newTaskPoints,
+        };
+        const newOverall = calculateOverallScore(updatedLeader);
+
+        await updateLeader(leader.id, {
+          taskPoints: newTaskPoints,
+          overall: newOverall,
+        });
+
+        // Não precisa refetch - real-time subscription atualiza automaticamente
+        toast.info("Task desmarcada! -" + task.points + " pontos");
+      } catch (error) {
+        console.error("Error uncompleting task:", error);
+        toast.error("Erro ao desmarcar task");
+      }
+      return;
+    }
+
+    // Caso contrário, completar
     try {
       await taskService.complete(taskId, leader.id);
 
@@ -136,7 +169,7 @@ export function useGameData() {
         timestamp: new Date().toISOString(),
       });
 
-      await refetchLeaders();
+      // Não precisa refetch - real-time subscription atualiza automaticamente
       toast.success("Task completada! +" + task.points + " pontos ⚽");
     } catch (error) {
       console.error("Error completing task:", error);
@@ -184,7 +217,7 @@ export function useGameData() {
         timestamp: new Date().toISOString(),
       });
 
-      await refetchLeaders();
+      // Não precisa refetch - real-time subscription atualiza automaticamente
       toast.success(
         "Avaliação enviada! +10 pontos para " + toLeader.name + " 🎖️"
       );
@@ -231,15 +264,9 @@ export function useGameData() {
   };
 
   const handleInitializeSampleData = async () => {
-    try {
-      toast.info(
-        "Dados já estão no Supabase! Use o SQL Editor para adicionar mais."
-      );
-      await refetchLeaders();
-    } catch (error) {
-      console.error("Error loading data:", error);
-      toast.error("Erro ao carregar dados");
-    }
+    toast.info(
+      "Dados já estão no Supabase! Use o SQL Editor para adicionar mais."
+    );
   };
 
   return {

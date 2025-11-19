@@ -76,6 +76,19 @@ export const taskService = {
    * Completar task para um líder
    */
   async complete(taskId: string, leaderId: string): Promise<void> {
+    // Primeiro verificar se a task existe
+    const { data: taskExists } = await supabase
+      .from("tasks")
+      .select("id")
+      .eq("id", taskId)
+      .eq("is_active", true)
+      .single();
+
+    if (!taskExists) {
+      throw new Error("Task não encontrada ou inativa");
+    }
+
+    // Agora fazer o upsert
     const { error } = await supabase.from("task_completions").upsert(
       {
         task_id: taskId,
@@ -89,6 +102,22 @@ export const taskService = {
     );
 
     if (error) throw error;
+  },
+
+  /**
+   * Desmarcar task (remover completion)
+   */
+  async uncomplete(taskId: string, leaderId: string): Promise<void> {
+    const { error } = await supabase
+      .from("task_completions")
+      .delete()
+      .eq("task_id", taskId)
+      .eq("leader_id", leaderId);
+
+    // Ignore error if no rows found (already uncompleted)
+    if (error && error.code !== "PGRST116") {
+      throw error;
+    }
   },
 
   /**

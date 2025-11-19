@@ -1,21 +1,26 @@
-import { useState, useEffect } from "react"
-import { motion, AnimatePresence } from "framer-motion"
-import { Dialog, DialogContent } from "@/components/ui/dialog"
-import { Button } from "@/components/ui/button"
-import { Textarea } from "@/components/ui/textarea"
-import { Sparkle, ShuffleSimple, PaperPlaneTilt, X } from "@phosphor-icons/react"
-import { toast } from "sonner"
-import { feedbackSuggestionService } from "@/lib/services/feedbackSuggestionService"
-import { peerEvaluationService } from "@/lib/services"
-import type { Leader } from "@/lib/types"
-import { Confetti } from "@/components/gamification/Confetti"
+import { useState, useEffect } from "react";
+import { motion, AnimatePresence } from "framer-motion";
+import { Dialog, DialogContent } from "@/components/ui/dialog";
+import { Button } from "@/components/ui/button";
+import { Textarea } from "@/components/ui/textarea";
+import {
+  Sparkle,
+  ShuffleSimple,
+  PaperPlaneTilt,
+  X,
+} from "@phosphor-icons/react";
+import { toast } from "sonner";
+import { feedbackSuggestionService } from "@/lib/services/feedbackSuggestionService";
+import { peerEvaluationService } from "@/lib/services";
+import type { Leader } from "@/lib/types";
+import { Confetti } from "@/components/gamification/Confetti";
 
 interface RandomFeedbackModalProps {
-  isOpen: boolean
-  onClose: () => void
-  fromLeader: Leader
-  leaders: Leader[]
-  onSuccess?: () => void
+  isOpen: boolean;
+  onClose: () => void;
+  fromLeader: Leader;
+  leaders: Leader[];
+  onSuccess?: () => void;
 }
 
 const suggestedQualities = [
@@ -25,88 +30,96 @@ const suggestedQualities = [
   "Trabalho em equipe",
   "Inovação",
   "Empatia",
-]
+];
 
-export function RandomFeedbackModal({ isOpen, onClose, fromLeader, leaders, onSuccess }: RandomFeedbackModalProps) {
-  const [suggestedLeader, setSuggestedLeader] = useState<Leader | null>(null)
-  const [selectedQualities, setSelectedQualities] = useState<string[]>([])
-  const [comment, setComment] = useState("")
-  const [loading, setLoading] = useState(false)
-  const [showConfetti, setShowConfetti] = useState(false)
-  const [isRevealing, setIsRevealing] = useState(true)
+export function RandomFeedbackModal({
+  isOpen,
+  onClose,
+  fromLeader,
+  leaders,
+  onSuccess,
+}: RandomFeedbackModalProps) {
+  const [suggestedLeader, setSuggestedLeader] = useState<Leader | null>(null);
+  const [selectedQualities, setSelectedQualities] = useState<string[]>([]);
+  const [comment, setComment] = useState("");
+  const [loading, setLoading] = useState(false);
+  const [showConfetti, setShowConfetti] = useState(false);
+  const [isRevealing, setIsRevealing] = useState(true);
 
   useEffect(() => {
     if (isOpen) {
-      loadSuggestion()
-      setIsRevealing(true)
-      setTimeout(() => setIsRevealing(false), 1500)
+      loadSuggestion();
+      setIsRevealing(true);
+      setTimeout(() => setIsRevealing(false), 1500);
     }
-  }, [isOpen])
+  }, [isOpen]);
 
   const loadSuggestion = async () => {
     try {
-      const leaderId = await feedbackSuggestionService.suggestLeader(fromLeader.id)
+      const leaderId = await feedbackSuggestionService.suggestLeader(
+        fromLeader.id
+      );
       if (leaderId) {
-        const leader = leaders.find(l => l.id === leaderId)
-        setSuggestedLeader(leader || null)
+        const leader = leaders.find((l) => l.id === leaderId);
+        setSuggestedLeader(leader || null);
       }
     } catch (error) {
-      console.error("Error loading suggestion:", error)
+      console.error("Error loading suggestion:", error);
     }
-  }
+  };
 
   const handleShuffle = async () => {
-    setIsRevealing(true)
-    await loadSuggestion()
-    setTimeout(() => setIsRevealing(false), 1000)
-  }
+    setIsRevealing(true);
+    await loadSuggestion();
+    setTimeout(() => setIsRevealing(false), 1000);
+  };
 
   const handleQualityToggle = (quality: string) => {
-    setSelectedQualities(prev =>
+    setSelectedQualities((prev) =>
       prev.includes(quality)
-        ? prev.filter(q => q !== quality)
+        ? prev.filter((q) => q !== quality)
         : [...prev, quality]
-    )
-  }
+    );
+  };
 
   const handleSubmit = async () => {
     if (!suggestedLeader || selectedQualities.length === 0) {
-      toast.error("Selecione pelo menos uma qualidade!")
-      return
+      toast.error("Selecione pelo menos uma qualidade!");
+      return;
     }
 
-    setLoading(true)
+    setLoading(true);
     try {
       await peerEvaluationService.create(
         fromLeader.id,
         suggestedLeader.id,
         comment || `Reconhecimento: ${selectedQualities.join(", ")}`,
         selectedQualities
-      )
+      );
 
       await feedbackSuggestionService.recordSuggestion(
         fromLeader.id,
         suggestedLeader.id,
         true
-      )
+      );
 
-      setShowConfetti(true)
+      setShowConfetti(true);
       toast.success(`Feedback enviado! +5 pontos para você ⭐`, {
-        description: `${suggestedLeader.name} recebeu +10 pontos`
-      })
+        description: `${suggestedLeader.name} recebeu +10 pontos`,
+      });
 
       setTimeout(() => {
-        onSuccess?.()
-        onClose()
-        resetForm()
-      }, 2000)
+        onSuccess?.();
+        onClose();
+        resetForm();
+      }, 2000);
     } catch (error) {
-      console.error("Error submitting feedback:", error)
-      toast.error("Erro ao enviar feedback")
+      console.error("Error submitting feedback:", error);
+      toast.error("Erro ao enviar feedback");
     } finally {
-      setLoading(false)
+      setLoading(false);
     }
-  }
+  };
 
   const handleSkip = async () => {
     if (suggestedLeader) {
@@ -114,20 +127,20 @@ export function RandomFeedbackModal({ isOpen, onClose, fromLeader, leaders, onSu
         fromLeader.id,
         suggestedLeader.id,
         false
-      )
+      );
     }
-    onClose()
-    resetForm()
-  }
+    onClose();
+    resetForm();
+  };
 
   const resetForm = () => {
-    setSuggestedLeader(null)
-    setSelectedQualities([])
-    setComment("")
-    setShowConfetti(false)
-  }
+    setSuggestedLeader(null);
+    setSelectedQualities([]);
+    setComment("");
+    setShowConfetti(false);
+  };
 
-  if (!suggestedLeader) return null
+  if (!suggestedLeader) return null;
 
   return (
     <>
@@ -177,8 +190,12 @@ export function RandomFeedbackModal({ isOpen, onClose, fromLeader, leaders, onSu
                       className="w-16 h-16 rounded-full border-2 border-primary"
                     />
                     <div className="flex-1">
-                      <h3 className="font-bold text-lg">{suggestedLeader.name}</h3>
-                      <p className="text-sm text-muted-foreground">{suggestedLeader.team}</p>
+                      <h3 className="font-bold text-lg">
+                        {suggestedLeader.name}
+                      </h3>
+                      <p className="text-sm text-muted-foreground">
+                        {suggestedLeader.team}
+                      </p>
                     </div>
                     <Button
                       variant="ghost"
@@ -197,7 +214,11 @@ export function RandomFeedbackModal({ isOpen, onClose, fromLeader, leaders, onSu
                       animate={{ opacity: 0 }}
                       transition={{ duration: 1 }}
                     >
-                      <Sparkle size={48} weight="fill" className="text-primary animate-pulse" />
+                      <Sparkle
+                        size={48}
+                        weight="fill"
+                        className="text-primary animate-pulse"
+                      />
                     </motion.div>
                   )}
                 </div>
@@ -205,10 +226,12 @@ export function RandomFeedbackModal({ isOpen, onClose, fromLeader, leaders, onSu
             </AnimatePresence>
 
             <div className="space-y-2">
-              <label className="text-sm font-medium">Selecione qualidades (até 3)</label>
+              <label className="text-sm font-medium">
+                Selecione qualidades (até 3)
+              </label>
               <div className="grid grid-cols-2 gap-2">
                 {suggestedQualities.map((quality) => {
-                  const isSelected = selectedQualities.includes(quality)
+                  const isSelected = selectedQualities.includes(quality);
                   return (
                     <motion.button
                       key={quality}
@@ -216,24 +239,34 @@ export function RandomFeedbackModal({ isOpen, onClose, fromLeader, leaders, onSu
                       disabled={!isSelected && selectedQualities.length >= 3}
                       className={`
                         p-3 rounded-lg border-2 text-sm font-medium transition-all
-                        ${isSelected
-                          ? 'border-primary bg-primary/10 text-primary'
-                          : 'border-border hover:border-primary/50'
+                        ${
+                          isSelected
+                            ? "border-primary bg-primary/10 text-primary"
+                            : "border-border hover:border-primary/50"
                         }
-                        ${!isSelected && selectedQualities.length >= 3 ? 'opacity-50 cursor-not-allowed' : ''}
+                        ${
+                          !isSelected && selectedQualities.length >= 3
+                            ? "opacity-50 cursor-not-allowed"
+                            : ""
+                        }
                       `}
-                      whileHover={{ scale: isSelected || selectedQualities.length < 3 ? 1.02 : 1 }}
+                      whileHover={{
+                        scale:
+                          isSelected || selectedQualities.length < 3 ? 1.02 : 1,
+                      }}
                       whileTap={{ scale: 0.98 }}
                     >
                       {quality}
                     </motion.button>
-                  )
+                  );
                 })}
               </div>
             </div>
 
             <div className="space-y-2">
-              <label className="text-sm font-medium">Comentário (opcional)</label>
+              <label className="text-sm font-medium">
+                Comentário (opcional)
+              </label>
               <Textarea
                 placeholder="Adicione uma mensagem pessoal..."
                 value={comment}
@@ -265,5 +298,5 @@ export function RandomFeedbackModal({ isOpen, onClose, fromLeader, leaders, onSu
         </DialogContent>
       </Dialog>
     </>
-  )
+  );
 }

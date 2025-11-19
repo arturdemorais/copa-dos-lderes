@@ -55,7 +55,28 @@ export function useLeaders() {
 
     // Subscribe to real-time changes
     const unsubscribe = leaderService.subscribeToChanges((updatedLeaders) => {
-      setLeaders(updatedLeaders);
+      // Recalcular scores para leaders atualizados via real-time
+      const recalculated = updatedLeaders.map((leader) => {
+        const consistency = calculateConsistencyScore(leader.history || []);
+        const momentum = calculateMomentum(leader.history || []);
+        const trend = calculateTrend(momentum);
+        const overall = calculateOverallScore({
+          ...leader,
+          consistencyScore: consistency,
+        });
+        const rankChange = calculateRankChange(updatedLeaders, leader);
+
+        return {
+          ...leader,
+          overall,
+          consistencyScore: consistency,
+          momentum,
+          trend,
+          rankChange,
+        };
+      });
+
+      setLeaders(recalculated);
     });
 
     return () => {
@@ -66,8 +87,26 @@ export function useLeaders() {
   const updateLeader = async (id: string, updates: Partial<Leader>) => {
     try {
       const updated = await leaderService.update(id, updates);
-      setLeaders((prev) => prev.map((l) => (l.id === id ? updated : l)));
-      return updated;
+
+      // Recalcular scores do leader atualizado
+      const consistency = calculateConsistencyScore(updated.history || []);
+      const momentum = calculateMomentum(updated.history || []);
+      const trend = calculateTrend(momentum);
+      const overall = calculateOverallScore({
+        ...updated,
+        consistencyScore: consistency,
+      });
+
+      const recalculated = {
+        ...updated,
+        overall,
+        consistencyScore: consistency,
+        momentum,
+        trend,
+      };
+
+      setLeaders((prev) => prev.map((l) => (l.id === id ? recalculated : l)));
+      return recalculated;
     } catch (err) {
       setError(err as Error);
       throw err;

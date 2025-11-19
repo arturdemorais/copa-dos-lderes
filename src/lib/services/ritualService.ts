@@ -71,16 +71,21 @@ export const ritualService = {
     leaderId: string,
     present: boolean
   ): Promise<void> {
-    const { error } = await supabase.from("ritual_attendance").upsert(
-      {
-        ritual_id: ritualId,
-        leader_id: leaderId,
-        present,
-      },
-      {
-        onConflict: "ritual_id,leader_id",
-      }
-    );
+    const { error } = await supabase
+      .from("ritual_attendance")
+      .upsert(
+        {
+          ritual_id: ritualId,
+          leader_id: leaderId,
+          present,
+        },
+        {
+          onConflict: "ritual_id,leader_id",
+          ignoreDuplicates: false,
+        }
+      )
+      .select()
+      .single();
 
     if (error) throw error;
   },

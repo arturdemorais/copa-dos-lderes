@@ -1,47 +1,47 @@
-import { useEffect, useState } from "react"
-import { Card } from "@/components/ui/card"
-import { Button } from "@/components/ui/button"
-import { FirstAid, Fire } from "@phosphor-icons/react"
-import { energyService, EnergyCheckIn } from "@/lib/services/energyService"
-import { motion } from "framer-motion"
+import { useEffect, useState } from "react";
+import { Card } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { FirstAid, Fire } from "@phosphor-icons/react";
+import { energyService, EnergyCheckIn } from "@/lib/services/energyService";
+import { motion } from "framer-motion";
 
 interface EnergyCardProps {
-  leaderId: string
-  onCheckInClick: () => void
+  leaderId: string;
+  onCheckInClick: () => void;
 }
 
 export function EnergyCard({ leaderId, onCheckInClick }: EnergyCardProps) {
-  const [todayCheckIn, setTodayCheckIn] = useState<EnergyCheckIn | null>(null)
-  const [streak, setStreak] = useState(0)
-  const [average, setAverage] = useState(0)
-  const [history, setHistory] = useState<EnergyCheckIn[]>([])
+  const [todayCheckIn, setTodayCheckIn] = useState<EnergyCheckIn | null>(null);
+  const [streak, setStreak] = useState(0);
+  const [average, setAverage] = useState(0);
+  const [history, setHistory] = useState<EnergyCheckIn[]>([]);
 
   useEffect(() => {
-    loadEnergyData()
-  }, [leaderId])
+    loadEnergyData();
+  }, [leaderId]);
 
   const loadEnergyData = async () => {
     try {
-      const today = await energyService.getTodayCheckIn(leaderId)
-      setTodayCheckIn(today)
+      const today = await energyService.getTodayCheckIn(leaderId);
+      setTodayCheckIn(today);
 
-      const streakDays = await energyService.getStreak(leaderId)
-      setStreak(streakDays)
+      const streakDays = await energyService.getStreak(leaderId);
+      setStreak(streakDays);
 
-      const avg = await energyService.getAverageEnergy(leaderId, 7)
-      setAverage(avg)
+      const avg = await energyService.getAverageEnergy(leaderId, 7);
+      setAverage(avg);
 
-      const hist = await energyService.getHistory(leaderId, 7)
-      setHistory(hist)
+      const hist = await energyService.getHistory(leaderId, 7);
+      setHistory(hist);
     } catch (error) {
-      console.error("Error loading energy data:", error)
+      console.error("Error loading energy data:", error);
     }
-  }
+  };
 
   const getEnergyEmoji = (level: number) => {
-    const emojis = ["😴", "😐", "😊", "🚀", "⚡"]
-    return emojis[level - 1] || "😊"
-  }
+    const emojis = ["😴", "😐", "😊", "🚀", "⚡"];
+    return emojis[level - 1] || "😊";
+  };
 
   return (
     <Card className="p-6">
@@ -57,7 +57,7 @@ export function EnergyCard({ leaderId, onCheckInClick }: EnergyCardProps) {
             className="flex items-center gap-1 px-2 py-1 bg-orange-500/10 text-orange-600 dark:text-orange-400 rounded-full text-xs font-bold"
           >
             <Fire size={14} weight="fill" />
-            {streak} dia{streak > 1 ? 's' : ''}
+            {streak} dia{streak > 1 ? "s" : ""}
           </motion.div>
         )}
       </div>
@@ -77,7 +77,8 @@ export function EnergyCard({ leaderId, onCheckInClick }: EnergyCardProps) {
             <div>
               <p className="text-sm text-muted-foreground">Energia de hoje</p>
               <p className="text-2xl font-bold">
-                {getEnergyEmoji(todayCheckIn.energyLevel)} {todayCheckIn.energyLevel}/5
+                {getEnergyEmoji(todayCheckIn.energyLevel)}{" "}
+                {todayCheckIn.energyLevel}/5
               </p>
             </div>
             {average > 0 && (
@@ -90,7 +91,9 @@ export function EnergyCard({ leaderId, onCheckInClick }: EnergyCardProps) {
 
           {history.length > 1 && (
             <div>
-              <p className="text-xs text-muted-foreground mb-2">Últimos 7 dias</p>
+              <p className="text-xs text-muted-foreground mb-2">
+                Últimos 7 dias
+              </p>
               <div className="flex gap-1">
                 {history.map((checkIn, idx) => (
                   <div
@@ -100,7 +103,7 @@ export function EnergyCard({ leaderId, onCheckInClick }: EnergyCardProps) {
                       background: `linear-gradient(to right, 
                         hsl(${(checkIn.energyLevel / 5) * 120}, 70%, 50%), 
                         hsl(${(checkIn.energyLevel / 5) * 120}, 70%, 40%)
-                      )`
+                      )`,
                     }}
                     title={`${checkIn.date}: ${checkIn.energyLevel}/5`}
                   />
@@ -111,5 +114,5 @@ export function EnergyCard({ leaderId, onCheckInClick }: EnergyCardProps) {
         </div>
       )}
     </Card>
-  )
+  );
 }
