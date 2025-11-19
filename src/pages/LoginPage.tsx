@@ -11,7 +11,7 @@ import {
 } from "@/components/ui/card";
 import { Trophy } from "@phosphor-icons/react";
 import { toast } from "sonner";
-import { leaderService } from "@/lib/services";
+import { authService } from "@/lib/services";
 import type { User } from "@/lib/types";
 
 interface LoginPageProps {
@@ -28,50 +28,22 @@ export function LoginPage({ onLogin }: LoginPageProps) {
     setLoading(true);
 
     try {
-      // Login como Admin
-      if (email === "admin@copa.com" && password === "admin") {
-        onLogin({
-          id: "admin-1",
-          name: "Administrador",
-          email: "admin@copa.com",
-          role: "admin",
-        });
-        toast.success("Bem-vindo, Administrador!");
-        return;
-      }
-
-      // Login como Líder - verificar se existe no banco
-      const leader = await leaderService.getByEmail(email);
-
-      if (!leader) {
-        toast.error(
-          "Email não encontrado. Entre em contato com o administrador."
-        );
-        setLoading(false);
-        return;
-      }
-
-      // Mock de validação de senha (futuramente será Supabase Auth real)
-      if (!password || password.length < 3) {
-        toast.error("Senha inválida");
-        setLoading(false);
-        return;
-      }
-
-      // Login bem-sucedido
-      const user: User = {
-        id: leader.id,
-        name: leader.name,
-        email: leader.email,
-        role: "leader",
-        photo: leader.photo,
-      };
+      // AUTH REAL do Supabase
+      const { user } = await authService.signIn(email, password);
 
       onLogin(user);
-      toast.success(`Bem-vindo, ${leader.name}! ⚽`);
+      toast.success(`Bem-vindo, ${user.name}! ⚽`);
     } catch (error: any) {
       console.error("Login error:", error);
-      toast.error("Erro ao fazer login. Tente novamente.");
+
+      // Mensagens de erro mais amigáveis
+      if (error.message.includes("Invalid login credentials")) {
+        toast.error("❌ Email ou senha incorretos");
+      } else if (error.message.includes("não encontrado")) {
+        toast.error(error.message);
+      } else {
+        toast.error("Erro ao fazer login. Tente novamente.");
+      }
     } finally {
       setLoading(false);
     }
@@ -133,37 +105,6 @@ export function LoginPage({ onLogin }: LoginPageProps) {
               >
                 {loading ? "Verificando..." : "Entrar"}
               </Button>
-
-              <div className="text-xs text-center text-muted-foreground pt-4 space-y-2">
-                <p>
-                  💡 <strong>Para Admins:</strong>
-                </p>
-                <p>
-                  Email:{" "}
-                  <code className="bg-muted px-2 py-1 rounded">
-                    admin@copa.com
-                  </code>
-                </p>
-                <p>
-                  Senha:{" "}
-                  <code className="bg-muted px-2 py-1 rounded">admin</code>
-                </p>
-
-                <div className="pt-3 border-t mt-3">
-                  <p>
-                    ⚽ <strong>Para Líderes:</strong>
-                  </p>
-                  <p className="text-xs">Use um dos emails cadastrados:</p>
-                  <div className="text-xs space-y-1 mt-2">
-                    <p>• ana.silva@vorp.com</p>
-                    <p>• beatriz.costa@vorp.com</p>
-                    <p>• carlos.mendes@vorp.com</p>
-                    <p className="text-muted-foreground">
-                      (qualquer senha com 3+ caracteres)
-                    </p>
-                  </div>
-                </div>
-              </div>
             </form>
           </CardContent>
         </Card>

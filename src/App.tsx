@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { Toaster } from "@/components/ui/sonner";
+import { Toaster, toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { SignOut, House, Trophy, Books, Gauge } from "@phosphor-icons/react";
 import { LoginPage } from "@/pages/LoginPage";
@@ -125,10 +125,13 @@ function AppContent() {
 
   if (!currentUser) {
     return (
-      <Routes>
-        <Route path="/" element={<LoginPage onLogin={handleLogin} />} />
-        <Route path="*" element={<Navigate to="/" />} />
-      </Routes>
+      <>
+        <Routes>
+          <Route path="/" element={<LoginPage onLogin={handleLogin} />} />
+          <Route path="*" element={<Navigate to="/" />} />
+        </Routes>
+        <Toaster />
+      </>
     );
   }
 
@@ -138,14 +141,16 @@ function AppContent() {
       <div className="min-h-screen flex items-center justify-center bg-background">
         <div className="flex flex-col items-center gap-4">
           <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary"></div>
-          <p className="text-muted-foreground animate-pulse">Carregando vestiário...</p>
+          <p className="text-muted-foreground animate-pulse">
+            Carregando vestiário...
+          </p>
         </div>
       </div>
     );
   }
 
   const currentLeader = getCurrentLeader();
-  
+
   const leaderTasks = currentLeader
     ? (tasks || []).filter((t) => t.leaderId === currentLeader.id)
     : [];

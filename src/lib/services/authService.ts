@@ -1,70 +1,122 @@
 import { supabase } from "../supabaseClient";
+import { leaderService } from "./leaderService";
 import type { User } from "../types";
 
 export const authService = {
   /**
-   * Login com email e senha
+   * Login com email e senha (AUTH REAL)
    */
   async signIn(email: string, password: string) {
+    // 1. Autenticar no Supabase Auth
     const { data, error } = await supabase.auth.signInWithPassword({
       email,
       password,
     });
 
-    if (error) throw error;
+    if (error) {
+      console.error("Auth error:", error);
+      throw error;
+    }
 
-    // Buscar perfil do usuário
-    const { data: profile, error: profileError } = await supabase
-      .from("profiles")
-      .select("*")
-      .eq("id", data.user.id)
-      .single();
+    // 2. Buscar leader associado
+    try {
+      const leader = await leaderService.getByEmail(email);
 
-    if (profileError) throw profileError;
+      if (!leader) {
+        console.error(`Leader não encontrado para email: ${email}`);
+        throw new Error(
+          `Perfil de líder não encontrado para ${email}. Execute o SQL de criação do perfil admin.`
+        );
+      }
 
-    const user: User = {
-      id: profile.id,
-      name: profile.name,
-      email: profile.email,
-      role: profile.role,
-      photo: profile.photo || undefined,
-    };
+      // 3. Verificar se é admin
+      const isAdmin = leader.isAdmin || false;
 
-    return { user, session: data.session };
+      const user: User = {
+        id: data.user.id,
+        name: leader.name,
+        email: email,
+        role: isAdmin ? "admin" : "leader",
+        photo: leader.photo,
+      };
+
+      console.log(`Login bem-sucedido: ${user.name} (${user.role})`);
+      return { user, session: data.session };
+    } catch (err) {
+      // Fazer logout se der erro ao buscar leader
+      await supabase.auth.signOut();
+      throw err;
+    }
   },
 
   /**
-   * Criar nova conta (signup)
+   * Criar nova conta + leader (signup)
    */
   async signUp(
     email: string,
     password: string,
     name: string,
-    role: "leader" | "admin" = "leader"
+    team: string,
+    position: string,
+    photo?: string,
+    isAdmin?: boolean // Adicionar parâmetro opcional
   ) {
+    // 1. Criar user no Supabase Auth
     const { data, error } = await supabase.auth.signUp({
       email,
       password,
       options: {
         data: {
           name,
-          role,
+          team,
+          position,
+          photo,
         },
       },
     });
 
     if (error) throw error;
+    if (!data.user) throw new Error("Erro ao criar usuário");
 
-    // Criar perfil
-    if (data.user) {
-      const { error: profileError } = await supabase.from("profiles").insert({
-        id: data.user.id,
+    // 2. Criar leader manualmente (não depende do trigger)
+    try {
+      const { error: leaderError } = await supabase.from("leaders").insert({
+        user_id: data.user.id,
         name,
         email,
-        role,
+        team,
+        position,
+        overall: 0,
+        weekly_points: 0,
+        task_points: 0,
+        fan_score: 0,
+        assist_points: 0,
+        ritual_points: 0,
+        consistency_score: 0,
+        photo:
+          photo || `https://api.dicebear.com/7.x/avataaars/svg?seed=${email}`,
+        strengths: [],
+        improvements: [],
+        attr_communication: 50,
+        attr_technique: 50,
+        attr_management: 50,
+        attr_pace: 50,
+        attr_leadership: 50,
+        attr_development: 50,
+        is_admin: isAdmin || false, // Definir se é admin
       });
 
-      if (profileError) throw profileError;
+      if (leaderError) {
+        // Se falhar ao criar leader, deletar o user criado
+        await supabase.auth.admin.deleteUser(data.user.id);
+        throw new Error(`Erro ao criar perfil: ${leaderError.message}`);
+      }
+    } catch (err: any) {
+      // Tentar deletar o user se algo deu errado
+      try {
+        await supabase.auth.admin.deleteUser(data.user.id);
+      } catch {}
+      throw err;
     }
 
     return data;
@@ -91,29 +143,26 @@ export const authService = {
   },
 
   /**
-   * Obter usuário atual
+   * Obter usuário atual (vinculado ao leader)
    */
   async getCurrentUser(): Promise<User | null> {
     const {
       data: { user },
     } = await supabase.auth.getUser();
 
-    if (!user) return null;
+    if (!user || !user.email) return null;
 
-    const { data: profile, error } = await supabase
-      .from("profiles")
-      .select("*")
-      .eq("id", user.id)
-      .single();
+    const leader = await leaderService.getByEmail(user.email);
+    if (!leader) return null;
 
-    if (error || !profile) return null;
+    const isAdmin = leader.isAdmin || false;
 
     return {
-      id: profile.id,
-      name: profile.name,
-      email: profile.email,
-      role: profile.role,
-      photo: profile.photo || undefined,
+      id: user.id,
+      name: leader.name,
+      email: user.email,
+      role: isAdmin ? "admin" : "leader",
+      photo: leader.photo,
     };
   },
 

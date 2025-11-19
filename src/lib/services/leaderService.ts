@@ -3,9 +3,24 @@ import type { Leader } from "../types";
 
 export const leaderService = {
   /**
-   * Buscar todos os líderes
+   * Buscar todos os líderes (EXCETO admins)
    */
   async getAll(): Promise<Leader[]> {
+    const { data, error } = await supabase
+      .from("leaders")
+      .select("*")
+      .eq("is_admin", false) // Apenas líderes que participam da gamificação
+      .order("overall", { ascending: false });
+
+    if (error) throw error;
+
+    return data.map(this.mapToLeader);
+  },
+
+  /**
+   * Buscar TODOS os líderes incluindo admins (apenas para admin dashboard)
+   */
+  async getAllIncludingAdmins(): Promise<Leader[]> {
     const { data, error } = await supabase
       .from("leaders")
       .select("*")
@@ -40,13 +55,17 @@ export const leaderService = {
       .from("leaders")
       .select("*")
       .eq("email", email)
-      .single();
+      .maybeSingle(); // Changed from .single() to avoid 406 error
 
     if (error) {
-      if (error.code === "PGRST116") return null; // Not found
+      console.error(`Error fetching leader by email (${email}):`, error);
       throw error;
     }
-    if (!data) return null;
+
+    if (!data) {
+      console.log(`No leader found for email: ${email}`);
+      return null;
+    }
 
     return this.mapToLeader(data);
   },
@@ -209,6 +228,7 @@ export const leaderService = {
       trophies: [],
       badges: [],
       history: [],
+      isAdmin: row.is_admin || false, // Mapear is_admin do banco
     };
   },
 

@@ -1,66 +1,135 @@
-import { useState } from 'react'
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
-import { Button } from '@/components/ui/button'
-import { Input } from '@/components/ui/input'
-import { Label } from '@/components/ui/label'
-import { Textarea } from '@/components/ui/textarea'
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table'
-import { Checkbox } from '@/components/ui/checkbox'
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog'
-import { Badge } from '@/components/ui/badge'
-import { Users, SoccerBall, CalendarCheck, Plus, Pencil, Trash, Database } from '@phosphor-icons/react'
-import type { Leader, Task, Ritual } from '@/lib/types'
-import { createSampleLeaders } from '@/lib/sampleData'
-import { toast } from 'sonner'
+import { useState } from "react";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Textarea } from "@/components/ui/textarea";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
+import { Checkbox } from "@/components/ui/checkbox";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog";
+import { Badge } from "@/components/ui/badge";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "@/components/ui/alert-dialog";
+import {
+  Users,
+  SoccerBall,
+  CalendarCheck,
+  Plus,
+  Pencil,
+  Trash,
+  Database,
+  UserPlus,
+} from "@phosphor-icons/react";
+import { CreateLeaderModal } from "@/components/modals/CreateLeaderModal";
+import type { Leader, Task, Ritual } from "@/lib/types";
+import { createSampleLeaders } from "@/lib/sampleData";
+import { toast } from "sonner";
+import { leaderService } from "@/lib/services";
 
 interface AdminDashboardProps {
-  leaders: Leader[]
-  tasks: Task[]
-  onUpdateLeader: (leader: Leader) => void
-  onCreateTask: (task: Omit<Task, 'id' | 'leaderId' | 'completed'>) => void
-  onDeleteTask: (taskId: string) => void
-  onInitializeSampleData?: () => void
+  leaders: Leader[];
+  tasks: Task[];
+  onUpdateLeader: (leader: Leader) => void;
+  onCreateTask: (task: Omit<Task, "id" | "leaderId" | "completed">) => void;
+  onDeleteTask: (taskId: string) => void;
+  onInitializeSampleData?: () => void;
 }
 
-export function AdminDashboard({ leaders, tasks, onUpdateLeader, onCreateTask, onDeleteTask, onInitializeSampleData }: AdminDashboardProps) {
-  const [editingLeader, setEditingLeader] = useState<Leader | null>(null)
-  const [newTask, setNewTask] = useState({ title: '', description: '', points: 0 })
+export function AdminDashboard({
+  leaders,
+  tasks,
+  onUpdateLeader,
+  onCreateTask,
+  onDeleteTask,
+  onInitializeSampleData,
+}: AdminDashboardProps) {
+  const [editingLeader, setEditingLeader] = useState<Leader | null>(null);
+  const [deletingLeader, setDeletingLeader] = useState<Leader | null>(null);
+  const [newTask, setNewTask] = useState({
+    title: "",
+    description: "",
+    points: 0,
+  });
+  const [showCreateLeaderModal, setShowCreateLeaderModal] = useState(false);
 
   const rituals: Ritual[] = [
-    { id: 'r1', name: 'Daily Seg', type: 'daily' },
-    { id: 'r2', name: 'Daily Ter', type: 'daily' },
-    { id: 'r3', name: 'Daily Qua', type: 'daily' },
-    { id: 'r4', name: 'Daily Qui', type: 'daily' },
-    { id: 'r5', name: 'Daily Sex', type: 'daily' },
-    { id: 'r6', name: 'Weekly', type: 'weekly' },
-    { id: 'r7', name: 'RMR', type: 'rmr' }
-  ]
+    { id: "r1", name: "Daily Seg", type: "daily" },
+    { id: "r2", name: "Daily Ter", type: "daily" },
+    { id: "r3", name: "Daily Qua", type: "daily" },
+    { id: "r4", name: "Daily Qui", type: "daily" },
+    { id: "r5", name: "Daily Sex", type: "daily" },
+    { id: "r6", name: "Weekly", type: "weekly" },
+    { id: "r7", name: "RMR", type: "rmr" },
+  ];
 
   const handleCreateTask = () => {
     if (!newTask.title || !newTask.description || newTask.points <= 0) {
-      toast.error('Preencha todos os campos corretamente')
-      return
+      toast.error("Preencha todos os campos corretamente");
+      return;
     }
 
-    onCreateTask(newTask)
-    setNewTask({ title: '', description: '', points: 0 })
-    toast.success('Task criada com sucesso!')
-  }
+    onCreateTask(newTask);
+    setNewTask({ title: "", description: "", points: 0 });
+    toast.success("Task criada com sucesso!");
+  };
 
   const handleUpdateLeader = () => {
-    if (!editingLeader) return
-    onUpdateLeader(editingLeader)
-    setEditingLeader(null)
-    toast.success('Líder atualizado com sucesso!')
-  }
-  
+    if (!editingLeader) return;
+    onUpdateLeader(editingLeader);
+    setEditingLeader(null);
+    toast.success("Líder atualizado com sucesso!");
+  };
+
   const handleInitializeData = () => {
     if (onInitializeSampleData) {
-      onInitializeSampleData()
-      toast.success('Dados de exemplo carregados com sucesso!')
+      onInitializeSampleData();
+      toast.success("Dados de exemplo carregados com sucesso!");
     }
-  }
+  };
+
+  const handleDeleteLeader = async () => {
+    if (!deletingLeader) return;
+
+    try {
+      await leaderService.delete(deletingLeader.id);
+      toast.success(`${deletingLeader.name} foi removido com sucesso!`);
+      setDeletingLeader(null);
+      // Forçar refresh da página para atualizar lista
+      window.location.reload();
+    } catch (error) {
+      console.error("Error deleting leader:", error);
+      toast.error("Erro ao deletar líder");
+    }
+  };
 
   return (
     <div className="space-y-6">
@@ -71,9 +140,13 @@ export function AdminDashboard({ leaders, tasks, onUpdateLeader, onCreateTask, o
             Gerencie líderes, tarefas e registre os rituais
           </p>
         </div>
-        
+
         {leaders.length === 0 && onInitializeSampleData && (
-          <Button onClick={handleInitializeData} variant="outline" className="gap-2">
+          <Button
+            onClick={handleInitializeData}
+            variant="outline"
+            className="gap-2"
+          >
             <Database size={20} />
             Carregar Dados de Exemplo
           </Button>
@@ -99,10 +172,21 @@ export function AdminDashboard({ leaders, tasks, onUpdateLeader, onCreateTask, o
         <TabsContent value="leaders">
           <Card>
             <CardHeader>
-              <CardTitle>Líderes Cadastrados</CardTitle>
-              <CardDescription>
-                Visualize e edite os perfis dos líderes
-              </CardDescription>
+              <div className="flex items-center justify-between">
+                <div>
+                  <CardTitle>Líderes Cadastrados</CardTitle>
+                  <CardDescription>
+                    Visualize e edite os perfis dos líderes
+                  </CardDescription>
+                </div>
+                <Button
+                  onClick={() => setShowCreateLeaderModal(true)}
+                  className="gap-2"
+                >
+                  <UserPlus size={18} weight="bold" />
+                  Cadastrar Líder
+                </Button>
+              </div>
             </CardHeader>
             <CardContent>
               <div className="rounded-lg border">
@@ -120,7 +204,9 @@ export function AdminDashboard({ leaders, tasks, onUpdateLeader, onCreateTask, o
                   <TableBody>
                     {leaders.map((leader) => (
                       <TableRow key={leader.id}>
-                        <TableCell className="font-medium">{leader.name}</TableCell>
+                        <TableCell className="font-medium">
+                          {leader.name}
+                        </TableCell>
                         <TableCell>{leader.email}</TableCell>
                         <TableCell>
                           <Badge variant="secondary">{leader.team}</Badge>
@@ -130,97 +216,169 @@ export function AdminDashboard({ leaders, tasks, onUpdateLeader, onCreateTask, o
                           <span className="font-bold">{leader.overall}</span>
                         </TableCell>
                         <TableCell className="text-right">
-                          <Dialog>
-                            <DialogTrigger asChild>
-                              <Button
-                                variant="ghost"
-                                size="sm"
-                                onClick={() => setEditingLeader(leader)}
-                              >
-                                <Pencil size={16} />
-                              </Button>
-                            </DialogTrigger>
-                            <DialogContent className="max-w-2xl">
-                              <DialogHeader>
-                                <DialogTitle>Editar Perfil do Líder</DialogTitle>
-                              </DialogHeader>
-                              {editingLeader && (
-                                <div className="space-y-4">
-                                  <div className="grid grid-cols-2 gap-4">
+                          <div className="flex items-center justify-end gap-2">
+                            <Dialog>
+                              <DialogTrigger asChild>
+                                <Button
+                                  variant="ghost"
+                                  size="sm"
+                                  onClick={() => setEditingLeader(leader)}
+                                >
+                                  <Pencil size={16} />
+                                </Button>
+                              </DialogTrigger>
+                              <DialogContent className="max-w-2xl">
+                                <DialogHeader>
+                                  <DialogTitle>
+                                    Editar Perfil do Líder
+                                  </DialogTitle>
+                                </DialogHeader>
+                                {editingLeader && (
+                                  <div className="space-y-4">
+                                    <div className="grid grid-cols-2 gap-4">
+                                      <div>
+                                        <Label>Nome</Label>
+                                        <Input
+                                          value={editingLeader.name}
+                                          onChange={(e) =>
+                                            setEditingLeader({
+                                              ...editingLeader,
+                                              name: e.target.value,
+                                            })
+                                          }
+                                        />
+                                      </div>
+                                      <div>
+                                        <Label>Email</Label>
+                                        <Input
+                                          value={editingLeader.email}
+                                          onChange={(e) =>
+                                            setEditingLeader({
+                                              ...editingLeader,
+                                              email: e.target.value,
+                                            })
+                                          }
+                                        />
+                                      </div>
+                                    </div>
+
+                                    <div className="grid grid-cols-2 gap-4">
+                                      <div>
+                                        <Label>Time</Label>
+                                        <Input
+                                          value={editingLeader.team}
+                                          onChange={(e) =>
+                                            setEditingLeader({
+                                              ...editingLeader,
+                                              team: e.target.value,
+                                            })
+                                          }
+                                        />
+                                      </div>
+                                      <div>
+                                        <Label>Posição</Label>
+                                        <Input
+                                          value={editingLeader.position}
+                                          onChange={(e) =>
+                                            setEditingLeader({
+                                              ...editingLeader,
+                                              position: e.target.value,
+                                            })
+                                          }
+                                        />
+                                      </div>
+                                    </div>
+
                                     <div>
-                                      <Label>Nome</Label>
-                                      <Input
-                                        value={editingLeader.name}
+                                      <Label>
+                                        Pontos Fortes (separados por vírgula)
+                                      </Label>
+                                      <Textarea
+                                        value={editingLeader.strengths.join(
+                                          ", "
+                                        )}
                                         onChange={(e) =>
-                                          setEditingLeader({ ...editingLeader, name: e.target.value })
+                                          setEditingLeader({
+                                            ...editingLeader,
+                                            strengths: e.target.value
+                                              .split(",")
+                                              .map((s) => s.trim()),
+                                          })
                                         }
                                       />
                                     </div>
+
                                     <div>
-                                      <Label>Email</Label>
-                                      <Input
-                                        value={editingLeader.email}
+                                      <Label>
+                                        Pontos a Desenvolver (separados por
+                                        vírgula)
+                                      </Label>
+                                      <Textarea
+                                        value={editingLeader.improvements.join(
+                                          ", "
+                                        )}
                                         onChange={(e) =>
-                                          setEditingLeader({ ...editingLeader, email: e.target.value })
+                                          setEditingLeader({
+                                            ...editingLeader,
+                                            improvements: e.target.value
+                                              .split(",")
+                                              .map((s) => s.trim()),
+                                          })
                                         }
                                       />
                                     </div>
-                                  </div>
 
-                                  <div className="grid grid-cols-2 gap-4">
-                                    <div>
-                                      <Label>Time</Label>
-                                      <Input
-                                        value={editingLeader.team}
-                                        onChange={(e) =>
-                                          setEditingLeader({ ...editingLeader, team: e.target.value })
-                                        }
-                                      />
-                                    </div>
-                                    <div>
-                                      <Label>Posição</Label>
-                                      <Input
-                                        value={editingLeader.position}
-                                        onChange={(e) =>
-                                          setEditingLeader({ ...editingLeader, position: e.target.value })
-                                        }
-                                      />
-                                    </div>
+                                    <Button
+                                      onClick={handleUpdateLeader}
+                                      className="w-full"
+                                    >
+                                      Salvar Alterações
+                                    </Button>
                                   </div>
+                                )}
+                              </DialogContent>
+                            </Dialog>
 
-                                  <div>
-                                    <Label>Pontos Fortes (separados por vírgula)</Label>
-                                    <Textarea
-                                      value={editingLeader.strengths.join(', ')}
-                                      onChange={(e) =>
-                                        setEditingLeader({
-                                          ...editingLeader,
-                                          strengths: e.target.value.split(',').map(s => s.trim())
-                                        })
-                                      }
-                                    />
-                                  </div>
-
-                                  <div>
-                                    <Label>Pontos a Desenvolver (separados por vírgula)</Label>
-                                    <Textarea
-                                      value={editingLeader.improvements.join(', ')}
-                                      onChange={(e) =>
-                                        setEditingLeader({
-                                          ...editingLeader,
-                                          improvements: e.target.value.split(',').map(s => s.trim())
-                                        })
-                                      }
-                                    />
-                                  </div>
-
-                                  <Button onClick={handleUpdateLeader} className="w-full">
-                                    Salvar Alterações
-                                  </Button>
-                                </div>
-                              )}
-                            </DialogContent>
-                          </Dialog>
+                            <AlertDialog>
+                              <AlertDialogTrigger asChild>
+                                <Button
+                                  variant="ghost"
+                                  size="sm"
+                                  onClick={() => setDeletingLeader(leader)}
+                                >
+                                  <Trash
+                                    size={16}
+                                    className="text-destructive"
+                                  />
+                                </Button>
+                              </AlertDialogTrigger>
+                              <AlertDialogContent>
+                                <AlertDialogHeader>
+                                  <AlertDialogTitle>
+                                    Deletar Líder?
+                                  </AlertDialogTitle>
+                                  <AlertDialogDescription>
+                                    Tem certeza que deseja remover{" "}
+                                    <strong>{leader.name}</strong>? Esta ação
+                                    não pode ser desfeita.
+                                  </AlertDialogDescription>
+                                </AlertDialogHeader>
+                                <AlertDialogFooter>
+                                  <AlertDialogCancel
+                                    onClick={() => setDeletingLeader(null)}
+                                  >
+                                    Cancelar
+                                  </AlertDialogCancel>
+                                  <AlertDialogAction
+                                    onClick={handleDeleteLeader}
+                                    className="bg-destructive hover:bg-destructive/90"
+                                  >
+                                    Deletar
+                                  </AlertDialogAction>
+                                </AlertDialogFooter>
+                              </AlertDialogContent>
+                            </AlertDialog>
+                          </div>
                         </TableCell>
                       </TableRow>
                     ))}
@@ -250,7 +408,9 @@ export function AdminDashboard({ leaders, tasks, onUpdateLeader, onCreateTask, o
                     id="task-title"
                     placeholder="Ex: Realizar 1-on-1 com o time"
                     value={newTask.title}
-                    onChange={(e) => setNewTask({ ...newTask, title: e.target.value })}
+                    onChange={(e) =>
+                      setNewTask({ ...newTask, title: e.target.value })
+                    }
                   />
                 </div>
 
@@ -260,7 +420,9 @@ export function AdminDashboard({ leaders, tasks, onUpdateLeader, onCreateTask, o
                     id="task-description"
                     placeholder="Descreva a tarefa..."
                     value={newTask.description}
-                    onChange={(e) => setNewTask({ ...newTask, description: e.target.value })}
+                    onChange={(e) =>
+                      setNewTask({ ...newTask, description: e.target.value })
+                    }
                   />
                 </div>
 
@@ -270,8 +432,10 @@ export function AdminDashboard({ leaders, tasks, onUpdateLeader, onCreateTask, o
                     id="task-points"
                     type="number"
                     placeholder="Ex: 50"
-                    value={newTask.points || ''}
-                    onChange={(e) => setNewTask({ ...newTask, points: Number(e.target.value) })}
+                    value={newTask.points || ""}
+                    onChange={(e) =>
+                      setNewTask({ ...newTask, points: Number(e.target.value) })
+                    }
                   />
                 </div>
 
@@ -306,7 +470,9 @@ export function AdminDashboard({ leaders, tasks, onUpdateLeader, onCreateTask, o
                           <p className="text-sm text-muted-foreground mb-2">
                             {task.description}
                           </p>
-                          <Badge variant="secondary">+{task.points} pontos</Badge>
+                          <Badge variant="secondary">
+                            +{task.points} pontos
+                          </Badge>
                         </div>
                         <Button
                           variant="ghost"
@@ -348,7 +514,9 @@ export function AdminDashboard({ leaders, tasks, onUpdateLeader, onCreateTask, o
                   <TableBody>
                     {leaders.map((leader) => (
                       <TableRow key={leader.id}>
-                        <TableCell className="font-medium">{leader.name}</TableCell>
+                        <TableCell className="font-medium">
+                          {leader.name}
+                        </TableCell>
                         {rituals.map((ritual) => (
                           <TableCell key={ritual.id} className="text-center">
                             <Checkbox />
@@ -363,6 +531,16 @@ export function AdminDashboard({ leaders, tasks, onUpdateLeader, onCreateTask, o
           </Card>
         </TabsContent>
       </Tabs>
+
+      {/* Modal de Cadastro de Líder */}
+      <CreateLeaderModal
+        isOpen={showCreateLeaderModal}
+        onClose={() => setShowCreateLeaderModal(false)}
+        onSuccess={() => {
+          // Recarregar lista de líderes (será atualizado via real-time)
+          toast.success("Líder cadastrado! Atualize a página para ver.");
+        }}
+      />
     </div>
-  )
+  );
 }

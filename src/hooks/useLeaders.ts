@@ -9,7 +9,7 @@ import {
   calculateRankChange,
 } from "@/lib/scoring";
 
-export function useLeaders() {
+export function useLeaders(includeAdmins = false) {
   const [leaders, setLeaders] = useState<Leader[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<Error | null>(null);
@@ -17,7 +17,11 @@ export function useLeaders() {
   const fetchLeaders = async () => {
     try {
       setLoading(true);
-      const data = await leaderService.getAll();
+      // Se includeAdmins = true, busca todos (admin dashboard)
+      // Senão, busca apenas líderes (gamificação)
+      const data = includeAdmins
+        ? await leaderService.getAllIncludingAdmins()
+        : await leaderService.getAll();
 
       // Recalcular scores
       const updated = data.map((leader) => {
