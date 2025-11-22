@@ -120,7 +120,7 @@ export function LeaderHeroCard({
                     </div>
                     <div className="bg-black/20 rounded p-2">
                       <div className="text-xl font-bold">
-                        {(currentLeader.fanScore ?? 0).toFixed(1)}
+                        {currentLeader.fanScore ?? 0}
                       </div>
                       <div className="text-xs opacity-80">Torcida</div>
                     </div>

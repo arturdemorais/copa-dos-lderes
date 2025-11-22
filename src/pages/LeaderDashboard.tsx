@@ -79,8 +79,16 @@ export function LeaderDashboard({
   };
 
   const handleTaskCheck = (taskId: string) => {
+    // Verificar se a task está sendo completada ou desmarcada
+    const task = tasks.find((t) => t.id === taskId);
+    const isCompleting = task && !task.completed;
+
     onTaskComplete(taskId);
-    setShowConfetti(true);
+
+    // Só mostrar confetti se estiver COMPLETANDO (não desmarcando)
+    if (isCompleting) {
+      setShowConfetti(true);
+    }
   };
 
   const topThreeLeaders = leaders
