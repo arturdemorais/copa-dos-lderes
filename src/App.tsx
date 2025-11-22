@@ -61,11 +61,13 @@ function Layout({
         <div className="container mx-auto px-4 py-4">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-3">
-              <div className="flex items-center justify-center w-10 h-10 rounded-full bg-primary text-primary-foreground">
-                <Trophy weight="fill" size={24} />
-              </div>
+              <img
+                src="/logo.png"
+                alt="Vorp League"
+                className="w-12 h-12 object-contain"
+              />
               <div>
-                <h1 className="font-bold text-lg">Copa dos Líderes</h1>
+                <h1 className="font-bold text-lg">Vorp League</h1>
                 <p className="text-xs text-muted-foreground">
                   {currentUser.role === "admin"
                     ? "Administrador"

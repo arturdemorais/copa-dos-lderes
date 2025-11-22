@@ -97,7 +97,7 @@ export function AlbumPage({ leaders, onLeaderClick }: AlbumPageProps) {
                 </span>
               </motion.h1>
               <p className="text-amber-800 dark:text-amber-200 font-medium">
-                Colecione todos os técnicos da Copa dos Líderes 2027
+                Colecione todos os técnicos da Vorp League 2026
               </p>
             </div>
 

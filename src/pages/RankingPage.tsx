@@ -222,9 +222,7 @@ export function RankingPage({
                 <Trophy weight="fill" className="text-yellow-500" size={28} />
                 Pódio da Temporada
               </CardTitle>
-              <CardDescription>
-                Os artilheiros da Copa dos Líderes
-              </CardDescription>
+              <CardDescription>Os artilheiros da Vorp League</CardDescription>
             </div>
             <Badge variant="outline" className="text-lg px-4 py-2">
               🎖️ Top 3

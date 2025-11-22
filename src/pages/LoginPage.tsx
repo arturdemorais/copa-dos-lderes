@@ -53,10 +53,12 @@ export function LoginPage({ onLogin }: LoginPageProps) {
     <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-primary/5 via-background to-secondary/5 p-4">
       <div className="w-full max-w-md">
         <div className="text-center mb-8">
-          <div className="inline-flex items-center justify-center w-20 h-20 rounded-full bg-primary text-primary-foreground mb-4">
-            <Trophy weight="fill" size={48} />
-          </div>
-          <h1 className="text-4xl font-bold mb-2">Copa dos Líderes</h1>
+          <img
+            src="/logo.png"
+            alt="Vorp League"
+            className="w-24 h-24 object-contain mx-auto mb-4"
+          />
+          <h1 className="text-4xl font-bold mb-2">Vorp League</h1>
           <p className="text-muted-foreground">
             Transforme sua gestão em vitória
           </p>
