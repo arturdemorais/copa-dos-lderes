@@ -144,7 +144,10 @@ export function RandomFeedbackModal({
 
   return (
     <>
-      {showConfetti && <Confetti />}
+      <Confetti
+        trigger={showConfetti}
+        onComplete={() => setShowConfetti(false)}
+      />
       <Dialog open={isOpen} onOpenChange={onClose}>
         <DialogContent className="sm:max-w-[500px] overflow-hidden">
           <button
