@@ -70,27 +70,16 @@ export function LeaderHeroCard({
                 <div className="relative z-10">
                   <div className="flex items-start justify-between mb-4">
                     <div>
-                      <motion.div
-                        className="text-6xl font-black mb-1"
-                        animate={{ scale: [1, 1.05, 1] }}
-                        transition={{ duration: 2, repeat: Infinity }}
-                      >
+                      <div className="text-6xl font-black mb-1">
                         {currentLeader.overall ?? 0}
-                      </motion.div>
+                      </div>
                       <div className="text-xs uppercase tracking-wider opacity-90">
                         {currentLeader.position}
                       </div>
                     </div>
-                    <motion.div
-                      animate={{ rotate: [0, 360] }}
-                      transition={{
-                        duration: 20,
-                        repeat: Infinity,
-                        ease: "linear",
-                      }}
-                    >
+                    <div>
                       <Trophy weight="fill" size={32} className="opacity-80" />
-                    </motion.div>
+                    </div>
                   </div>
 
                   <div className="space-y-2 mb-4">
