@@ -1,6 +1,12 @@
 import { useState } from "react";
 import { motion } from "framer-motion";
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
+import {
+  Card,
+  CardContent,
+  CardHeader,
+  CardTitle,
+  CardDescription,
+} from "@/components/ui/card";
 import { Target, Star } from "@phosphor-icons/react";
 import type { Leader } from "@/lib/types";
 
@@ -97,15 +103,7 @@ export function LeaderStatsRadar({ currentLeader }: LeaderStatsRadarProps) {
               </div>
 
               <div className="flex items-center justify-center">
-                <motion.div
-                  animate={{ rotate: 360 }}
-                  transition={{
-                    duration: 30,
-                    repeat: Infinity,
-                    ease: "linear",
-                  }}
-                  className="relative w-48 h-48"
-                >
+                <div className="relative w-48 h-48">
                   <div className="absolute inset-0 rounded-full bg-gradient-to-br from-primary/20 to-accent/20 blur-xl" />
                   <div className="absolute inset-4 rounded-full bg-card border-4 border-primary/30 flex items-center justify-center">
                     <div className="text-center">
@@ -130,7 +128,7 @@ export function LeaderStatsRadar({ currentLeader }: LeaderStatsRadarProps) {
                       </div>
                     </div>
                   </div>
-                </motion.div>
+                </div>
               </div>
             </div>
           </CardContent>
