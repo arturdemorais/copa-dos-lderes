@@ -10,7 +10,7 @@ try {
     theme = JSON.parse(fs.readFileSync(themePath, "utf-8"));
   }
 } catch (err) {
-  console.error('failed to parse custom styles', err)
+  console.error("failed to parse custom styles", err);
 }
 const defaultTheme = {
   container: {
@@ -92,6 +92,25 @@ const defaultTheme = {
       },
       "focus-ring": "var(--color-focus-ring)",
     },
+    backgroundImage: {
+      "gradient-primary": "var(--gradient-primary)",
+      "gradient-secondary": "var(--gradient-secondary)",
+      "gradient-success": "var(--gradient-success)",
+      "gradient-mesh": "var(--gradient-mesh)",
+    },
+    boxShadow: {
+      "glow-sm": "var(--shadow-glow-sm)",
+      "glow-md": "var(--shadow-glow-md)",
+      "glow-lg": "var(--shadow-glow-lg)",
+      "glow-accent": "var(--shadow-glow-accent)",
+      "glow-success": "var(--shadow-glow-success)",
+    },
+    animation: {
+      float: "float 3s ease-in-out infinite",
+      "pulse-glow": "pulse-glow 2s ease-in-out infinite",
+      shimmer: "shimmer 2s linear infinite",
+      "border-rotate": "borderRotate 3s linear infinite",
+    },
     borderRadius: {
       sm: "var(--radius-sm)",
       md: "var(--radius-md)",
@@ -139,7 +158,7 @@ const defaultTheme = {
     96: "var(--size-96)",
   },
   darkMode: ["selector", '[data-appearance="dark"]'],
-}
+};
 
 export default {
   content: ["./index.html", "./src/**/*.{js,ts,jsx,tsx}"],
