@@ -1,5 +1,11 @@
 import { motion } from "framer-motion";
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
+import {
+  Card,
+  CardContent,
+  CardHeader,
+  CardTitle,
+  CardDescription,
+} from "@/components/ui/card";
 import { Trophy, Star } from "@phosphor-icons/react";
 import type { Leader } from "@/lib/types";
 
@@ -15,9 +21,7 @@ export function LeaderPodium({ topThreeLeaders }: LeaderPodiumProps) {
           <Trophy weight="fill" className="text-accent" size={24} />
           Estádio - Top 3
         </CardTitle>
-        <CardDescription>
-          Os melhores técnicos da temporada
-        </CardDescription>
+        <CardDescription>Os melhores técnicos da temporada</CardDescription>
       </CardHeader>
       <CardContent className="pt-6 flex-1 flex flex-col justify-center">
         <div className="space-y-3">
@@ -40,11 +44,7 @@ export function LeaderPodium({ topThreeLeaders }: LeaderPodiumProps) {
                       ? "bg-accent text-accent-foreground shadow-lg shadow-accent/40"
                       : ""
                   }
-                  ${
-                    idx === 1
-                      ? "bg-muted-foreground/20 text-foreground"
-                      : ""
-                  }
+                  ${idx === 1 ? "bg-muted-foreground/20 text-foreground" : ""}
                   ${idx === 2 ? "bg-primary/20 text-primary" : ""}
                 `}
               >
@@ -52,14 +52,10 @@ export function LeaderPodium({ topThreeLeaders }: LeaderPodiumProps) {
               </motion.div>
               <div className="flex-1">
                 <p className="font-medium">{leader.name}</p>
-                <p className="text-xs text-muted-foreground">
-                  {leader.team}
-                </p>
+                <p className="text-xs text-muted-foreground">{leader.team}</p>
               </div>
               <div className="text-right">
-                <p className="font-bold text-lg">
-                  {leader.overall ?? 0}
-                </p>
+                <p className="font-bold text-lg">{leader.overall ?? 0}</p>
                 <p className="text-xs text-muted-foreground">pts</p>
               </div>
               {idx === 0 && (
@@ -68,11 +64,7 @@ export function LeaderPodium({ topThreeLeaders }: LeaderPodiumProps) {
                   animate={{ scale: 1 }}
                   transition={{ delay: 0.5 }}
                 >
-                  <Star
-                    weight="fill"
-                    className="text-accent"
-                    size={20}
-                  />
+                  <Star weight="fill" className="text-accent" size={20} />
                 </motion.span>
               )}
             </motion.div>

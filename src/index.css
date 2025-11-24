@@ -22,6 +22,20 @@
     font-family: "Montserrat", sans-serif;
   }
 
+  /* Image optimization for crisp rendering */
+  img {
+    image-rendering: -webkit-optimize-contrast;
+    image-rendering: crisp-edges;
+  }
+
+  /* Avatar images - high quality rendering */
+  [data-slot="avatar-image"] {
+    image-rendering: auto;
+    backface-visibility: hidden;
+    -webkit-font-smoothing: antialiased;
+    transform: translateZ(0);
+  }
+
   /* Improved responsive container max-widths */
   .max-w-content {
     max-width: 1400px;

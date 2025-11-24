@@ -2,22 +2,95 @@ import { supabase } from "../supabaseClient";
 import type { Leader } from "../types";
 
 /**
+ * Optimize and resize image before upload
+ */
+async function optimizeImage(file: File): Promise<Blob> {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    
+    reader.onload = (e) => {
+      const img = new Image();
+      
+      img.onload = () => {
+        // Target size: 512x512 for profile photos (high quality but optimized)
+        const maxSize = 512;
+        let width = img.width;
+        let height = img.height;
+        
+        // Calculate new dimensions maintaining aspect ratio
+        if (width > height) {
+          if (width > maxSize) {
+            height = (height * maxSize) / width;
+            width = maxSize;
+          }
+        } else {
+          if (height > maxSize) {
+            width = (width * maxSize) / height;
+            height = maxSize;
+          }
+        }
+        
+        // Create canvas for resizing
+        const canvas = document.createElement('canvas');
+        canvas.width = width;
+        canvas.height = height;
+        
+        const ctx = canvas.getContext('2d');
+        if (!ctx) {
+          reject(new Error('Could not get canvas context'));
+          return;
+        }
+        
+        // Enable image smoothing for better quality
+        ctx.imageSmoothingEnabled = true;
+        ctx.imageSmoothingQuality = 'high';
+        
+        // Draw resized image
+        ctx.drawImage(img, 0, 0, width, height);
+        
+        // Convert to blob with high quality (0.92 = 92% quality)
+        canvas.toBlob(
+          (blob) => {
+            if (blob) {
+              resolve(blob);
+            } else {
+              reject(new Error('Failed to create blob'));
+            }
+          },
+          'image/webp', // WebP format for better compression
+          0.92 // High quality (92%)
+        );
+      };
+      
+      img.onerror = () => reject(new Error('Failed to load image'));
+      img.src = e.target?.result as string;
+    };
+    
+    reader.onerror = () => reject(new Error('Failed to read file'));
+    reader.readAsDataURL(file);
+  });
+}
+
+/**
  * Upload profile photo to Supabase Storage
  */
 export async function uploadProfilePhoto(
   file: File,
   leaderId: string
 ): Promise<string> {
-  const fileExt = file.name.split(".").pop();
-  const fileName = `${leaderId}-${Date.now()}.${fileExt}`;
+  // Optimize image before upload
+  const optimizedBlob = await optimizeImage(file);
+  
+  const fileName = `${leaderId}-${Date.now()}.webp`;
   const filePath = `profile-photos/${fileName}`;
 
-  // Upload file to Supabase Storage
+  // Upload optimized file to Supabase Storage
   const { error: uploadError } = await supabase.storage
     .from("leader-photos")
-    .upload(filePath, file, {
+    .upload(filePath, optimizedBlob, {
       cacheControl: "3600",
       upsert: true,
+      contentType: 'image/webp',
     });
 
   if (uploadError) {
