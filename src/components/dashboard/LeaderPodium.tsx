@@ -9,7 +9,7 @@ interface LeaderPodiumProps {
 
 export function LeaderPodium({ topThreeLeaders }: LeaderPodiumProps) {
   return (
-    <Card className="overflow-hidden">
+    <Card className="overflow-hidden h-full flex flex-col">
       <CardHeader className="bg-gradient-to-r from-accent/10 to-primary/10">
         <CardTitle className="flex items-center gap-2">
           <Trophy weight="fill" className="text-accent" size={24} />
@@ -19,7 +19,7 @@ export function LeaderPodium({ topThreeLeaders }: LeaderPodiumProps) {
           Os melhores técnicos da temporada
         </CardDescription>
       </CardHeader>
-      <CardContent className="pt-6">
+      <CardContent className="pt-6 flex-1 flex flex-col justify-center">
         <div className="space-y-3">
           {topThreeLeaders.map((leader, idx) => (
             <motion.div

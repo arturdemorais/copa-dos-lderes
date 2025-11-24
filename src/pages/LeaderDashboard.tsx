@@ -123,7 +123,7 @@ export function LeaderDashboard({
       />
 
       <Tabs defaultValue="overview" className="space-y-6">
-        <TabsList className="grid w-full grid-cols-4 max-w-xl mx-auto">
+        <TabsList className="grid w-full grid-cols-4">
           <TabsTrigger value="overview" className="flex items-center gap-2">
             <Trophy size={16} />
             <span className="hidden sm:inline">Visão Geral</span>
@@ -144,7 +144,7 @@ export function LeaderDashboard({
 
         <TabsContent value="overview" className="space-y-6">
           {/* Sprint 2: Engagement Cards */}
-          <div className="grid md:grid-cols-2 gap-5 max-w-4xl mx-auto">
+          <div className="grid md:grid-cols-2 gap-5 items-stretch">
             <EnergyCard
               leaderId={currentLeader.id}
               onCheckInClick={() => setShowEnergyModal(true)}
@@ -162,7 +162,7 @@ export function LeaderDashboard({
           <LeaderStatsRadar currentLeader={currentLeader} />
 
           {/* Pódio e Entrevista */}
-          <div className="grid md:grid-cols-2 gap-5 max-w-4xl mx-auto">
+          <div className="grid md:grid-cols-2 gap-5 items-stretch">
             <LeaderPodium topThreeLeaders={topThreeLeaders} />
             <LeaderInterview />
           </div>

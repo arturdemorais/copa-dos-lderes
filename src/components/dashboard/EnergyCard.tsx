@@ -44,7 +44,7 @@ export function EnergyCard({ leaderId, onCheckInClick }: EnergyCardProps) {
   };
 
   return (
-    <Card className="p-6">
+    <Card className="p-6 h-full flex flex-col">
       <div className="flex items-start justify-between mb-4">
         <div className="flex items-center gap-2">
           <FirstAid size={24} weight="fill" className="text-primary" />
@@ -63,7 +63,7 @@ export function EnergyCard({ leaderId, onCheckInClick }: EnergyCardProps) {
       </div>
 
       {!todayCheckIn ? (
-        <div className="space-y-3">
+        <div className="space-y-3 flex-1 flex flex-col justify-center">
           <p className="text-sm text-muted-foreground">
             Ainda não fez seu check-in hoje
           </p>
@@ -72,7 +72,7 @@ export function EnergyCard({ leaderId, onCheckInClick }: EnergyCardProps) {
           </Button>
         </div>
       ) : (
-        <div className="space-y-4">
+        <div className="space-y-4 flex-1 flex flex-col justify-between">
           <div className="flex items-center justify-between p-4 bg-accent/50 rounded-lg">
             <div>
               <p className="text-sm text-muted-foreground">Energia de hoje</p>

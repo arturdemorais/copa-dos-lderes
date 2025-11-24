@@ -83,7 +83,7 @@ export function WeeklyQuestionCard({ leaderId }: WeeklyQuestionCardProps) {
   if (!question) return null;
 
   return (
-    <Card className="p-6 space-y-4">
+    <Card className="p-6 space-y-4 h-full flex flex-col">
       <div className="flex items-start gap-3">
         <div className="p-3 rounded-xl bg-primary/10">
           <ChatCircleDots size={24} weight="fill" className="text-primary" />
@@ -101,7 +101,7 @@ export function WeeklyQuestionCard({ leaderId }: WeeklyQuestionCardProps) {
       </div>
 
       {!hasAnswered ? (
-        <div className="space-y-3">
+        <div className="space-y-3 flex-1 flex flex-col justify-end">
           <Textarea
             placeholder="Sua resposta... (máx 500 caracteres)"
             value={answer}
@@ -118,7 +118,7 @@ export function WeeklyQuestionCard({ leaderId }: WeeklyQuestionCardProps) {
           </div>
         </div>
       ) : (
-        <div className="space-y-3">
+        <div className="space-y-3 flex-1 flex flex-col justify-end">
           <div className="flex items-center gap-2 text-green-600 dark:text-green-400">
             <Heart size={20} weight="fill" />
             <span className="text-sm font-medium">
