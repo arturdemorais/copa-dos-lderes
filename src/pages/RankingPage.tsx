@@ -137,12 +137,12 @@ export function RankingPage({
   const topThree = sortedLeaders.slice(0, 3);
 
   return (
-    <div className="space-y-6 min-h-screen">
+    <div className="space-y-8 min-h-screen max-w-[1400px] mx-auto">
       {/* Header Estilo Placar Eletrônico */}
       <motion.div
         initial={{ opacity: 0, y: -20 }}
         animate={{ opacity: 1, y: 0 }}
-        className="relative overflow-hidden rounded-2xl glass-strong p-8 text-white border-2 border-white/10"
+        className="relative overflow-hidden rounded-2xl glass-strong p-6 sm:p-8 text-foreground border-2 border-border"
       >
         {/* Efeito de luzes do estádio - Melhorado */}
         <div className="absolute inset-0 opacity-30">
@@ -178,14 +178,14 @@ export function RankingPage({
           <div className="flex items-center justify-between flex-wrap gap-4">
             <div>
               <motion.h1
-                className="text-5xl font-black mb-2 flex items-center gap-3 text-white"
+                className="text-3xl sm:text-4xl lg:text-5xl font-black mb-2 flex items-center gap-3 text-foreground"
                 initial={{ x: -20 }}
                 animate={{ x: 0 }}
               >
-                <Trophy weight="fill" size={48} className="text-yellow-400" />
+                <Trophy weight="fill" size={48} className="text-yellow-600" />
                 CLASSIFICAÇÃO
               </motion.h1>
-              <p className="text-gray-300 flex items-center gap-2 text-lg">
+              <p className="text-muted-foreground flex items-center gap-2 text-lg">
                 <motion.span
                   animate={{ opacity: [1, 0.3, 1] }}
                   transition={{ duration: 2, repeat: Infinity }}
@@ -196,26 +196,26 @@ export function RankingPage({
             </div>
 
             {/* Estatísticas Rápidas - Melhorado */}
-            <div className="flex gap-4">
+            <div className="flex gap-3 sm:gap-4">
               <motion.div
                 whileHover={{ scale: 1.05, y: -5 }}
-                className="glass rounded-xl p-4 text-center min-w-[120px] border border-white/10 shadow-glow-sm"
+                className="glass rounded-xl p-3 sm:p-4 text-center min-w-[100px] sm:min-w-[120px] border border-border shadow-glow-sm"
               >
                 <div className="text-3xl font-black bg-gradient-primary bg-clip-text text-transparent">
                   {sortedLeaders[0]?.overall ?? 0}
                 </div>
-                <div className="text-xs text-gray-300 uppercase tracking-wider mt-1">
+                <div className="text-xs text-muted-foreground uppercase tracking-wider mt-1">
                   Maior Overall
                 </div>
               </motion.div>
               <motion.div
                 whileHover={{ scale: 1.05, y: -5 }}
-                className="glass rounded-xl p-4 text-center min-w-[120px] border border-white/10 shadow-glow-sm"
+                className="glass rounded-xl p-3 sm:p-4 text-center min-w-[100px] sm:min-w-[120px] border border-border shadow-glow-sm"
               >
-                <div className="text-3xl font-black text-green-400">
+                <div className="text-3xl font-black text-green-600">
                   {leaders.filter((l) => (l.momentum ?? 0) > 0).length}
                 </div>
-                <div className="text-xs text-gray-300 uppercase tracking-wider mt-1">
+                <div className="text-xs text-muted-foreground uppercase tracking-wider mt-1">
                   Em Ascensão
                 </div>
               </motion.div>
@@ -230,7 +230,7 @@ export function RankingPage({
         animate={{ opacity: 1, y: 0 }}
         transition={{ delay: 0.2, duration: 0.8 }}
       >
-        <Card className="overflow-hidden relative glass border-2 border-white/10 shadow-2xl">
+        <Card className="overflow-hidden relative glass border-2 border-border shadow-2xl">
           {/* Background Effect */}
           <div className="absolute inset-0 bg-gradient-to-br from-yellow-500/5 via-transparent to-blue-500/5" />
           <div className="absolute inset-0 bg-grid opacity-5" />
@@ -238,21 +238,21 @@ export function RankingPage({
           <CardHeader className="relative z-10">
             <div className="flex items-center justify-between">
               <div>
-                <CardTitle className="text-3xl flex items-center gap-3 font-black text-white">
+                <CardTitle className="text-3xl flex items-center gap-3 font-black text-foreground">
                   <Trophy
                     weight="fill"
-                    className="text-yellow-400 drop-shadow-glow-md"
+                    className="text-yellow-600 drop-shadow-glow-md"
                     size={36}
                   />
                   PÓDIO DA TEMPORADA
                 </CardTitle>
-                <CardDescription className="text-gray-400 text-base mt-2">
+                <CardDescription className="text-muted-foreground text-base mt-2">
                   Os campeões da Vorp League
                 </CardDescription>
               </div>
               <Badge
                 variant="outline"
-                className="text-lg px-6 py-3 border-yellow-500/50 bg-yellow-500/10 text-yellow-400"
+                className="text-lg px-6 py-3 border-yellow-500/50 bg-yellow-500/10 text-yellow-600"
               >
                 <Crown weight="fill" size={20} className="mr-2" />
                 Top 3
@@ -260,8 +260,8 @@ export function RankingPage({
             </div>
           </CardHeader>
 
-          <CardContent className="relative z-10 pb-12">
-            <div className="flex items-end justify-center gap-6 md:gap-12 py-12 px-4">
+          <CardContent className="relative z-10 pb-8 sm:pb-12">
+            <div className="flex items-end justify-center gap-4 sm:gap-6 md:gap-12 py-8 sm:py-12 px-4">
               {/* 2º Lugar - Prata */}
               {topThree.length >= 2 && (
                 <motion.div
@@ -298,12 +298,14 @@ export function RankingPage({
 
                   {/* Info */}
                   <div className="text-center mb-4">
-                    <p className="font-bold text-lg md:text-xl text-white">
+                    <p className="font-bold text-lg md:text-xl text-foreground">
                       {topThree[1].name}
                     </p>
-                    <p className="text-sm text-gray-400">{topThree[1].team}</p>
+                    <p className="text-sm text-muted-foreground">
+                      {topThree[1].team}
+                    </p>
                     <motion.p
-                      className="text-2xl md:text-3xl font-black text-gray-300 mt-2"
+                      className="text-2xl md:text-3xl font-black text-muted-foreground mt-2"
                       animate={{ scale: [1, 1.1, 1] }}
                       transition={{ duration: 2, repeat: Infinity }}
                     >
@@ -381,10 +383,12 @@ export function RankingPage({
 
                   {/* Info */}
                   <div className="text-center mb-4">
-                    <p className="font-black text-xl md:text-2xl text-white">
+                    <p className="font-black text-xl md:text-2xl text-foreground">
                       {topThree[0].name}
                     </p>
-                    <p className="text-sm text-gray-300">{topThree[0].team}</p>
+                    <p className="text-sm text-muted-foreground">
+                      {topThree[0].team}
+                    </p>
                     <motion.p
                       className="text-3xl md:text-4xl font-black bg-gradient-secondary bg-clip-text text-transparent mt-2"
                       animate={{ scale: [1, 1.15, 1] }}
@@ -454,10 +458,12 @@ export function RankingPage({
 
                   {/* Info */}
                   <div className="text-center mb-4">
-                    <p className="font-bold text-lg md:text-xl text-white">
+                    <p className="font-bold text-lg md:text-xl text-foreground">
                       {topThree[2].name}
                     </p>
-                    <p className="text-sm text-gray-400">{topThree[2].team}</p>
+                    <p className="text-sm text-muted-foreground">
+                      {topThree[2].team}
+                    </p>
                     <motion.p
                       className="text-2xl md:text-3xl font-black text-orange-400 mt-2"
                       animate={{ scale: [1, 1.1, 1] }}
@@ -485,16 +491,16 @@ export function RankingPage({
         </Card>
       </motion.div>
 
-      <div className="grid lg:grid-cols-3 gap-6">
+      <div className="grid lg:grid-cols-3 gap-6 sm:gap-8">
         <div className="lg:col-span-2">
-          <Card className="glass border-2 border-white/10">
+          <Card className="glass border-2 border-border">
             <CardHeader>
               <div className="flex items-center justify-between mb-4">
                 <div>
-                  <CardTitle className="text-3xl font-black text-white">
+                  <CardTitle className="text-3xl font-black text-foreground">
                     Tabela do Campeonato
                   </CardTitle>
-                  <CardDescription className="text-gray-400">
+                  <CardDescription className="text-muted-foreground">
                     Classificação completa de todos os técnicos
                   </CardDescription>
                 </div>
@@ -537,25 +543,31 @@ export function RankingPage({
                   placeholder="Buscar líder ou time..."
                   value={searchTerm}
                   onChange={(e) => setSearchTerm(e.target.value)}
-                  className="pl-10 bg-white/5 border-white/10 focus:border-blue-500/50"
+                  className="pl-10 bg-muted/50 border-input focus:border-blue-500/50"
                 />
               </div>
             </CardHeader>
             <CardContent>
-              <div className="rounded-lg border border-white/10 overflow-hidden">
+              <div className="rounded-lg border border-border overflow-hidden">
                 <Table>
                   <TableHeader>
-                    <TableRow className="hover:bg-transparent border-white/10">
-                      <TableHead className="w-16 text-gray-300">Pos.</TableHead>
-                      <TableHead className="text-gray-300">Técnico</TableHead>
-                      <TableHead className="text-gray-300">Seleção</TableHead>
-                      <TableHead className="text-center text-gray-300">
+                    <TableRow className="hover:bg-transparent border-border">
+                      <TableHead className="w-16 text-muted-foreground">
+                        Pos.
+                      </TableHead>
+                      <TableHead className="text-muted-foreground">
+                        Técnico
+                      </TableHead>
+                      <TableHead className="text-muted-foreground">
+                        Seleção
+                      </TableHead>
+                      <TableHead className="text-center text-muted-foreground">
                         Overall
                       </TableHead>
-                      <TableHead className="text-center text-gray-300">
+                      <TableHead className="text-center text-muted-foreground">
                         Variação
                       </TableHead>
-                      <TableHead className="text-right text-gray-300">
+                      <TableHead className="text-right text-muted-foreground">
                         Pts Semana
                       </TableHead>
                     </TableRow>
@@ -589,7 +601,7 @@ export function RankingPage({
                               animate={{ opacity: 1, x: 0 }}
                               exit={{ opacity: 0, x: 20 }}
                               transition={{ delay: idx * 0.03 }}
-                              className="cursor-pointer hover:bg-white/5 border-white/5 transition-all group"
+                              className="cursor-pointer hover:bg-muted/50 border-border transition-all group"
                               onClick={() => onLeaderClick(leader)}
                               onMouseEnter={() => setHoveredLeader(leader.id)}
                               onMouseLeave={() => setHoveredLeader(null)}
@@ -598,10 +610,10 @@ export function RankingPage({
                                 <div
                                   className={`
                                   text-lg
-                                  ${position === 1 ? "text-yellow-400" : ""}
+                                  ${position === 1 ? "text-yellow-600" : ""}
                                   ${position === 2 ? "text-gray-400" : ""}
                                   ${position === 3 ? "text-orange-500" : ""}
-                                  ${position > 3 ? "text-gray-300" : ""}
+                                  ${position > 3 ? "text-muted-foreground" : ""}
                                 `}
                                 >
                                   {position}
@@ -613,7 +625,7 @@ export function RankingPage({
                                     whileHover={{ scale: 1.1 }}
                                     className="relative"
                                   >
-                                    <Avatar className="h-12 w-12 border-2 border-white/10">
+                                    <Avatar className="h-12 w-12 border-2 border-border">
                                       <AvatarImage
                                         src={leader.photo}
                                         alt={leader.name}
@@ -625,10 +637,10 @@ export function RankingPage({
                                     </Avatar>
                                   </motion.div>
                                   <div>
-                                    <p className="font-semibold text-white">
+                                    <p className="font-semibold text-foreground">
                                       {leader.name}
                                     </p>
-                                    <p className="text-xs text-gray-400">
+                                    <p className="text-xs text-muted-foreground">
                                       {leader.position}
                                     </p>
                                   </div>
@@ -637,7 +649,7 @@ export function RankingPage({
                               <TableCell>
                                 <Badge
                                   variant="secondary"
-                                  className="font-medium bg-white/5 border-white/10"
+                                  className="font-medium bg-muted/50 border-border"
                                 >
                                   {leader.team}
                                 </Badge>
@@ -663,14 +675,14 @@ export function RankingPage({
                               </TableCell>
                               <TableCell className="text-right">
                                 <div className="flex items-center justify-end gap-2">
-                                  <span className="font-bold text-lg text-white">
+                                  <span className="font-bold text-lg text-foreground">
                                     {leader.weeklyPoints ?? 0}
                                   </span>
                                   {leader.weeklyPoints &&
                                     leader.weeklyPoints > 40 && (
                                       <Lightning
                                         weight="fill"
-                                        className="text-yellow-400 animate-pulse"
+                                        className="text-yellow-600 animate-pulse"
                                         size={18}
                                       />
                                     )}

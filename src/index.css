@@ -21,6 +21,20 @@
   h6 {
     font-family: "Montserrat", sans-serif;
   }
+
+  /* Improved responsive container max-widths */
+  .max-w-content {
+    max-width: 1400px;
+  }
+
+  .max-w-reading {
+    max-width: 65ch;
+  }
+
+  /* Better responsive padding utilities */
+  .container-padding {
+    @apply px-6 sm:px-8 lg:px-12;
+  }
 }
 
 :root {
@@ -372,10 +386,7 @@
 }
 
 .bg-grid {
-  background-image: linear-gradient(
-      rgba(0, 200, 83, 0.04) 1px,
-      transparent 1px
-    ),
+  background-image: linear-gradient(rgba(0, 200, 83, 0.04) 1px, transparent 1px),
     linear-gradient(90deg, rgba(0, 200, 83, 0.04) 1px, transparent 1px);
   background-size: 50px 50px;
 }

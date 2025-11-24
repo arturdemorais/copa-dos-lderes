@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useRef } from "react";
 import { motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -18,9 +18,16 @@ import {
   Lock,
   Users,
   Briefcase,
+  Upload,
+  X,
 } from "@phosphor-icons/react";
 import { toast } from "sonner";
 import { authService } from "@/lib/services";
+import {
+  uploadProfilePhoto,
+  deleteProfilePhoto,
+} from "@/lib/services/leaderService";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 
 interface CreateLeaderModalProps {
   onSuccess: () => void;
@@ -61,6 +68,10 @@ export function CreateLeaderModal({
     team: "",
     position: "",
   });
+  const [photoFile, setPhotoFile] = useState<File | null>(null);
+  const [photoPreview, setPhotoPreview] = useState<string | null>(null);
+  const [uploadingPhoto, setUploadingPhoto] = useState(false);
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -87,13 +98,29 @@ export function CreateLeaderModal({
 
     setLoading(true);
     try {
-      await authService.signUp(
+      const result = await authService.signUp(
         formData.email,
         formData.password,
         formData.name,
         formData.team,
         formData.position
       );
+
+      // Upload photo if provided
+      if (photoFile && result.leader?.id) {
+        try {
+          const photoUrl = await uploadProfilePhoto(
+            photoFile,
+            result.leader.id
+          );
+          // Update leader with photo URL
+          await authService.updateLeaderPhoto(result.leader.id, photoUrl);
+        } catch (photoError) {
+          console.error("Error uploading photo:", photoError);
+          // Don't fail the whole operation if photo upload fails
+          toast.warning("Líder criado, mas houve erro ao fazer upload da foto");
+        }
+      }
 
       toast.success("Líder cadastrado com sucesso! 🎉", {
         description: "Envie as credenciais para o líder",
@@ -108,6 +135,8 @@ export function CreateLeaderModal({
         team: "",
         position: "",
       });
+      setPhotoFile(null);
+      setPhotoPreview(null);
 
       onSuccess();
       onClose();
@@ -121,6 +150,40 @@ export function CreateLeaderModal({
       }
     } finally {
       setLoading(false);
+    }
+  };
+
+  const handlePhotoSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    // Validate file type
+    if (!file.type.startsWith("image/")) {
+      toast.error("Por favor, selecione uma imagem válida");
+      return;
+    }
+
+    // Validate file size (max 5MB)
+    if (file.size > 5 * 1024 * 1024) {
+      toast.error("A imagem deve ter no máximo 5MB");
+      return;
+    }
+
+    setPhotoFile(file);
+
+    // Create preview
+    const reader = new FileReader();
+    reader.onloadend = () => {
+      setPhotoPreview(reader.result as string);
+    };
+    reader.readAsDataURL(file);
+  };
+
+  const handleRemovePhoto = () => {
+    setPhotoFile(null);
+    setPhotoPreview(null);
+    if (fileInputRef.current) {
+      fileInputRef.current.value = "";
     }
   };
 
@@ -143,6 +206,59 @@ export function CreateLeaderModal({
         </div>
 
         <form onSubmit={handleSubmit} className="space-y-4">
+          {/* Photo Upload Section */}
+          <div className="flex flex-col items-center gap-3 pb-4 border-b">
+            <Avatar className="h-20 w-20">
+              <AvatarImage src={photoPreview || undefined} />
+              <AvatarFallback className="text-xl">
+                {formData.name
+                  ? formData.name
+                      .split(" ")
+                      .map((n) => n[0])
+                      .join("")
+                  : "?"}
+              </AvatarFallback>
+            </Avatar>
+
+            <div className="flex gap-2">
+              <Button
+                type="button"
+                variant="outline"
+                size="sm"
+                onClick={() => fileInputRef.current?.click()}
+                className="gap-2"
+              >
+                <Upload size={16} />
+                {photoPreview ? "Alterar Foto" : "Adicionar Foto"}
+              </Button>
+
+              {photoPreview && (
+                <Button
+                  type="button"
+                  variant="outline"
+                  size="sm"
+                  onClick={handleRemovePhoto}
+                  className="gap-2 text-destructive"
+                >
+                  <X size={16} />
+                  Remover
+                </Button>
+              )}
+            </div>
+
+            <input
+              ref={fileInputRef}
+              type="file"
+              accept="image/*"
+              onChange={handlePhotoSelect}
+              className="hidden"
+            />
+
+            <p className="text-xs text-muted-foreground text-center">
+              Opcional. JPG, PNG ou GIF. Máximo 5MB.
+            </p>
+          </div>
+
           {/* Nome */}
           <div className="space-y-2">
             <Label htmlFor="name">Nome Completo *</Label>

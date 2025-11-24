@@ -22,7 +22,7 @@ export function LeaderInterview() {
           }}
         />
         <CardHeader>
-          <CardTitle className="flex items-center gap-2 text-accent-foreground">
+          <CardTitle className="flex items-center gap-2 text-foreground">
             <motion.span
               animate={{ scale: [1, 1.2, 1], rotate: [0, 15, 0] }}
               transition={{

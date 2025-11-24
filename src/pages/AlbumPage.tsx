@@ -62,12 +62,12 @@ export function AlbumPage({ leaders, onLeaderClick }: AlbumPageProps) {
   };
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-8 max-w-[1400px] mx-auto">
       {/* Header Estilo Álbum de Figurinhas */}
       <motion.div
         initial={{ opacity: 0, y: -20 }}
         animate={{ opacity: 1, y: 0 }}
-        className="relative overflow-hidden rounded-2xl bg-gradient-to-br from-amber-50 via-yellow-50 to-orange-50 dark:from-amber-950 dark:via-yellow-950 dark:to-orange-950 p-8 border-2 border-amber-200 dark:border-amber-800"
+        className="relative overflow-hidden rounded-2xl bg-gradient-to-br from-amber-50 via-yellow-50 to-orange-50 dark:from-amber-950 dark:via-yellow-950 dark:to-orange-950 p-6 sm:p-8 border-2 border-amber-200 dark:border-amber-800"
       >
         {/* Efeito de papel texturizado */}
         <div
@@ -82,7 +82,7 @@ export function AlbumPage({ leaders, onLeaderClick }: AlbumPageProps) {
           <div className="flex items-center justify-between flex-wrap gap-4">
             <div>
               <motion.h1
-                className="text-4xl font-black mb-2 flex items-center gap-3"
+                className="text-3xl sm:text-4xl font-black mb-2 flex items-center gap-3"
                 initial={{ x: -20 }}
                 animate={{ x: 0 }}
               >
@@ -102,10 +102,10 @@ export function AlbumPage({ leaders, onLeaderClick }: AlbumPageProps) {
             </div>
 
             {/* Estatísticas de Coleção */}
-            <div className="flex gap-3">
+            <div className="flex gap-2 sm:gap-3">
               <motion.div
                 whileHover={{ scale: 1.05 }}
-                className="bg-white/80 dark:bg-slate-900/80 backdrop-blur-sm rounded-lg p-3 text-center min-w-[90px] border border-amber-200 dark:border-amber-800"
+                className="bg-white/80 dark:bg-slate-900/80 backdrop-blur-sm rounded-lg p-2 sm:p-3 text-center min-w-[80px] sm:min-w-[90px] border border-amber-200 dark:border-amber-800"
               >
                 <div className="text-2xl font-bold text-amber-600">
                   {stats.total}
@@ -116,7 +116,7 @@ export function AlbumPage({ leaders, onLeaderClick }: AlbumPageProps) {
               </motion.div>
               <motion.div
                 whileHover={{ scale: 1.05 }}
-                className="bg-gradient-to-br from-yellow-400 to-amber-500 rounded-lg p-3 text-center min-w-[90px] shadow-lg"
+                className="bg-gradient-to-br from-yellow-400 to-amber-500 rounded-lg p-2 sm:p-3 text-center min-w-[80px] sm:min-w-[90px] shadow-lg"
               >
                 <div className="text-2xl font-bold text-white">
                   {stats.legendary}
@@ -125,7 +125,7 @@ export function AlbumPage({ leaders, onLeaderClick }: AlbumPageProps) {
               </motion.div>
               <motion.div
                 whileHover={{ scale: 1.05 }}
-                className="bg-gradient-to-br from-blue-400 to-indigo-500 rounded-lg p-3 text-center min-w-[90px] shadow-lg"
+                className="bg-gradient-to-br from-blue-400 to-indigo-500 rounded-lg p-2 sm:p-3 text-center min-w-[80px] sm:min-w-[90px] shadow-lg"
               >
                 <div className="text-2xl font-bold text-white">
                   {stats.elite}
@@ -236,7 +236,7 @@ export function AlbumPage({ leaders, onLeaderClick }: AlbumPageProps) {
           ) : viewMode === "grid" ? (
             <motion.div
               layout
-              className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-6"
+              className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4 sm:gap-6"
             >
               <AnimatePresence mode="popLayout">
                 {filteredLeaders.map((leader, idx) => {

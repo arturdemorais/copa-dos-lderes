@@ -1,6 +1,56 @@
 import { supabase } from "../supabaseClient";
 import type { Leader } from "../types";
 
+/**
+ * Upload profile photo to Supabase Storage
+ */
+export async function uploadProfilePhoto(
+  file: File,
+  leaderId: string
+): Promise<string> {
+  const fileExt = file.name.split(".").pop();
+  const fileName = `${leaderId}-${Date.now()}.${fileExt}`;
+  const filePath = `profile-photos/${fileName}`;
+
+  // Upload file to Supabase Storage
+  const { error: uploadError } = await supabase.storage
+    .from("leader-photos")
+    .upload(filePath, file, {
+      cacheControl: "3600",
+      upsert: true,
+    });
+
+  if (uploadError) {
+    console.error("Upload error:", uploadError);
+    throw uploadError;
+  }
+
+  // Get public URL
+  const { data } = supabase.storage
+    .from("leader-photos")
+    .getPublicUrl(filePath);
+
+  return data.publicUrl;
+}
+
+/**
+ * Delete profile photo from Supabase Storage
+ */
+export async function deleteProfilePhoto(photoUrl: string): Promise<void> {
+  try {
+    // Extract file path from URL
+    const url = new URL(photoUrl);
+    const pathParts = url.pathname.split("/leader-photos/");
+    if (pathParts.length < 2) return;
+
+    const filePath = pathParts[1];
+
+    await supabase.storage.from("leader-photos").remove([filePath]);
+  } catch (error) {
+    console.error("Error deleting photo:", error);
+  }
+}
+
 export const leaderService = {
   /**
    * Buscar todos os líderes (EXCETO admins)

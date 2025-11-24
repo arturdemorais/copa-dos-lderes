@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useRef } from "react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import {
   Card,
@@ -48,12 +48,19 @@ import {
   Trash,
   Database,
   UserPlus,
+  Upload,
+  X,
 } from "@phosphor-icons/react";
 import { CreateLeaderModal } from "@/components/modals/CreateLeaderModal";
 import type { Leader, Task, Ritual } from "@/lib/types";
 import { createSampleLeaders } from "@/lib/sampleData";
 import { toast } from "sonner";
 import { leaderService } from "@/lib/services";
+import {
+  uploadProfilePhoto,
+  deleteProfilePhoto,
+} from "@/lib/services/leaderService";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 
 interface AdminDashboardProps {
   leaders: Leader[];
@@ -80,6 +87,9 @@ export function AdminDashboard({
     points: 0,
   });
   const [showCreateLeaderModal, setShowCreateLeaderModal] = useState(false);
+  const [uploadingPhoto, setUploadingPhoto] = useState(false);
+  const [photoPreview, setPhotoPreview] = useState<string | null>(null);
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
   const rituals: Ritual[] = [
     { id: "r1", name: "Daily Seg", type: "daily" },
@@ -106,7 +116,72 @@ export function AdminDashboard({
     if (!editingLeader) return;
     onUpdateLeader(editingLeader);
     setEditingLeader(null);
+    setPhotoPreview(null);
     toast.success("Líder atualizado com sucesso!");
+  };
+
+  const handlePhotoUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file || !editingLeader) return;
+
+    // Validate file type
+    if (!file.type.startsWith("image/")) {
+      toast.error("Por favor, selecione uma imagem válida");
+      return;
+    }
+
+    // Validate file size (max 5MB)
+    if (file.size > 5 * 1024 * 1024) {
+      toast.error("A imagem deve ter no máximo 5MB");
+      return;
+    }
+
+    try {
+      setUploadingPhoto(true);
+
+      // Delete old photo if exists
+      if (editingLeader.photo) {
+        await deleteProfilePhoto(editingLeader.photo);
+      }
+
+      // Upload new photo
+      const photoUrl = await uploadProfilePhoto(file, editingLeader.id);
+
+      // Update leader with new photo URL
+      setEditingLeader({
+        ...editingLeader,
+        photo: photoUrl,
+      });
+
+      setPhotoPreview(photoUrl);
+      toast.success("Foto atualizada com sucesso! 📸");
+    } catch (error) {
+      console.error("Error uploading photo:", error);
+      toast.error("Erro ao fazer upload da foto");
+    } finally {
+      setUploadingPhoto(false);
+    }
+  };
+
+  const handleRemovePhoto = async () => {
+    if (!editingLeader) return;
+
+    try {
+      if (editingLeader.photo) {
+        await deleteProfilePhoto(editingLeader.photo);
+      }
+
+      setEditingLeader({
+        ...editingLeader,
+        photo: undefined,
+      });
+
+      setPhotoPreview(null);
+      toast.success("Foto removida com sucesso");
+    } catch (error) {
+      console.error("Error removing photo:", error);
+      toast.error("Erro ao remover foto");
+    }
   };
 
   const handleInitializeData = () => {
@@ -132,7 +207,7 @@ export function AdminDashboard({
   };
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-8 max-w-7xl mx-auto">
       <div className="flex items-start justify-between">
         <div>
           <h1 className="text-3xl font-bold mb-2">Painel do Administrador</h1>
@@ -153,7 +228,7 @@ export function AdminDashboard({
         )}
       </div>
 
-      <Tabs defaultValue="leaders" className="space-y-6">
+      <Tabs defaultValue="leaders" className="space-y-8">
         <TabsList>
           <TabsTrigger value="leaders" className="flex items-center gap-2">
             <Users size={18} />
@@ -193,6 +268,7 @@ export function AdminDashboard({
                 <Table>
                   <TableHeader>
                     <TableRow>
+                      <TableHead>Foto</TableHead>
                       <TableHead>Nome</TableHead>
                       <TableHead>Email</TableHead>
                       <TableHead>Time</TableHead>
@@ -204,6 +280,17 @@ export function AdminDashboard({
                   <TableBody>
                     {leaders.map((leader) => (
                       <TableRow key={leader.id}>
+                        <TableCell>
+                          <Avatar className="h-10 w-10">
+                            <AvatarImage src={leader.photo} alt={leader.name} />
+                            <AvatarFallback>
+                              {leader.name
+                                .split(" ")
+                                .map((n) => n[0])
+                                .join("")}
+                            </AvatarFallback>
+                          </Avatar>
+                        </TableCell>
                         <TableCell className="font-medium">
                           {leader.name}
                         </TableCell>
@@ -235,6 +322,67 @@ export function AdminDashboard({
                                 </DialogHeader>
                                 {editingLeader && (
                                   <div className="space-y-4">
+                                    {/* Photo Upload Section */}
+                                    <div className="flex flex-col items-center gap-4 pb-4 border-b">
+                                      <Avatar className="h-24 w-24">
+                                        <AvatarImage
+                                          src={
+                                            photoPreview || editingLeader.photo
+                                          }
+                                          alt={editingLeader.name}
+                                        />
+                                        <AvatarFallback className="text-2xl">
+                                          {editingLeader.name
+                                            .split(" ")
+                                            .map((n) => n[0])
+                                            .join("")}
+                                        </AvatarFallback>
+                                      </Avatar>
+
+                                      <div className="flex gap-2">
+                                        <Button
+                                          type="button"
+                                          variant="outline"
+                                          size="sm"
+                                          onClick={() =>
+                                            fileInputRef.current?.click()
+                                          }
+                                          disabled={uploadingPhoto}
+                                          className="gap-2"
+                                        >
+                                          <Upload size={16} />
+                                          {uploadingPhoto
+                                            ? "Enviando..."
+                                            : "Enviar Foto"}
+                                        </Button>
+
+                                        {(editingLeader.photo ||
+                                          photoPreview) && (
+                                          <Button
+                                            type="button"
+                                            variant="outline"
+                                            size="sm"
+                                            onClick={handleRemovePhoto}
+                                            className="gap-2 text-destructive"
+                                          >
+                                            <X size={16} />
+                                            Remover
+                                          </Button>
+                                        )}
+                                      </div>
+
+                                      <input
+                                        ref={fileInputRef}
+                                        type="file"
+                                        accept="image/*"
+                                        onChange={handlePhotoUpload}
+                                        className="hidden"
+                                      />
+
+                                      <p className="text-xs text-muted-foreground text-center">
+                                        JPG, PNG ou GIF. Máximo 5MB.
+                                      </p>
+                                    </div>
                                     <div className="grid grid-cols-2 gap-4">
                                       <div>
                                         <Label>Nome</Label>

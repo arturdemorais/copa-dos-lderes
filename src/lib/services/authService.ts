@@ -80,37 +80,43 @@ export const authService = {
 
     // 2. Criar leader manualmente (não depende do trigger)
     try {
-      const { error: leaderError } = await supabase.from("leaders").insert({
-        user_id: data.user.id,
-        name,
-        email,
-        team,
-        position,
-        overall: 0,
-        weekly_points: 0,
-        task_points: 0,
-        fan_score: 0,
-        assist_points: 0,
-        ritual_points: 0,
-        consistency_score: 0,
-        photo:
-          photo || `https://api.dicebear.com/7.x/avataaars/svg?seed=${email}`,
-        strengths: [],
-        improvements: [],
-        attr_communication: 50,
-        attr_technique: 50,
-        attr_management: 50,
-        attr_pace: 50,
-        attr_leadership: 50,
-        attr_development: 50,
-        is_admin: isAdmin || false, // Definir se é admin
-      });
+      const { data: leaderData, error: leaderError } = await supabase
+        .from("leaders")
+        .insert({
+          user_id: data.user.id,
+          name,
+          email,
+          team,
+          position,
+          overall: 0,
+          weekly_points: 0,
+          task_points: 0,
+          fan_score: 0,
+          assist_points: 0,
+          ritual_points: 0,
+          consistency_score: 0,
+          photo:
+            photo || `https://api.dicebear.com/7.x/avataaars/svg?seed=${email}`,
+          strengths: [],
+          improvements: [],
+          attr_communication: 50,
+          attr_technique: 50,
+          attr_management: 50,
+          attr_pace: 50,
+          attr_leadership: 50,
+          attr_development: 50,
+          is_admin: isAdmin || false, // Definir se é admin
+        })
+        .select()
+        .single();
 
       if (leaderError) {
         // Se falhar ao criar leader, deletar o user criado
         await supabase.auth.admin.deleteUser(data.user.id);
         throw new Error(`Erro ao criar perfil: ${leaderError.message}`);
       }
+
+      return { ...data, leader: leaderService.mapToLeader(leaderData) };
     } catch (err: any) {
       // Tentar deletar o user se algo deu errado
       try {
@@ -118,8 +124,21 @@ export const authService = {
       } catch {}
       throw err;
     }
+  },
 
-    return data;
+  /**
+   * Update leader photo URL
+   */
+  async updateLeaderPhoto(leaderId: string, photoUrl: string) {
+    const { error } = await supabase
+      .from("leaders")
+      .update({ photo: photoUrl })
+      .eq("id", leaderId);
+
+    if (error) {
+      console.error("Error updating leader photo:", error);
+      throw error;
+    }
   },
 
   /**
