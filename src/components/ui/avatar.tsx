@@ -1,9 +1,9 @@
-"use client"
+"use client";
 
-import { ComponentProps } from "react"
-import * as AvatarPrimitive from "@radix-ui/react-avatar"
+import { ComponentProps } from "react";
+import * as AvatarPrimitive from "@radix-ui/react-avatar";
 
-import { cn } from "@/lib/utils"
+import { cn } from "@/lib/utils";
 
 function Avatar({
   className,
@@ -18,7 +18,7 @@ function Avatar({
       )}
       {...props}
     />
-  )
+  );
 }
 
 function AvatarImage({
@@ -33,7 +33,7 @@ function AvatarImage({
       decoding="async"
       {...props}
     />
-  )
+  );
 }
 
 function AvatarFallback({
@@ -49,7 +49,7 @@ function AvatarFallback({
       )}
       {...props}
     />
-  )
+  );
 }
 
-export { Avatar, AvatarImage, AvatarFallback }
+export { Avatar, AvatarImage, AvatarFallback };

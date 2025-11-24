@@ -7,16 +7,16 @@ import type { Leader } from "../types";
 async function optimizeImage(file: File): Promise<Blob> {
   return new Promise((resolve, reject) => {
     const reader = new FileReader();
-    
+
     reader.onload = (e) => {
       const img = new Image();
-      
+
       img.onload = () => {
         // Target size: 512x512 for profile photos (high quality but optimized)
         const maxSize = 512;
         let width = img.width;
         let height = img.height;
-        
+
         // Calculate new dimensions maintaining aspect ratio
         if (width > height) {
           if (width > maxSize) {
@@ -29,44 +29,44 @@ async function optimizeImage(file: File): Promise<Blob> {
             height = maxSize;
           }
         }
-        
+
         // Create canvas for resizing
-        const canvas = document.createElement('canvas');
+        const canvas = document.createElement("canvas");
         canvas.width = width;
         canvas.height = height;
-        
-        const ctx = canvas.getContext('2d');
+
+        const ctx = canvas.getContext("2d");
         if (!ctx) {
-          reject(new Error('Could not get canvas context'));
+          reject(new Error("Could not get canvas context"));
           return;
         }
-        
+
         // Enable image smoothing for better quality
         ctx.imageSmoothingEnabled = true;
-        ctx.imageSmoothingQuality = 'high';
-        
+        ctx.imageSmoothingQuality = "high";
+
         // Draw resized image
         ctx.drawImage(img, 0, 0, width, height);
-        
+
         // Convert to blob with high quality (0.92 = 92% quality)
         canvas.toBlob(
           (blob) => {
             if (blob) {
               resolve(blob);
             } else {
-              reject(new Error('Failed to create blob'));
+              reject(new Error("Failed to create blob"));
             }
           },
-          'image/webp', // WebP format for better compression
+          "image/webp", // WebP format for better compression
           0.92 // High quality (92%)
         );
       };
-      
-      img.onerror = () => reject(new Error('Failed to load image'));
+
+      img.onerror = () => reject(new Error("Failed to load image"));
       img.src = e.target?.result as string;
     };
-    
-    reader.onerror = () => reject(new Error('Failed to read file'));
+
+    reader.onerror = () => reject(new Error("Failed to read file"));
     reader.readAsDataURL(file);
   });
 }
@@ -80,7 +80,7 @@ export async function uploadProfilePhoto(
 ): Promise<string> {
   // Optimize image before upload
   const optimizedBlob = await optimizeImage(file);
-  
+
   const fileName = `${leaderId}-${Date.now()}.webp`;
   const filePath = `profile-photos/${fileName}`;
 
@@ -90,7 +90,7 @@ export async function uploadProfilePhoto(
     .upload(filePath, optimizedBlob, {
       cacheControl: "3600",
       upsert: true,
-      contentType: 'image/webp',
+      contentType: "image/webp",
     });
 
   if (uploadError) {
