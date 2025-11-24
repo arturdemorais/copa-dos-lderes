@@ -58,7 +58,7 @@ function Layout({
   return (
     <div className="min-h-screen bg-background">
       <header className="border-b bg-card sticky top-0 z-40">
-        <div className="container mx-auto px-6 sm:px-8 lg:px-12 py-4 max-w-[1600px]">
+        <div className="container mx-auto px-6 sm:px-8 lg:px-16 xl:px-24 py-4 max-w-[1400px]">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-3">
               <img
@@ -96,7 +96,7 @@ function Layout({
         </div>
       </header>
 
-      <main className="container mx-auto px-6 sm:px-8 lg:px-12 py-8 max-w-[1600px]">
+      <main className="container mx-auto px-6 sm:px-8 lg:px-16 xl:px-24 py-8 max-w-[1400px]">
         {children}
       </main>
     </div>

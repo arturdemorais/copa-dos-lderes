@@ -62,12 +62,12 @@ export function AlbumPage({ leaders, onLeaderClick }: AlbumPageProps) {
   };
 
   return (
-    <div className="space-y-8 max-w-[1400px] mx-auto">
+    <div className="space-y-6 max-w-6xl mx-auto">
       {/* Header Estilo Álbum de Figurinhas */}
       <motion.div
         initial={{ opacity: 0, y: -20 }}
         animate={{ opacity: 1, y: 0 }}
-        className="relative overflow-hidden rounded-2xl bg-gradient-to-br from-amber-50 via-yellow-50 to-orange-50 dark:from-amber-950 dark:via-yellow-950 dark:to-orange-950 p-6 sm:p-8 border-2 border-amber-200 dark:border-amber-800"
+        className="relative overflow-hidden rounded-2xl bg-gradient-to-br from-amber-50 via-yellow-50 to-orange-50 dark:from-amber-950 dark:via-yellow-950 dark:to-orange-950 p-6 border-2 border-amber-200 dark:border-amber-800"
       >
         {/* Efeito de papel texturizado */}
         <div
@@ -102,7 +102,7 @@ export function AlbumPage({ leaders, onLeaderClick }: AlbumPageProps) {
             </div>
 
             {/* Estatísticas de Coleção */}
-            <div className="flex gap-2 sm:gap-3">
+            <div className="flex gap-2">
               <motion.div
                 whileHover={{ scale: 1.05 }}
                 className="bg-white/80 dark:bg-slate-900/80 backdrop-blur-sm rounded-lg p-2 sm:p-3 text-center min-w-[80px] sm:min-w-[90px] border border-amber-200 dark:border-amber-800"
@@ -236,7 +236,7 @@ export function AlbumPage({ leaders, onLeaderClick }: AlbumPageProps) {
           ) : viewMode === "grid" ? (
             <motion.div
               layout
-              className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4 sm:gap-6"
+              className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4"
             >
               <AnimatePresence mode="popLayout">
                 {filteredLeaders.map((leader, idx) => {

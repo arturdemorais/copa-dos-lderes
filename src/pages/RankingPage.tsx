@@ -137,12 +137,12 @@ export function RankingPage({
   const topThree = sortedLeaders.slice(0, 3);
 
   return (
-    <div className="space-y-8 min-h-screen max-w-[1400px] mx-auto">
+    <div className="space-y-6 min-h-screen max-w-6xl mx-auto">
       {/* Header Estilo Placar Eletrônico */}
       <motion.div
         initial={{ opacity: 0, y: -20 }}
         animate={{ opacity: 1, y: 0 }}
-        className="relative overflow-hidden rounded-2xl glass-strong p-6 sm:p-8 text-foreground border-2 border-border"
+        className="relative overflow-hidden rounded-2xl glass-strong p-6 text-foreground border-2 border-border"
       >
         {/* Efeito de luzes do estádio - Melhorado */}
         <div className="absolute inset-0 opacity-30">
@@ -196,7 +196,7 @@ export function RankingPage({
             </div>
 
             {/* Estatísticas Rápidas - Melhorado */}
-            <div className="flex gap-3 sm:gap-4">
+            <div className="flex gap-3">
               <motion.div
                 whileHover={{ scale: 1.05, y: -5 }}
                 className="glass rounded-xl p-3 sm:p-4 text-center min-w-[100px] sm:min-w-[120px] border border-border shadow-glow-sm"
@@ -260,8 +260,8 @@ export function RankingPage({
             </div>
           </CardHeader>
 
-          <CardContent className="relative z-10 pb-8 sm:pb-12">
-            <div className="flex items-end justify-center gap-4 sm:gap-6 md:gap-12 py-8 sm:py-12 px-4">
+          <CardContent className="relative z-10 pb-8">
+            <div className="flex items-end justify-center gap-4 sm:gap-6 md:gap-10 py-8 px-4">
               {/* 2º Lugar - Prata */}
               {topThree.length >= 2 && (
                 <motion.div
@@ -491,7 +491,7 @@ export function RankingPage({
         </Card>
       </motion.div>
 
-      <div className="grid lg:grid-cols-3 gap-6 sm:gap-8">
+      <div className="grid lg:grid-cols-3 gap-5">
         <div className="lg:col-span-2">
           <Card className="glass border-2 border-border">
             <CardHeader>

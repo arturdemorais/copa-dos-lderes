@@ -108,7 +108,7 @@ export function LeaderDashboard({
     tasks.length > 0 ? Math.round((completedTasks / tasks.length) * 100) : 0;
 
   return (
-    <div className="space-y-8 max-w-7xl mx-auto">
+    <div className="space-y-6 max-w-6xl mx-auto">
       <Confetti
         trigger={showConfetti}
         onComplete={() => setShowConfetti(false)}
@@ -122,8 +122,8 @@ export function LeaderDashboard({
         completionRate={completionRate}
       />
 
-      <Tabs defaultValue="overview" className="space-y-8">
-        <TabsList className="grid w-full grid-cols-4 max-w-2xl mx-auto">
+      <Tabs defaultValue="overview" className="space-y-6">
+        <TabsList className="grid w-full grid-cols-4 max-w-xl mx-auto">
           <TabsTrigger value="overview" className="flex items-center gap-2">
             <Trophy size={16} />
             <span className="hidden sm:inline">Visão Geral</span>
@@ -142,9 +142,9 @@ export function LeaderDashboard({
           </TabsTrigger>
         </TabsList>
 
-        <TabsContent value="overview" className="space-y-8">
+        <TabsContent value="overview" className="space-y-6">
           {/* Sprint 2: Engagement Cards */}
-          <div className="grid md:grid-cols-2 gap-6 max-w-5xl mx-auto">
+          <div className="grid md:grid-cols-2 gap-5 max-w-4xl mx-auto">
             <EnergyCard
               leaderId={currentLeader.id}
               onCheckInClick={() => setShowEnergyModal(true)}
@@ -162,7 +162,7 @@ export function LeaderDashboard({
           <LeaderStatsRadar currentLeader={currentLeader} />
 
           {/* Pódio e Entrevista */}
-          <div className="grid md:grid-cols-2 gap-6 max-w-5xl mx-auto">
+          <div className="grid md:grid-cols-2 gap-5 max-w-4xl mx-auto">
             <LeaderPodium topThreeLeaders={topThreeLeaders} />
             <LeaderInterview />
           </div>

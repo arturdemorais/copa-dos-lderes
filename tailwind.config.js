@@ -18,9 +18,9 @@ const defaultTheme = {
     padding: {
       DEFAULT: "1.5rem",
       sm: "2rem",
-      lg: "3rem",
-      xl: "4rem",
-      "2xl": "5rem",
+      lg: "4rem",
+      xl: "6rem",
+      "2xl": "8rem",
     },
     screens: {
       sm: "640px",
