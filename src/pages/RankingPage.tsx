@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { motion, AnimatePresence } from "framer-motion";
 import {
   Card,
   CardContent,
@@ -29,10 +30,10 @@ import {
   Lightning,
   Star,
   TrendUp,
+  Sparkle,
 } from "@phosphor-icons/react";
 import { ActivityFeed } from "@/components/feed/ActivityFeed";
 import type { Leader, Activity } from "@/lib/types";
-import { motion, AnimatePresence } from "framer-motion";
 import { getPerformanceCategory } from "@/lib/scoring";
 
 interface RankingPageProps {
@@ -136,24 +137,40 @@ export function RankingPage({
   const topThree = sortedLeaders.slice(0, 3);
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-6 min-h-screen">
       {/* Header Estilo Placar Eletrônico */}
       <motion.div
         initial={{ opacity: 0, y: -20 }}
         animate={{ opacity: 1, y: 0 }}
-        className="relative overflow-hidden rounded-2xl bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 p-6 text-white"
+        className="relative overflow-hidden rounded-2xl glass-strong p-8 text-white border-2 border-white/10"
       >
-        {/* Efeito de luzes do estádio */}
-        <div className="absolute inset-0 opacity-20">
+        {/* Efeito de luzes do estádio - Melhorado */}
+        <div className="absolute inset-0 opacity-30">
           <motion.div
-            className="absolute top-0 left-1/4 w-32 h-32 bg-accent rounded-full blur-3xl"
-            animate={{ scale: [1, 1.2, 1], opacity: [0.3, 0.5, 0.3] }}
-            transition={{ duration: 3, repeat: Infinity }}
+            className="absolute top-0 left-1/4 w-40 h-40 bg-blue-500 rounded-full blur-3xl"
+            animate={{
+              scale: [1, 1.3, 1],
+              opacity: [0.3, 0.6, 0.3],
+              x: [0, 20, 0],
+            }}
+            transition={{ duration: 4, repeat: Infinity }}
           />
           <motion.div
-            className="absolute bottom-0 right-1/4 w-32 h-32 bg-primary rounded-full blur-3xl"
-            animate={{ scale: [1.2, 1, 1.2], opacity: [0.5, 0.3, 0.5] }}
-            transition={{ duration: 3, repeat: Infinity, delay: 1.5 }}
+            className="absolute bottom-0 right-1/4 w-40 h-40 bg-purple-500 rounded-full blur-3xl"
+            animate={{
+              scale: [1.3, 1, 1.3],
+              opacity: [0.6, 0.3, 0.6],
+              x: [0, -20, 0],
+            }}
+            transition={{ duration: 4, repeat: Infinity, delay: 2 }}
+          />
+          <motion.div
+            className="absolute top-1/2 left-1/2 w-40 h-40 bg-orange-500 rounded-full blur-3xl"
+            animate={{
+              scale: [1, 1.5, 1],
+              opacity: [0.2, 0.4, 0.2],
+            }}
+            transition={{ duration: 5, repeat: Infinity, delay: 1 }}
           />
         </div>
 
@@ -161,184 +178,340 @@ export function RankingPage({
           <div className="flex items-center justify-between flex-wrap gap-4">
             <div>
               <motion.h1
-                className="text-4xl font-black mb-2 flex items-center gap-3"
+                className="text-5xl font-black mb-2 flex items-center gap-3 text-white"
                 initial={{ x: -20 }}
                 animate={{ x: 0 }}
               >
-                <motion.span
-                  animate={{ rotate: [0, -10, 10, -10, 0] }}
-                  transition={{
-                    duration: 0.5,
-                    repeat: Infinity,
-                    repeatDelay: 5,
-                  }}
-                >
-                  🏟️
-                </motion.span>
-                TABELA DE CLASSIFICAÇÃO
+                <Trophy weight="fill" size={48} className="text-yellow-400" />
+                CLASSIFICAÇÃO
               </motion.h1>
-              <p className="text-slate-300 flex items-center gap-2">
+              <p className="text-gray-300 flex items-center gap-2 text-lg">
                 <motion.span
-                  animate={{ opacity: [1, 0.5, 1] }}
+                  animate={{ opacity: [1, 0.3, 1] }}
                   transition={{ duration: 2, repeat: Infinity }}
-                  className="inline-block w-2 h-2 bg-red-500 rounded-full"
+                  className="inline-block w-3 h-3 bg-red-500 rounded-full shadow-glow-accent"
                 />
                 AO VIVO • {leaders.length} técnicos competindo
               </p>
             </div>
 
-            {/* Estatísticas Rápidas */}
+            {/* Estatísticas Rápidas - Melhorado */}
             <div className="flex gap-4">
               <motion.div
-                whileHover={{ scale: 1.05 }}
-                className="bg-white/10 backdrop-blur-sm rounded-lg p-3 text-center min-w-[100px]"
+                whileHover={{ scale: 1.05, y: -5 }}
+                className="glass rounded-xl p-4 text-center min-w-[120px] border border-white/10 shadow-glow-sm"
               >
-                <div className="text-2xl font-bold text-accent">
+                <div className="text-3xl font-black bg-gradient-primary bg-clip-text text-transparent">
                   {sortedLeaders[0]?.overall ?? 0}
                 </div>
-                <div className="text-xs text-slate-300">Maior Overall</div>
+                <div className="text-xs text-gray-300 uppercase tracking-wider mt-1">
+                  Maior Overall
+                </div>
               </motion.div>
               <motion.div
-                whileHover={{ scale: 1.05 }}
-                className="bg-white/10 backdrop-blur-sm rounded-lg p-3 text-center min-w-[100px]"
+                whileHover={{ scale: 1.05, y: -5 }}
+                className="glass rounded-xl p-4 text-center min-w-[120px] border border-white/10 shadow-glow-sm"
               >
-                <div className="text-2xl font-bold text-green-400">
+                <div className="text-3xl font-black text-green-400">
                   {leaders.filter((l) => (l.momentum ?? 0) > 0).length}
                 </div>
-                <div className="text-xs text-slate-300">Em Ascensão</div>
+                <div className="text-xs text-gray-300 uppercase tracking-wider mt-1">
+                  Em Ascensão
+                </div>
               </motion.div>
             </div>
           </div>
         </div>
       </motion.div>
 
-      {/* Pódio 3D Estilo Olimpíadas */}
-      <Card className="overflow-hidden relative">
-        <div className="absolute inset-0 bg-gradient-to-br from-yellow-500/5 via-transparent to-blue-500/5" />
-        <CardHeader className="relative z-10">
-          <div className="flex items-center justify-between">
-            <div>
-              <CardTitle className="text-2xl flex items-center gap-2">
-                <Trophy weight="fill" className="text-yellow-500" size={28} />
-                Pódio da Temporada
-              </CardTitle>
-              <CardDescription>Os artilheiros da Vorp League</CardDescription>
+      {/* Pódio 3D EPIC - Estilo Competição */}
+      <motion.div
+        initial={{ opacity: 0, y: 40 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ delay: 0.2, duration: 0.8 }}
+      >
+        <Card className="overflow-hidden relative glass border-2 border-white/10 shadow-2xl">
+          {/* Background Effect */}
+          <div className="absolute inset-0 bg-gradient-to-br from-yellow-500/5 via-transparent to-blue-500/5" />
+          <div className="absolute inset-0 bg-grid opacity-5" />
+
+          <CardHeader className="relative z-10">
+            <div className="flex items-center justify-between">
+              <div>
+                <CardTitle className="text-3xl flex items-center gap-3 font-black text-white">
+                  <Trophy
+                    weight="fill"
+                    className="text-yellow-400 drop-shadow-glow-md"
+                    size={36}
+                  />
+                  PÓDIO DA TEMPORADA
+                </CardTitle>
+                <CardDescription className="text-gray-400 text-base mt-2">
+                  Os campeões da Vorp League
+                </CardDescription>
+              </div>
+              <Badge
+                variant="outline"
+                className="text-lg px-6 py-3 border-yellow-500/50 bg-yellow-500/10 text-yellow-400"
+              >
+                <Crown weight="fill" size={20} className="mr-2" />
+                Top 3
+              </Badge>
             </div>
-            <Badge variant="outline" className="text-lg px-4 py-2">
-              🎖️ Top 3
-            </Badge>
-          </div>
-        </CardHeader>
-        <CardContent className="relative z-10">
-          <div className="flex items-end justify-center gap-8 py-8">
-            {topThree.length >= 2 && (
-              <div className="flex flex-col items-center">
-                <Avatar className="h-16 w-16 border-4 border-muted-foreground/30 mb-2">
-                  <AvatarImage src={topThree[1].photo} />
-                  <AvatarFallback className="bg-secondary text-secondary-foreground">
-                    {getInitials(topThree[1].name)}
-                  </AvatarFallback>
-                </Avatar>
-                <div className="text-center mb-2">
-                  <p className="font-semibold text-sm">{topThree[1].name}</p>
-                  <p className="text-xs text-muted-foreground">
-                    {topThree[1].team}
-                  </p>
-                  <p className="text-lg font-bold">
-                    {topThree[1].overall ?? 0}
-                  </p>
-                </div>
-                <div className="bg-muted-foreground/20 h-24 w-24 rounded-t-lg flex items-center justify-center">
-                  <span className="text-3xl font-bold text-muted-foreground">
-                    2
-                  </span>
-                </div>
-              </div>
-            )}
+          </CardHeader>
 
-            {topThree.length >= 1 && (
-              <div className="flex flex-col items-center">
-                <Trophy
-                  weight="fill"
-                  className="text-accent trophy-gleam mb-2"
-                  size={32}
-                />
-                <Avatar className="h-20 w-20 border-4 border-accent mb-2">
-                  <AvatarImage src={topThree[0].photo} />
-                  <AvatarFallback className="bg-primary text-primary-foreground">
-                    {getInitials(topThree[0].name)}
-                  </AvatarFallback>
-                </Avatar>
-                <div className="text-center mb-2">
-                  <p className="font-bold">{topThree[0].name}</p>
-                  <p className="text-xs text-muted-foreground">
-                    {topThree[0].team}
-                  </p>
-                  <p className="text-2xl font-bold text-accent">
-                    {topThree[0].overall ?? 0}
-                  </p>
-                </div>
-                <div className="bg-accent h-32 w-24 rounded-t-lg flex items-center justify-center">
-                  <span className="text-4xl font-bold text-accent-foreground">
-                    1
-                  </span>
-                </div>
-              </div>
-            )}
+          <CardContent className="relative z-10 pb-12">
+            <div className="flex items-end justify-center gap-6 md:gap-12 py-12 px-4">
+              {/* 2º Lugar - Prata */}
+              {topThree.length >= 2 && (
+                <motion.div
+                  initial={{ opacity: 0, y: 50, scale: 0.8 }}
+                  animate={{ opacity: 1, y: 0, scale: 1 }}
+                  transition={{ delay: 0.3, duration: 0.6, type: "spring" }}
+                  whileHover={{ y: -10, scale: 1.05 }}
+                  className="flex flex-col items-center cursor-pointer"
+                  onClick={() => onLeaderClick(topThree[1])}
+                >
+                  {/* Avatar com Moldura Prata */}
+                  <motion.div
+                    className="relative mb-4"
+                    whileHover={{ rotate: [0, -5, 5, 0] }}
+                    transition={{ duration: 0.5 }}
+                  >
+                    <div className="absolute inset-0 bg-gradient-to-br from-gray-300 to-gray-500 rounded-full blur-xl opacity-60 animate-pulse-glow" />
+                    <div className="relative p-1 rounded-full bg-gradient-to-br from-gray-300 to-gray-500">
+                      <Avatar className="h-20 w-20 md:h-24 md:w-24 border-4 border-white/20">
+                        <AvatarImage
+                          src={topThree[1].photo}
+                          alt={topThree[1].name}
+                          className="object-cover"
+                        />
+                        <AvatarFallback className="bg-gray-400 text-white text-2xl font-bold">
+                          {getInitials(topThree[1].name)}
+                        </AvatarFallback>
+                      </Avatar>
+                    </div>
+                    <div className="absolute -bottom-2 -right-2 bg-gradient-to-br from-gray-300 to-gray-500 rounded-full p-2 shadow-glow-sm">
+                      <Medal weight="fill" className="text-white" size={24} />
+                    </div>
+                  </motion.div>
 
-            {topThree.length >= 3 && (
-              <div className="flex flex-col items-center">
-                <Avatar className="h-16 w-16 border-4 border-primary/30 mb-2">
-                  <AvatarImage src={topThree[2].photo} />
-                  <AvatarFallback className="bg-primary text-primary-foreground">
-                    {getInitials(topThree[2].name)}
-                  </AvatarFallback>
-                </Avatar>
-                <div className="text-center mb-2">
-                  <p className="font-semibold text-sm">{topThree[2].name}</p>
-                  <p className="text-xs text-muted-foreground">
-                    {topThree[2].team}
-                  </p>
-                  <p className="text-lg font-bold">
-                    {topThree[2].overall ?? 0}
-                  </p>
-                </div>
-                <div className="bg-primary/20 h-20 w-24 rounded-t-lg flex items-center justify-center">
-                  <span className="text-3xl font-bold text-primary">3</span>
-                </div>
-              </div>
-            )}
-          </div>
-        </CardContent>
-      </Card>
+                  {/* Info */}
+                  <div className="text-center mb-4">
+                    <p className="font-bold text-lg md:text-xl text-white">
+                      {topThree[1].name}
+                    </p>
+                    <p className="text-sm text-gray-400">{topThree[1].team}</p>
+                    <motion.p
+                      className="text-2xl md:text-3xl font-black text-gray-300 mt-2"
+                      animate={{ scale: [1, 1.1, 1] }}
+                      transition={{ duration: 2, repeat: Infinity }}
+                    >
+                      {topThree[1].overall ?? 0}
+                    </motion.p>
+                  </div>
+
+                  {/* Podium Base - Prata */}
+                  <motion.div
+                    className="relative w-28 md:w-32 h-28 md:h-32 rounded-t-2xl bg-gradient-to-b from-gray-300 to-gray-500 flex items-center justify-center shadow-2xl"
+                    whileHover={{ y: -5 }}
+                  >
+                    <div className="absolute inset-0 bg-white/10 rounded-t-2xl" />
+                    <span className="text-5xl md:text-6xl font-black text-white drop-shadow-lg relative z-10">
+                      2
+                    </span>
+                    <div className="absolute bottom-0 left-0 right-0 h-1 bg-white/30" />
+                  </motion.div>
+                </motion.div>
+              )}
+
+              {/* 1º Lugar - Ouro (Maior) */}
+              {topThree.length >= 1 && (
+                <motion.div
+                  initial={{ opacity: 0, y: 50, scale: 0.8 }}
+                  animate={{ opacity: 1, y: 0, scale: 1 }}
+                  transition={{ delay: 0.5, duration: 0.8, type: "spring" }}
+                  whileHover={{ y: -15, scale: 1.08 }}
+                  className="flex flex-col items-center cursor-pointer relative"
+                  onClick={() => onLeaderClick(topThree[0])}
+                >
+                  {/* Spotlight Effect */}
+                  <motion.div
+                    className="absolute -top-20 w-40 h-40 bg-yellow-400/20 rounded-full blur-3xl"
+                    animate={{ scale: [1, 1.2, 1], opacity: [0.3, 0.5, 0.3] }}
+                    transition={{ duration: 3, repeat: Infinity }}
+                  />
+
+                  {/* Coroa Animada */}
+                  <motion.div
+                    animate={{ y: [0, -10, 0], rotate: [0, 5, -5, 0] }}
+                    transition={{ duration: 3, repeat: Infinity }}
+                    className="mb-2"
+                  >
+                    <Crown
+                      weight="fill"
+                      className="text-yellow-400 drop-shadow-glow-lg"
+                      size={48}
+                    />
+                  </motion.div>
+
+                  {/* Avatar com Moldura Ouro */}
+                  <motion.div
+                    className="relative mb-4"
+                    animate={{ rotate: [0, 2, -2, 0] }}
+                    transition={{ duration: 4, repeat: Infinity }}
+                  >
+                    <div className="absolute inset-0 bg-gradient-to-br from-yellow-400 to-orange-500 rounded-full blur-2xl opacity-70 animate-pulse-glow" />
+                    <div className="relative p-1.5 rounded-full bg-gradient-to-br from-yellow-400 via-yellow-500 to-orange-500 shadow-glow-accent">
+                      <Avatar className="h-28 w-28 md:h-32 md:w-32 border-4 border-white/30">
+                        <AvatarImage
+                          src={topThree[0].photo}
+                          alt={topThree[0].name}
+                          className="object-cover"
+                        />
+                        <AvatarFallback className="bg-yellow-600 text-white text-3xl font-bold">
+                          {getInitials(topThree[0].name)}
+                        </AvatarFallback>
+                      </Avatar>
+                    </div>
+                    <div className="absolute -bottom-3 -right-3 bg-gradient-to-br from-yellow-400 to-orange-500 rounded-full p-3 shadow-glow-accent">
+                      <Trophy weight="fill" className="text-white" size={28} />
+                    </div>
+                  </motion.div>
+
+                  {/* Info */}
+                  <div className="text-center mb-4">
+                    <p className="font-black text-xl md:text-2xl text-white">
+                      {topThree[0].name}
+                    </p>
+                    <p className="text-sm text-gray-300">{topThree[0].team}</p>
+                    <motion.p
+                      className="text-3xl md:text-4xl font-black bg-gradient-secondary bg-clip-text text-transparent mt-2"
+                      animate={{ scale: [1, 1.15, 1] }}
+                      transition={{ duration: 2, repeat: Infinity }}
+                    >
+                      {topThree[0].overall ?? 0}
+                    </motion.p>
+                  </div>
+
+                  {/* Podium Base - Ouro (Maior) */}
+                  <motion.div
+                    className="relative w-32 md:w-36 h-40 md:h-44 rounded-t-2xl bg-gradient-to-b from-yellow-400 via-yellow-500 to-orange-500 flex items-center justify-center shadow-2xl shadow-yellow-500/50"
+                    whileHover={{ y: -8 }}
+                  >
+                    <div className="absolute inset-0 bg-white/20 rounded-t-2xl" />
+                    <Sparkle
+                      weight="fill"
+                      className="absolute top-2 left-2 text-white/50"
+                      size={20}
+                    />
+                    <Sparkle
+                      weight="fill"
+                      className="absolute top-4 right-3 text-white/50"
+                      size={16}
+                    />
+                    <span className="text-6xl md:text-7xl font-black text-white drop-shadow-2xl relative z-10">
+                      1
+                    </span>
+                    <div className="absolute bottom-0 left-0 right-0 h-2 bg-white/40" />
+                  </motion.div>
+                </motion.div>
+              )}
+
+              {/* 3º Lugar - Bronze */}
+              {topThree.length >= 3 && (
+                <motion.div
+                  initial={{ opacity: 0, y: 50, scale: 0.8 }}
+                  animate={{ opacity: 1, y: 0, scale: 1 }}
+                  transition={{ delay: 0.4, duration: 0.6, type: "spring" }}
+                  whileHover={{ y: -10, scale: 1.05 }}
+                  className="flex flex-col items-center cursor-pointer"
+                  onClick={() => onLeaderClick(topThree[2])}
+                >
+                  {/* Avatar com Moldura Bronze */}
+                  <motion.div
+                    className="relative mb-4"
+                    whileHover={{ rotate: [0, 5, -5, 0] }}
+                    transition={{ duration: 0.5 }}
+                  >
+                    <div className="absolute inset-0 bg-gradient-to-br from-orange-400 to-orange-700 rounded-full blur-xl opacity-60 animate-pulse-glow" />
+                    <div className="relative p-1 rounded-full bg-gradient-to-br from-orange-400 to-orange-700">
+                      <Avatar className="h-20 w-20 md:h-24 md:w-24 border-4 border-white/20">
+                        <AvatarImage
+                          src={topThree[2].photo}
+                          alt={topThree[2].name}
+                          className="object-cover"
+                        />
+                        <AvatarFallback className="bg-orange-600 text-white text-2xl font-bold">
+                          {getInitials(topThree[2].name)}
+                        </AvatarFallback>
+                      </Avatar>
+                    </div>
+                    <div className="absolute -bottom-2 -right-2 bg-gradient-to-br from-orange-400 to-orange-700 rounded-full p-2 shadow-glow-sm">
+                      <Medal weight="fill" className="text-white" size={24} />
+                    </div>
+                  </motion.div>
+
+                  {/* Info */}
+                  <div className="text-center mb-4">
+                    <p className="font-bold text-lg md:text-xl text-white">
+                      {topThree[2].name}
+                    </p>
+                    <p className="text-sm text-gray-400">{topThree[2].team}</p>
+                    <motion.p
+                      className="text-2xl md:text-3xl font-black text-orange-400 mt-2"
+                      animate={{ scale: [1, 1.1, 1] }}
+                      transition={{ duration: 2, repeat: Infinity }}
+                    >
+                      {topThree[2].overall ?? 0}
+                    </motion.p>
+                  </div>
+
+                  {/* Podium Base - Bronze */}
+                  <motion.div
+                    className="relative w-28 md:w-32 h-24 md:h-28 rounded-t-2xl bg-gradient-to-b from-orange-400 to-orange-700 flex items-center justify-center shadow-2xl"
+                    whileHover={{ y: -5 }}
+                  >
+                    <div className="absolute inset-0 bg-white/10 rounded-t-2xl" />
+                    <span className="text-5xl md:text-6xl font-black text-white drop-shadow-lg relative z-10">
+                      3
+                    </span>
+                    <div className="absolute bottom-0 left-0 right-0 h-1 bg-white/30" />
+                  </motion.div>
+                </motion.div>
+              )}
+            </div>
+          </CardContent>
+        </Card>
+      </motion.div>
 
       <div className="grid lg:grid-cols-3 gap-6">
         <div className="lg:col-span-2">
-          <Card>
+          <Card className="glass border-2 border-white/10">
             <CardHeader>
               <div className="flex items-center justify-between mb-4">
                 <div>
-                  <CardTitle className="text-2xl">
+                  <CardTitle className="text-3xl font-black text-white">
                     Tabela do Campeonato
                   </CardTitle>
-                  <CardDescription>
+                  <CardDescription className="text-gray-400">
                     Classificação completa de todos os técnicos
                   </CardDescription>
                 </div>
               </div>
 
               {/* Filtros */}
-              <div className="flex gap-2 mb-4">
+              <div className="flex flex-wrap gap-2 mb-4">
                 <Badge
                   variant={selectedFilter === "all" ? "default" : "outline"}
-                  className="cursor-pointer"
+                  className="cursor-pointer transition-all hover:scale-105"
                   onClick={() => setSelectedFilter("all")}
                 >
                   Todos ({leaders.length})
                 </Badge>
                 <Badge
                   variant={selectedFilter === "top10" ? "default" : "outline"}
-                  className="cursor-pointer"
+                  className="cursor-pointer transition-all hover:scale-105"
                   onClick={() => setSelectedFilter("top10")}
                 >
                   <Star weight="fill" size={14} className="mr-1" />
@@ -346,7 +519,7 @@ export function RankingPage({
                 </Badge>
                 <Badge
                   variant={selectedFilter === "rising" ? "default" : "outline"}
-                  className="cursor-pointer"
+                  className="cursor-pointer transition-all hover:scale-105"
                   onClick={() => setSelectedFilter("rising")}
                 >
                   <TrendUp weight="fill" size={14} className="mr-1" />
@@ -364,125 +537,150 @@ export function RankingPage({
                   placeholder="Buscar líder ou time..."
                   value={searchTerm}
                   onChange={(e) => setSearchTerm(e.target.value)}
-                  className="pl-10"
+                  className="pl-10 bg-white/5 border-white/10 focus:border-blue-500/50"
                 />
               </div>
             </CardHeader>
             <CardContent>
-              <div className="rounded-lg border">
+              <div className="rounded-lg border border-white/10 overflow-hidden">
                 <Table>
                   <TableHeader>
-                    <TableRow>
-                      <TableHead className="w-16">Pos.</TableHead>
-                      <TableHead>Técnico</TableHead>
-                      <TableHead>Seleção</TableHead>
-                      <TableHead className="text-center">Overall</TableHead>
-                      <TableHead className="text-center">Variação</TableHead>
-                      <TableHead className="text-right">Pts Semana</TableHead>
+                    <TableRow className="hover:bg-transparent border-white/10">
+                      <TableHead className="w-16 text-gray-300">Pos.</TableHead>
+                      <TableHead className="text-gray-300">Técnico</TableHead>
+                      <TableHead className="text-gray-300">Seleção</TableHead>
+                      <TableHead className="text-center text-gray-300">
+                        Overall
+                      </TableHead>
+                      <TableHead className="text-center text-gray-300">
+                        Variação
+                      </TableHead>
+                      <TableHead className="text-right text-gray-300">
+                        Pts Semana
+                      </TableHead>
                     </TableRow>
                   </TableHeader>
                   <TableBody>
-                    {filteredLeaders.length === 0 ? (
-                      <TableRow>
-                        <TableCell
-                          colSpan={6}
-                          className="text-center py-8 text-muted-foreground"
-                        >
-                          Nenhum líder encontrado
-                        </TableCell>
-                      </TableRow>
-                    ) : (
-                      filteredLeaders.map((leader, idx) => {
-                        const position =
-                          sortedLeaders.findIndex((l) => l.id === leader.id) +
-                          1;
-                        const rankBadge = getRankBadge(position);
-                        const category = getPerformanceCategory(
-                          leader.overall ?? 0
-                        );
-                        const change = Math.floor(Math.random() * 5) - 2;
-
-                        return (
-                          <TableRow
-                            key={leader.id}
-                            className="cursor-pointer hover:bg-muted/50"
-                            onClick={() => onLeaderClick(leader)}
-                            onMouseEnter={() => setHoveredLeader(leader.id)}
-                            onMouseLeave={() => setHoveredLeader(null)}
+                    <AnimatePresence mode="popLayout">
+                      {filteredLeaders.length === 0 ? (
+                        <TableRow>
+                          <TableCell
+                            colSpan={6}
+                            className="text-center py-8 text-muted-foreground"
                           >
-                            <TableCell className="font-bold">
-                              <div
-                                className={`
-                                ${idx === 0 ? "text-accent" : ""}
-                                ${idx === 1 ? "text-muted-foreground" : ""}
-                                ${idx === 2 ? "text-primary" : ""}
-                              `}
-                              >
-                                {idx + 1}
-                              </div>
-                            </TableCell>
-                            <TableCell>
-                              <div className="flex items-center gap-3">
-                                <Avatar className="h-10 w-10">
-                                  <AvatarImage src={leader.photo} />
-                                  <AvatarFallback className="bg-primary text-primary-foreground text-sm">
-                                    {getInitials(leader.name)}
-                                  </AvatarFallback>
-                                </Avatar>
-                                <div>
-                                  <p className="font-medium">{leader.name}</p>
-                                  <p className="text-xs text-muted-foreground">
-                                    {leader.position}
-                                  </p>
-                                </div>
-                              </div>
-                            </TableCell>
-                            <TableCell>
-                              <Badge
-                                variant="secondary"
-                                className="font-medium"
-                              >
-                                {leader.team}
-                              </Badge>
-                            </TableCell>
-                            <TableCell className="text-center">
-                              <motion.div
-                                animate={
-                                  hoveredLeader === leader.id
-                                    ? { scale: 1.2 }
-                                    : { scale: 1 }
-                                }
-                                className="inline-block"
-                              >
-                                <span
-                                  className={`font-black text-2xl ${category.color}`}
+                            Nenhum líder encontrado
+                          </TableCell>
+                        </TableRow>
+                      ) : (
+                        filteredLeaders.map((leader, idx) => {
+                          const position =
+                            sortedLeaders.findIndex((l) => l.id === leader.id) +
+                            1;
+                          const rankBadge = getRankBadge(position);
+                          const category = getPerformanceCategory(
+                            leader.overall ?? 0
+                          );
+                          const change = Math.floor(Math.random() * 5) - 2;
+
+                          return (
+                            <motion.tr
+                              key={leader.id}
+                              initial={{ opacity: 0, x: -20 }}
+                              animate={{ opacity: 1, x: 0 }}
+                              exit={{ opacity: 0, x: 20 }}
+                              transition={{ delay: idx * 0.03 }}
+                              className="cursor-pointer hover:bg-white/5 border-white/5 transition-all group"
+                              onClick={() => onLeaderClick(leader)}
+                              onMouseEnter={() => setHoveredLeader(leader.id)}
+                              onMouseLeave={() => setHoveredLeader(null)}
+                            >
+                              <TableCell className="font-bold">
+                                <div
+                                  className={`
+                                  text-lg
+                                  ${position === 1 ? "text-yellow-400" : ""}
+                                  ${position === 2 ? "text-gray-400" : ""}
+                                  ${position === 3 ? "text-orange-500" : ""}
+                                  ${position > 3 ? "text-gray-300" : ""}
+                                `}
                                 >
-                                  {leader.overall ?? 0}
-                                </span>
-                              </motion.div>
-                            </TableCell>
-                            <TableCell className="text-center">
-                              {getVariationIcon(change)}
-                            </TableCell>
-                            <TableCell className="text-right">
-                              <div className="flex items-center justify-end gap-2">
-                                <span className="font-bold text-lg">
-                                  {leader.weeklyPoints ?? 0}
-                                </span>
-                                {leader.weeklyPoints &&
-                                  leader.weeklyPoints > 40 && (
-                                    <Lightning
-                                      weight="fill"
-                                      className="text-yellow-500"
-                                      size={16}
-                                    />
-                                  )}
-                              </div>
-                            </TableCell>
-                          </TableRow>
-                        );
-                      })
-                    )}
+                                  {position}
+                                </div>
+                              </TableCell>
+                              <TableCell>
+                                <div className="flex items-center gap-3">
+                                  <motion.div
+                                    whileHover={{ scale: 1.1 }}
+                                    className="relative"
+                                  >
+                                    <Avatar className="h-12 w-12 border-2 border-white/10">
+                                      <AvatarImage
+                                        src={leader.photo}
+                                        alt={leader.name}
+                                        className="object-cover"
+                                      />
+                                      <AvatarFallback className="bg-gradient-primary text-white text-sm font-bold">
+                                        {getInitials(leader.name)}
+                                      </AvatarFallback>
+                                    </Avatar>
+                                  </motion.div>
+                                  <div>
+                                    <p className="font-semibold text-white">
+                                      {leader.name}
+                                    </p>
+                                    <p className="text-xs text-gray-400">
+                                      {leader.position}
+                                    </p>
+                                  </div>
+                                </div>
+                              </TableCell>
+                              <TableCell>
+                                <Badge
+                                  variant="secondary"
+                                  className="font-medium bg-white/5 border-white/10"
+                                >
+                                  {leader.team}
+                                </Badge>
+                              </TableCell>
+                              <TableCell className="text-center">
+                                <motion.div
+                                  animate={
+                                    hoveredLeader === leader.id
+                                      ? { scale: 1.3 }
+                                      : { scale: 1 }
+                                  }
+                                  className="inline-block"
+                                >
+                                  <span
+                                    className={`font-black text-2xl ${category.color}`}
+                                  >
+                                    {leader.overall ?? 0}
+                                  </span>
+                                </motion.div>
+                              </TableCell>
+                              <TableCell className="text-center">
+                                {getVariationIcon(change)}
+                              </TableCell>
+                              <TableCell className="text-right">
+                                <div className="flex items-center justify-end gap-2">
+                                  <span className="font-bold text-lg text-white">
+                                    {leader.weeklyPoints ?? 0}
+                                  </span>
+                                  {leader.weeklyPoints &&
+                                    leader.weeklyPoints > 40 && (
+                                      <Lightning
+                                        weight="fill"
+                                        className="text-yellow-400 animate-pulse"
+                                        size={18}
+                                      />
+                                    )}
+                                </div>
+                              </TableCell>
+                            </motion.tr>
+                          );
+                        })
+                      )}
+                    </AnimatePresence>
                   </TableBody>
                 </Table>
               </div>
