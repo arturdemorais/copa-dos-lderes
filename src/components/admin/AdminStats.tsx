@@ -25,7 +25,9 @@ interface AdminStatsProps {
 
 export function AdminStats({ leaders }: AdminStatsProps) {
   // Filtrar apenas líderes que participam da gamificação (não admins)
-  const gamificationLeaders = leaders.filter((l) => !l.email?.includes("@admin") && l.team !== "Admin");
+  const gamificationLeaders = leaders.filter(
+    (l) => !l.email?.includes("@admin") && l.team !== "Admin"
+  );
   const [varStats, setVarStats] = useState({
     total: 0,
     pending: 0,
@@ -52,7 +54,7 @@ export function AdminStats({ leaders }: AdminStatsProps) {
 
       // Activity stats
       const activityData = await activityLogService.getStatistics();
-      
+
       // Calcular ações de hoje e da semana
       const today = new Date().toISOString().split("T")[0];
       const weekAgo = new Date();
@@ -77,9 +79,17 @@ export function AdminStats({ leaders }: AdminStatsProps) {
     }
   };
 
-  const totalPoints = gamificationLeaders.reduce((sum, l) => sum + (l.overall ?? 0), 0);
-  const avgPoints = gamificationLeaders.length > 0 ? totalPoints / gamificationLeaders.length : 0;
-  const topLeader = gamificationLeaders.sort((a, b) => (b.overall ?? 0) - (a.overall ?? 0))[0];
+  const totalPoints = gamificationLeaders.reduce(
+    (sum, l) => sum + (l.overall ?? 0),
+    0
+  );
+  const avgPoints =
+    gamificationLeaders.length > 0
+      ? totalPoints / gamificationLeaders.length
+      : 0;
+  const topLeader = gamificationLeaders.sort(
+    (a, b) => (b.overall ?? 0) - (a.overall ?? 0)
+  )[0];
 
   const stats = [
     {
@@ -153,9 +163,7 @@ export function AdminStats({ leaders }: AdminStatsProps) {
           <Card className="relative overflow-hidden">
             <CardContent className="p-6">
               <div className="flex items-start justify-between mb-3">
-                <div
-                  className={`p-3 rounded-lg ${stat.bgColor} ${stat.color}`}
-                >
+                <div className={`p-3 rounded-lg ${stat.bgColor} ${stat.color}`}>
                   <stat.icon size={24} weight="fill" />
                 </div>
                 {stat.alert && (

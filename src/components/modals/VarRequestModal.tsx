@@ -126,7 +126,10 @@ export function VarRequestModal({
           {/* Alert de pontos em risco */}
           <div className="p-3 bg-amber-50 dark:bg-amber-950/20 border border-amber-200 dark:border-amber-800 rounded-lg">
             <div className="flex items-start gap-2">
-              <Warning size={20} className="text-amber-600 dark:text-amber-500 mt-0.5 flex-shrink-0" />
+              <Warning
+                size={20}
+                className="text-amber-600 dark:text-amber-500 mt-0.5 flex-shrink-0"
+              />
               <div className="flex-1">
                 <p className="text-sm font-medium text-foreground">
                   Pontos em risco: {pointsAtRisk}
@@ -143,7 +146,9 @@ export function VarRequestModal({
           {/* Tipo da solicitação */}
           <div className="flex gap-2">
             <Badge variant="outline" className="text-xs">
-              {requestType === "ritual_absence" ? "⚽ Ausência em Ritual" : "⏱️ Atraso em Tarefa"}
+              {requestType === "ritual_absence"
+                ? "⚽ Ausência em Ritual"
+                : "⏱️ Atraso em Tarefa"}
             </Badge>
             {ritualName && (
               <Badge variant="secondary" className="text-xs">
@@ -179,7 +184,8 @@ export function VarRequestModal({
           {/* URL de comprovante (opcional) */}
           <div className="space-y-2">
             <Label htmlFor="evidence" className="text-sm font-medium">
-              Link de Comprovante <span className="text-xs text-muted-foreground">(opcional)</span>
+              Link de Comprovante{" "}
+              <span className="text-xs text-muted-foreground">(opcional)</span>
             </Label>
             <Input
               id="evidence"
@@ -197,9 +203,13 @@ export function VarRequestModal({
           {/* Dicas */}
           <div className="p-3 bg-blue-50 dark:bg-blue-950/20 border border-blue-200 dark:border-blue-800 rounded-lg">
             <div className="flex items-start gap-2">
-              <CheckCircle size={16} className="text-blue-600 dark:text-blue-500 mt-0.5 flex-shrink-0" />
+              <CheckCircle
+                size={16}
+                className="text-blue-600 dark:text-blue-500 mt-0.5 flex-shrink-0"
+              />
               <div className="text-xs text-foreground/80">
-                <strong>Dica:</strong> Seja claro e objetivo na justificativa. O admin irá revisar e decidir.
+                <strong>Dica:</strong> Seja claro e objetivo na justificativa. O
+                admin irá revisar e decidir.
               </div>
             </div>
           </div>

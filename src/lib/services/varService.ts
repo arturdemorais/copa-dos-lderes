@@ -100,23 +100,25 @@ export const varService = {
   /**
    * Buscar todas as solicitações (admin)
    */
-  async getAllRequests(status?: "pending" | "approved" | "rejected"): Promise<VarRequest[]> {
-    let query = supabase
-      .from("var_requests")
-      .select(
-        `
+  async getAllRequests(
+    status?: "pending" | "approved" | "rejected"
+  ): Promise<VarRequest[]> {
+    let query = supabase.from("var_requests").select(
+      `
         *,
         leader:leaders!leader_id(name, team, photo),
         ritual:rituals(name, type, date),
         task:tasks(title, description)
       `
-      );
+    );
 
     if (status) {
       query = query.eq("status", status);
     }
 
-    const { data, error } = await query.order("created_at", { ascending: false });
+    const { data, error } = await query.order("created_at", {
+      ascending: false,
+    });
 
     if (error) throw error;
 
@@ -218,7 +220,9 @@ export const varService = {
     rejected: number;
     approvalRate: number;
   }> {
-    const { data, error } = await supabase.from("var_requests").select("status");
+    const { data, error } = await supabase
+      .from("var_requests")
+      .select("status");
 
     if (error) throw error;
 

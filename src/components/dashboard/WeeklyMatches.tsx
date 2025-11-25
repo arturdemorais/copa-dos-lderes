@@ -1,6 +1,12 @@
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
+import {
+  Card,
+  CardContent,
+  CardHeader,
+  CardTitle,
+  CardDescription,
+} from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Button } from "@/components/ui/button";
@@ -15,7 +21,12 @@ interface WeeklyMatchesProps {
   leaderId: string;
 }
 
-export function WeeklyMatches({ tasks, completedTasks, onTaskCheck, leaderId }: WeeklyMatchesProps) {
+export function WeeklyMatches({
+  tasks,
+  completedTasks,
+  onTaskCheck,
+  leaderId,
+}: WeeklyMatchesProps) {
   const [varModalOpen, setVarModalOpen] = useState(false);
   const [selectedTask, setSelectedTask] = useState<Task | null>(null);
 
@@ -125,7 +136,7 @@ export function WeeklyMatches({ tasks, completedTasks, onTaskCheck, leaderId }: 
                         >
                           +{task.points}
                         </Badge>
-                        
+
                         {/* Botão VAR - aparece se tarefa NÃO foi completada */}
                         {!task.completed && (
                           <Button
@@ -135,10 +146,14 @@ export function WeeklyMatches({ tasks, completedTasks, onTaskCheck, leaderId }: 
                             className="h-8 px-2 border-blue-500/50 hover:border-blue-500 hover:bg-blue-50 dark:hover:bg-blue-950/20"
                             title="Solicitar VAR (justificar atraso)"
                           >
-                            <VideoCamera size={16} weight="fill" className="text-blue-600" />
+                            <VideoCamera
+                              size={16}
+                              weight="fill"
+                              className="text-blue-600"
+                            />
                           </Button>
                         )}
-                        
+
                         <div className="text-3xl">
                           {task.completed ? "🏆" : "⚔️"}
                         </div>

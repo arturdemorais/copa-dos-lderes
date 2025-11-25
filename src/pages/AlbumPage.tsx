@@ -30,7 +30,7 @@ interface AlbumPageProps {
 export function AlbumPage({ leaders, onLeaderClick }: AlbumPageProps) {
   // Filtrar apenas líderes que participam da gamificação (não admins)
   const gamificationLeaders = leaders.filter((l) => !l.isAdmin);
-  
+
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedRarity, setSelectedRarity] = useState<
     "all" | "legendary" | "elite" | "rare"
@@ -149,8 +149,8 @@ export function AlbumPage({ leaders, onLeaderClick }: AlbumPageProps) {
                 Coleção Completa
               </CardTitle>
               <CardDescription className="mt-1">
-                {filteredLeaders.length} de {gamificationLeaders.length} figurinhas • Clique
-                para ver detalhes
+                {filteredLeaders.length} de {gamificationLeaders.length}{" "}
+                figurinhas • Clique para ver detalhes
               </CardDescription>
             </div>
 

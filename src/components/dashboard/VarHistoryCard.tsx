@@ -8,7 +8,12 @@ import {
   CardDescription,
 } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { VideoCamera, CheckCircle, XCircle, Clock } from "@phosphor-icons/react";
+import {
+  VideoCamera,
+  CheckCircle,
+  XCircle,
+  Clock,
+} from "@phosphor-icons/react";
 import { varService, type VarRequest } from "@/lib/services";
 
 interface VarHistoryCardProps {
@@ -61,7 +66,9 @@ export function VarHistoryCard({ leaderId }: VarHistoryCardProps) {
   };
 
   const getTypeLabel = (type: string) => {
-    return type === "ritual_absence" ? "⚽ Ausência Ritual" : "⏱️ Atraso Tarefa";
+    return type === "ritual_absence"
+      ? "⚽ Ausência Ritual"
+      : "⏱️ Atraso Tarefa";
   };
 
   if (loading) {
@@ -88,11 +95,17 @@ export function VarHistoryCard({ leaderId }: VarHistoryCardProps) {
             <VideoCamera weight="fill" size={20} className="text-blue-600" />
             Meus VARs
           </CardTitle>
-          <CardDescription>Histórico de solicitações de revisão</CardDescription>
+          <CardDescription>
+            Histórico de solicitações de revisão
+          </CardDescription>
         </CardHeader>
         <CardContent>
           <div className="text-center py-6">
-            <VideoCamera size={48} weight="duotone" className="mx-auto text-muted-foreground mb-3" />
+            <VideoCamera
+              size={48}
+              weight="duotone"
+              className="mx-auto text-muted-foreground mb-3"
+            />
             <p className="text-sm text-muted-foreground">
               Nenhuma solicitação de VAR ainda
             </p>

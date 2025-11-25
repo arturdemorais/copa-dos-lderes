@@ -267,7 +267,10 @@ export function VarAdminPanel({ adminId }: VarAdminPanelProps) {
             <TabsTrigger value="pending">
               Pendentes{" "}
               {requests.filter((r) => r.status === "pending").length > 0 && (
-                <Badge variant="destructive" className="ml-2 h-5 w-5 p-0 text-xs">
+                <Badge
+                  variant="destructive"
+                  className="ml-2 h-5 w-5 p-0 text-xs"
+                >
                   {requests.filter((r) => r.status === "pending").length}
                 </Badge>
               )}
@@ -280,7 +283,9 @@ export function VarAdminPanel({ adminId }: VarAdminPanelProps) {
           <TabsContent value={activeTab} className="mt-6">
             {loading ? (
               <div className="text-center py-12">
-                <p className="text-muted-foreground">Carregando solicitações...</p>
+                <p className="text-muted-foreground">
+                  Carregando solicitações...
+                </p>
               </div>
             ) : requests.length === 0 ? (
               <div className="text-center py-12">
@@ -290,8 +295,7 @@ export function VarAdminPanel({ adminId }: VarAdminPanelProps) {
                   className="mx-auto text-muted-foreground mb-4"
                 />
                 <p className="text-muted-foreground">
-                  Nenhuma solicitação{" "}
-                  {activeTab !== "all" && `(${activeTab})`}
+                  Nenhuma solicitação {activeTab !== "all" && `(${activeTab})`}
                 </p>
               </div>
             ) : (

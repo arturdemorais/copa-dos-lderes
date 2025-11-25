@@ -20,17 +20,26 @@ import {
 } from "@/components/ui/select";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { ClockClockwise, FunnelSimple } from "@phosphor-icons/react";
-import { activityLogService, type ActivityLog, type ActivityCategory } from "@/lib/services";
+import {
+  activityLogService,
+  type ActivityLog,
+  type ActivityCategory,
+} from "@/lib/services";
 
 interface ActivityTimelineProps {
   leaderId?: string; // Se fornecido, filtra por líder
   limit?: number;
 }
 
-export function ActivityTimeline({ leaderId, limit = 100 }: ActivityTimelineProps) {
+export function ActivityTimeline({
+  leaderId,
+  limit = 100,
+}: ActivityTimelineProps) {
   const [logs, setLogs] = useState<ActivityLog[]>([]);
   const [loading, setLoading] = useState(true);
-  const [filterCategory, setFilterCategory] = useState<ActivityCategory | "all">("all");
+  const [filterCategory, setFilterCategory] = useState<
+    ActivityCategory | "all"
+  >("all");
   const [searchTerm, setSearchTerm] = useState("");
 
   useEffect(() => {
@@ -102,7 +111,9 @@ export function ActivityTimeline({ leaderId, limit = 100 }: ActivityTimelineProp
             <Label className="text-xs">Categoria</Label>
             <Select
               value={filterCategory}
-              onValueChange={(v) => setFilterCategory(v as ActivityCategory | "all")}
+              onValueChange={(v) =>
+                setFilterCategory(v as ActivityCategory | "all")
+              }
             >
               <SelectTrigger className="text-sm">
                 <SelectValue />
@@ -129,7 +140,9 @@ export function ActivityTimeline({ leaderId, limit = 100 }: ActivityTimelineProp
         <ScrollArea className="h-[600px] pr-4">
           {loading ? (
             <div className="text-center py-12">
-              <p className="text-sm text-muted-foreground">Carregando timeline...</p>
+              <p className="text-sm text-muted-foreground">
+                Carregando timeline...
+              </p>
             </div>
           ) : filteredLogs.length === 0 ? (
             <div className="text-center py-12">
@@ -138,7 +151,9 @@ export function ActivityTimeline({ leaderId, limit = 100 }: ActivityTimelineProp
                 weight="duotone"
                 className="mx-auto text-muted-foreground mb-4"
               />
-              <p className="text-muted-foreground">Nenhuma atividade encontrada</p>
+              <p className="text-muted-foreground">
+                Nenhuma atividade encontrada
+              </p>
             </div>
           ) : (
             <div className="space-y-6">
@@ -153,7 +168,8 @@ export function ActivityTimeline({ leaderId, limit = 100 }: ActivityTimelineProp
                   <div className="sticky top-0 bg-background pb-2 mb-3 border-b">
                     <h3 className="font-semibold text-sm capitalize">{date}</h3>
                     <p className="text-xs text-muted-foreground">
-                      {dayLogs.length} atividade{dayLogs.length !== 1 ? "s" : ""}
+                      {dayLogs.length} atividade
+                      {dayLogs.length !== 1 ? "s" : ""}
                     </p>
                   </div>
 
@@ -169,7 +185,9 @@ export function ActivityTimeline({ leaderId, limit = 100 }: ActivityTimelineProp
                       >
                         {/* Ícone de categoria */}
                         <div className="absolute -left-[13px] top-0 w-6 h-6 rounded-full bg-background border-2 border-primary flex items-center justify-center text-xs">
-                          {activityLogService.getCategoryIcon(log.actionCategory)}
+                          {activityLogService.getCategoryIcon(
+                            log.actionCategory
+                          )}
                         </div>
 
                         {/* Conteúdo */}
@@ -183,32 +201,38 @@ export function ActivityTimeline({ leaderId, limit = 100 }: ActivityTimelineProp
                                   </span>
                                 )}
                                 <Badge variant="outline" className="text-xs">
-                                  {activityLogService.translateCategory(log.actionCategory)}
+                                  {activityLogService.translateCategory(
+                                    log.actionCategory
+                                  )}
                                 </Badge>
                               </div>
                               <p className="text-sm">{log.description}</p>
                             </div>
                             <span className="text-xs text-muted-foreground flex-shrink-0">
-                              {new Date(log.createdAt).toLocaleTimeString("pt-BR", {
-                                hour: "2-digit",
-                                minute: "2-digit",
-                              })}
+                              {new Date(log.createdAt).toLocaleTimeString(
+                                "pt-BR",
+                                {
+                                  hour: "2-digit",
+                                  minute: "2-digit",
+                                }
+                              )}
                             </span>
                           </div>
 
                           {/* Metadata (se existir) */}
-                          {log.metadata && Object.keys(log.metadata).length > 0 && (
-                            <div className="mt-2 p-2 bg-muted/50 rounded text-xs">
-                              <details>
-                                <summary className="cursor-pointer font-medium text-muted-foreground">
-                                  Detalhes técnicos
-                                </summary>
-                                <pre className="mt-2 text-[10px] overflow-x-auto">
-                                  {JSON.stringify(log.metadata, null, 2)}
-                                </pre>
-                              </details>
-                            </div>
-                          )}
+                          {log.metadata &&
+                            Object.keys(log.metadata).length > 0 && (
+                              <div className="mt-2 p-2 bg-muted/50 rounded text-xs">
+                                <details>
+                                  <summary className="cursor-pointer font-medium text-muted-foreground">
+                                    Detalhes técnicos
+                                  </summary>
+                                  <pre className="mt-2 text-[10px] overflow-x-auto">
+                                    {JSON.stringify(log.metadata, null, 2)}
+                                  </pre>
+                                </details>
+                              </div>
+                            )}
                         </div>
                       </motion.div>
                     ))}

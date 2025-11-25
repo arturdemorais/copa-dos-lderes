@@ -215,7 +215,10 @@ export function RankingPage({
                 className="glass rounded-xl p-3 sm:p-4 text-center min-w-[100px] sm:min-w-[120px] border border-border shadow-glow-sm"
               >
                 <div className="text-3xl font-black text-green-600">
-                  {gamificationLeaders.filter((l) => (l.momentum ?? 0) > 0).length}
+                  {
+                    gamificationLeaders.filter((l) => (l.momentum ?? 0) > 0)
+                      .length
+                  }
                 </div>
                 <div className="text-xs text-muted-foreground uppercase tracking-wider mt-1">
                   Em Ascensão
@@ -532,7 +535,11 @@ export function RankingPage({
                 >
                   <TrendUp weight="fill" size={14} className="mr-1" />
                   Em Ascensão (
-                  {gamificationLeaders.filter((l) => (l.momentum ?? 0) > 0).length})
+                  {
+                    gamificationLeaders.filter((l) => (l.momentum ?? 0) > 0)
+                      .length
+                  }
+                  )
                 </Badge>
               </div>
 

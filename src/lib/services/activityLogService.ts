@@ -42,7 +42,11 @@ export interface ActivityLogFilters {
 export interface ActivityStats {
   totalActions: number;
   actionsByCategory: Record<string, number>;
-  actionsByLeader: Array<{ leaderId: string; leaderName: string; count: number }>;
+  actionsByLeader: Array<{
+    leaderId: string;
+    leaderName: string;
+    count: number;
+  }>;
   recentActivity: ActivityLog[];
 }
 
@@ -138,7 +142,10 @@ export const activityLogService = {
   /**
    * Estatísticas gerais
    */
-  async getStatistics(startDate?: string, endDate?: string): Promise<ActivityStats> {
+  async getStatistics(
+    startDate?: string,
+    endDate?: string
+  ): Promise<ActivityStats> {
     const logs = await this.getLogs({ startDate, endDate });
 
     // Total de ações
