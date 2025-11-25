@@ -1,5 +1,11 @@
 import { motion } from "framer-motion";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { Trophy, Crown, Calendar, Coins } from "@phosphor-icons/react";
@@ -10,11 +16,24 @@ interface MonthlyChampionsProps {
   currentYear?: number;
 }
 
-export function MonthlyChampions({ champions, currentYear = 2026 }: MonthlyChampionsProps) {
+export function MonthlyChampions({
+  champions,
+  currentYear = 2026,
+}: MonthlyChampionsProps) {
   const getMonthName = (month: number) => {
     const months = [
-      "Janeiro", "Fevereiro", "Março", "Abril", "Maio", "Junho",
-      "Julho", "Agosto", "Setembro", "Outubro", "Novembro", "Dezembro"
+      "Janeiro",
+      "Fevereiro",
+      "Março",
+      "Abril",
+      "Maio",
+      "Junho",
+      "Julho",
+      "Agosto",
+      "Setembro",
+      "Outubro",
+      "Novembro",
+      "Dezembro",
     ];
     return months[month - 1] || "";
   };
@@ -60,7 +79,9 @@ export function MonthlyChampions({ champions, currentYear = 2026 }: MonthlyChamp
         {/* Progress Bar */}
         <div className="space-y-2">
           <div className="flex items-center justify-between text-sm">
-            <span className="text-muted-foreground">Progresso da Temporada 2026</span>
+            <span className="text-muted-foreground">
+              Progresso da Temporada 2026
+            </span>
             <span className="font-bold text-foreground">
               {Math.round((completedMonths.length / 12) * 100)}%
             </span>
@@ -110,7 +131,10 @@ export function MonthlyChampions({ champions, currentYear = 2026 }: MonthlyChamp
                   {isLatest && (
                     <div className="absolute -top-3 -right-3">
                       <motion.div
-                        animate={{ rotate: [0, 10, -10, 0], scale: [1, 1.1, 1] }}
+                        animate={{
+                          rotate: [0, 10, -10, 0],
+                          scale: [1, 1.1, 1],
+                        }}
                         transition={{ duration: 2, repeat: Infinity }}
                       >
                         <Badge className="bg-gradient-to-r from-yellow-400 to-orange-500 text-white border-0 font-bold px-3 py-1 shadow-glow-gold">
@@ -133,15 +157,28 @@ export function MonthlyChampions({ champions, currentYear = 2026 }: MonthlyChamp
                       >
                         <Calendar weight="fill" size={16} />
                         <span className="text-xs font-bold mt-0.5">
-                          {getMonthName(champion.month).slice(0, 3).toUpperCase()}
+                          {getMonthName(champion.month)
+                            .slice(0, 3)
+                            .toUpperCase()}
                         </span>
                       </div>
                     </div>
 
                     {/* Avatar */}
-                    <Avatar className={`h-14 w-14 border-2 ${isLatest ? "border-yellow-500" : "border-border"}`}>
-                      <AvatarImage src={`/api/placeholder/100/100`} alt={champion.leaderName} />
-                      <AvatarFallback className={isLatest ? "bg-gradient-gold text-white" : "bg-muted"}>
+                    <Avatar
+                      className={`h-14 w-14 border-2 ${
+                        isLatest ? "border-yellow-500" : "border-border"
+                      }`}
+                    >
+                      <AvatarImage
+                        src={`/api/placeholder/100/100`}
+                        alt={champion.leaderName}
+                      />
+                      <AvatarFallback
+                        className={
+                          isLatest ? "bg-gradient-gold text-white" : "bg-muted"
+                        }
+                      >
                         {getInitials(champion.leaderName)}
                       </AvatarFallback>
                     </Avatar>
@@ -153,7 +190,11 @@ export function MonthlyChampions({ champions, currentYear = 2026 }: MonthlyChamp
                           {champion.leaderName}
                         </p>
                         {isLatest && (
-                          <Trophy weight="fill" size={18} className="text-yellow-600" />
+                          <Trophy
+                            weight="fill"
+                            size={18}
+                            className="text-yellow-600"
+                          />
                         )}
                       </div>
                       <div className="flex items-center gap-3 mt-1">
@@ -174,7 +215,9 @@ export function MonthlyChampions({ champions, currentYear = 2026 }: MonthlyChamp
                           {champion.vorpCoinsEarned}
                         </span>
                       </div>
-                      <p className="text-xs text-muted-foreground">Vorp Coins</p>
+                      <p className="text-xs text-muted-foreground">
+                        Vorp Coins
+                      </p>
                     </div>
                   </div>
                 </motion.div>
@@ -191,8 +234,9 @@ export function MonthlyChampions({ champions, currentYear = 2026 }: MonthlyChamp
               Próximos Campeonatos
             </p>
             <p className="text-sm text-muted-foreground">
-              Faltam {upcomingMonths} {upcomingMonths === 1 ? "mês" : "meses"} para completar a temporada 2026.
-              O campeão final será definido em Janeiro de 2027! 🏆
+              Faltam {upcomingMonths} {upcomingMonths === 1 ? "mês" : "meses"}{" "}
+              para completar a temporada 2026. O campeão final será definido em
+              Janeiro de 2027! 🏆
             </p>
           </div>
         )}

@@ -1,14 +1,17 @@
-import type { Leader, ScoreHistory } from './types'
+import type { Leader, ScoreHistory } from "./types";
 
 export function createSampleLeaders(): Leader[] {
-  const generateHistory = (weeks: number, baseScore: number): ScoreHistory[] => {
-    const history: ScoreHistory[] = []
-    let currentScore = baseScore
-    
+  const generateHistory = (
+    weeks: number,
+    baseScore: number
+  ): ScoreHistory[] => {
+    const history: ScoreHistory[] = [];
+    let currentScore = baseScore;
+
     for (let i = 1; i <= weeks; i++) {
-      const variation = Math.floor(Math.random() * 30) - 15
-      currentScore = Math.max(0, currentScore + variation)
-      
+      const variation = Math.floor(Math.random() * 30) - 15;
+      currentScore = Math.max(0, currentScore + variation);
+
       history.push({
         week: `Semana ${i}`,
         overall: currentScore,
@@ -16,20 +19,22 @@ export function createSampleLeaders(): Leader[] {
         fanScore: Math.min(10, (currentScore * 0.25) / 10),
         assistPoints: Math.floor(currentScore * 0.15),
         ritualPoints: Math.floor(currentScore * 0.15),
-        timestamp: new Date(Date.now() - (weeks - i) * 7 * 24 * 60 * 60 * 1000).toISOString()
-      })
+        timestamp: new Date(
+          Date.now() - (weeks - i) * 7 * 24 * 60 * 60 * 1000
+        ).toISOString(),
+      });
     }
-    
-    return history
-  }
-  
+
+    return history;
+  };
+
   return [
     {
-      id: 'leader-1',
-      name: 'Ana Silva',
-      email: 'ana.silva@copa.com',
-      team: 'Engenharia',
-      position: 'Tech Lead',
+      id: "leader-1",
+      name: "Ana Silva",
+      email: "ana.silva@copa.com",
+      team: "Engenharia",
+      position: "Tech Lead",
       overall: 285,
       weeklyPoints: 45,
       taskPoints: 120,
@@ -38,7 +43,7 @@ export function createSampleLeaders(): Leader[] {
       ritualPoints: 45,
       vorpCoins: 450,
       momentum: 12,
-      trend: 'rising',
+      trend: "rising",
       rankChange: 2,
       consistencyScore: 0.85,
       attributes: {
@@ -47,21 +52,21 @@ export function createSampleLeaders(): Leader[] {
         management: 88,
         pace: 82,
         leadership: 87,
-        development: 84
+        development: 84,
       },
-      strengths: ['Comunicação clara', 'Visão técnica', 'Empatia com o time'],
-      improvements: ['Delegação de tarefas', 'Gestão de conflitos'],
+      strengths: ["Comunicação clara", "Visão técnica", "Empatia com o time"],
+      improvements: ["Delegação de tarefas", "Gestão de conflitos"],
       trophies: [],
       badges: [],
       monthlyChampionships: [],
-      history: generateHistory(4, 250)
+      history: generateHistory(4, 250),
     },
     {
-      id: 'leader-2',
-      name: 'Carlos Mendes',
-      email: 'carlos.mendes@copa.com',
-      team: 'Produto',
-      position: 'Product Manager',
+      id: "leader-2",
+      name: "Carlos Mendes",
+      email: "carlos.mendes@copa.com",
+      team: "Produto",
+      position: "Product Manager",
       overall: 270,
       weeklyPoints: 38,
       taskPoints: 110,
@@ -70,7 +75,7 @@ export function createSampleLeaders(): Leader[] {
       ritualPoints: 38,
       vorpCoins: 380,
       momentum: -5,
-      trend: 'stable',
+      trend: "stable",
       rankChange: -1,
       consistencyScore: 0.78,
       attributes: {
@@ -79,21 +84,25 @@ export function createSampleLeaders(): Leader[] {
         management: 85,
         pace: 90,
         leadership: 82,
-        development: 80
+        development: 80,
       },
-      strengths: ['Visão estratégica', 'Relacionamento com stakeholders', 'Priorização'],
-      improvements: ['Conhecimento técnico', 'Feedback construtivo'],
+      strengths: [
+        "Visão estratégica",
+        "Relacionamento com stakeholders",
+        "Priorização",
+      ],
+      improvements: ["Conhecimento técnico", "Feedback construtivo"],
       trophies: [],
       badges: [],
       monthlyChampionships: [],
-      history: generateHistory(4, 275)
+      history: generateHistory(4, 275),
     },
     {
-      id: 'leader-3',
-      name: 'Beatriz Costa',
-      email: 'beatriz.costa@copa.com',
-      team: 'Engenharia',
-      position: 'Engineering Manager',
+      id: "leader-3",
+      name: "Beatriz Costa",
+      email: "beatriz.costa@copa.com",
+      team: "Engenharia",
+      position: "Engineering Manager",
       overall: 310,
       weeklyPoints: 52,
       taskPoints: 135,
@@ -102,7 +111,7 @@ export function createSampleLeaders(): Leader[] {
       ritualPoints: 52,
       vorpCoins: 620,
       momentum: 18,
-      trend: 'rising',
+      trend: "rising",
       rankChange: 3,
       consistencyScore: 0.92,
       attributes: {
@@ -111,21 +120,25 @@ export function createSampleLeaders(): Leader[] {
         management: 94,
         pace: 85,
         leadership: 93,
-        development: 91
+        development: 91,
       },
-      strengths: ['Desenvolvimento de pessoas', 'Criação de cultura', 'Execução impecável'],
-      improvements: ['Work-life balance', 'Delegar mais'],
+      strengths: [
+        "Desenvolvimento de pessoas",
+        "Criação de cultura",
+        "Execução impecável",
+      ],
+      improvements: ["Work-life balance", "Delegar mais"],
       trophies: [],
       badges: [],
       monthlyChampionships: [],
-      history: generateHistory(4, 280)
+      history: generateHistory(4, 280),
     },
     {
-      id: 'leader-4',
-      name: 'Daniel Oliveira',
-      email: 'daniel.oliveira@copa.com',
-      team: 'Design',
-      position: 'Design Lead',
+      id: "leader-4",
+      name: "Daniel Oliveira",
+      email: "daniel.oliveira@copa.com",
+      team: "Design",
+      position: "Design Lead",
       overall: 245,
       weeklyPoints: 35,
       taskPoints: 95,
@@ -134,7 +147,7 @@ export function createSampleLeaders(): Leader[] {
       ritualPoints: 42,
       vorpCoins: 245,
       momentum: -8,
-      trend: 'falling',
+      trend: "falling",
       rankChange: -2,
       consistencyScore: 0.65,
       attributes: {
@@ -143,21 +156,25 @@ export function createSampleLeaders(): Leader[] {
         management: 72,
         pace: 88,
         leadership: 75,
-        development: 82
+        development: 82,
       },
-      strengths: ['Excelência técnica', 'Criatividade', 'Atenção aos detalhes'],
-      improvements: ['Gestão de tempo', 'Comunicação com stakeholders', 'Liderança de equipe'],
+      strengths: ["Excelência técnica", "Criatividade", "Atenção aos detalhes"],
+      improvements: [
+        "Gestão de tempo",
+        "Comunicação com stakeholders",
+        "Liderança de equipe",
+      ],
       trophies: [],
       badges: [],
       monthlyChampionships: [],
-      history: generateHistory(4, 260)
+      history: generateHistory(4, 260),
     },
     {
-      id: 'leader-5',
-      name: 'Elena Santos',
-      email: 'elena.santos@copa.com',
-      team: 'Produto',
-      position: 'Head of Product',
+      id: "leader-5",
+      name: "Elena Santos",
+      email: "elena.santos@copa.com",
+      team: "Produto",
+      position: "Head of Product",
       overall: 295,
       weeklyPoints: 48,
       taskPoints: 125,
@@ -166,7 +183,7 @@ export function createSampleLeaders(): Leader[] {
       ritualPoints: 48,
       vorpCoins: 540,
       momentum: 10,
-      trend: 'rising',
+      trend: "rising",
       rankChange: 1,
       consistencyScore: 0.88,
       attributes: {
@@ -175,21 +192,25 @@ export function createSampleLeaders(): Leader[] {
         management: 91,
         pace: 87,
         leadership: 89,
-        development: 88
+        development: 88,
       },
-      strengths: ['Visão de produto', 'Colaboração cross-functional', 'Tomada de decisão'],
-      improvements: ['Profundidade técnica', 'Gestão de prioridades'],
+      strengths: [
+        "Visão de produto",
+        "Colaboração cross-functional",
+        "Tomada de decisão",
+      ],
+      improvements: ["Profundidade técnica", "Gestão de prioridades"],
       trophies: [],
       badges: [],
       monthlyChampionships: [],
-      history: generateHistory(4, 270)
+      history: generateHistory(4, 270),
     },
     {
-      id: 'leader-6',
-      name: 'Fernando Lima',
-      email: 'fernando.lima@copa.com',
-      team: 'Design',
-      position: 'UX Manager',
+      id: "leader-6",
+      name: "Fernando Lima",
+      email: "fernando.lima@copa.com",
+      team: "Design",
+      position: "UX Manager",
       overall: 225,
       weeklyPoints: 32,
       taskPoints: 88,
@@ -198,7 +219,7 @@ export function createSampleLeaders(): Leader[] {
       ritualPoints: 35,
       vorpCoins: 225,
       momentum: 5,
-      trend: 'stable',
+      trend: "stable",
       rankChange: 0,
       consistencyScore: 0.72,
       attributes: {
@@ -207,14 +228,18 @@ export function createSampleLeaders(): Leader[] {
         management: 70,
         pace: 80,
         leadership: 72,
-        development: 78
+        development: 78,
       },
-      strengths: ['Research skills', 'Análise de dados', 'Foco no usuário'],
-      improvements: ['Liderança de equipe', 'Comunicação executiva', 'Agilidade'],
+      strengths: ["Research skills", "Análise de dados", "Foco no usuário"],
+      improvements: [
+        "Liderança de equipe",
+        "Comunicação executiva",
+        "Agilidade",
+      ],
       trophies: [],
       badges: [],
       monthlyChampionships: [],
-      history: generateHistory(4, 220)
-    }
-  ]
+      history: generateHistory(4, 220),
+    },
+  ];
 }

@@ -1,7 +1,19 @@
 import { motion } from "framer-motion";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { TrendUp, TrendDown, Fire, Snowflake, Lightning } from "@phosphor-icons/react";
+import {
+  TrendUp,
+  TrendDown,
+  Fire,
+  Snowflake,
+  Lightning,
+} from "@phosphor-icons/react";
 import type { Leader } from "@/lib/types";
 
 interface MomentumChartProps {
@@ -21,7 +33,10 @@ export function MomentumChart({ leader }: MomentumChartProps) {
     { week: "Atual", value: momentum },
   ];
 
-  const maxValue = Math.max(...momentumHistory.map((h) => Math.abs(h.value)), 50);
+  const maxValue = Math.max(
+    ...momentumHistory.map((h) => Math.abs(h.value)),
+    50
+  );
 
   const getTrendConfig = () => {
     if (momentum > 20) {
@@ -83,59 +98,45 @@ export function MomentumChart({ leader }: MomentumChartProps) {
 
   return (
     <Card className="glass border-2 border-border overflow-hidden">
-      <CardHeader>
+      <CardHeader className="pb-3">
         <div className="flex items-center justify-between">
-          <div>
-            <CardTitle className="text-2xl flex items-center gap-2">
-              {trendConfig.icon}
-              Forma Atual
-            </CardTitle>
-            <CardDescription>Seu momentum nas últimas semanas</CardDescription>
-          </div>
+          <CardTitle className="text-lg flex items-center gap-2">
+            {trendConfig.icon}
+            Forma Atual
+          </CardTitle>
           <Badge
-            className={`${trendConfig.bgColor} ${trendConfig.borderColor} ${trendConfig.textColor} border-2 font-bold px-4 py-2 text-sm`}
+            className={`${trendConfig.bgColor} ${trendConfig.borderColor} ${trendConfig.textColor} border font-bold px-2 py-0.5 text-xs`}
           >
             {trendConfig.status}
           </Badge>
         </div>
       </CardHeader>
-      <CardContent>
+      <CardContent className="pb-4">
         {/* Momentum Score Display */}
-        <div className={`${trendConfig.bgColor} rounded-xl p-6 mb-6 border-2 ${trendConfig.borderColor}`}>
+        <div className={`${trendConfig.bgColor} rounded-xl p-4 mb-4 border ${trendConfig.borderColor}`}>
           <div className="flex items-center justify-between">
             <div>
-              <p className="text-sm text-muted-foreground mb-1">Momentum Semanal</p>
-              <motion.div
-                animate={{ scale: [1, 1.05, 1] }}
-                transition={{ duration: 2, repeat: Infinity }}
-                className="flex items-baseline gap-2"
-              >
-                <span className={`text-5xl font-black ${trendConfig.textColor}`}>
+              <p className="text-xs text-muted-foreground mb-1">Momentum Semanal</p>
+              <div className="flex items-baseline gap-2">
+                <span className={`text-3xl font-black ${trendConfig.textColor}`}>
                   {momentum > 0 ? "+" : ""}
                   {Math.round(momentum)}
                 </span>
-                <span className="text-xl text-muted-foreground">pts/sem</span>
-              </motion.div>
+                <span className="text-sm text-muted-foreground">pts/sem</span>
+              </div>
             </div>
-            <motion.div
-              animate={{
-                scale: momentum > 10 ? [1, 1.2, 1] : 1,
-                rotate: momentum > 10 ? [0, 10, -10, 0] : 0,
-              }}
-              transition={{ duration: 2, repeat: Infinity }}
-              className="text-6xl"
-            >
+            <div className="text-4xl">
               {momentum > 20 ? "🔥" : momentum > 5 ? "⚡" : momentum < -10 ? "❄️" : "📊"}
-            </motion.div>
+            </div>
           </div>
-          <p className="text-sm text-muted-foreground mt-3">{trendConfig.description}</p>
+          <p className="text-xs text-muted-foreground mt-2">{trendConfig.description}</p>
         </div>
 
         {/* Momentum Chart */}
-        <div className="space-y-4">
-          <p className="text-sm font-semibold text-foreground">Evolução do Momentum</p>
+        <div className="space-y-3">
+          <p className="text-xs font-semibold text-foreground">Evolução (5 semanas)</p>
           
-          <div className="relative h-40 flex items-end gap-2">
+          <div className="relative h-32 flex items-end gap-1">
             {/* Zero line */}
             <div className="absolute top-1/2 left-0 right-0 h-px bg-border" />
             
@@ -148,7 +149,7 @@ export function MomentumChart({ leader }: MomentumChartProps) {
                 <div key={item.week} className="flex-1 flex flex-col items-center">
                   <div
                     className="relative flex-1 w-full flex items-end justify-center"
-                    style={{ minHeight: "80px" }}
+                    style={{ minHeight: "64px" }}
                   >
                     <motion.div
                       initial={{ height: 0 }}
@@ -176,9 +177,9 @@ export function MomentumChart({ leader }: MomentumChartProps) {
                         <motion.div
                           animate={{ y: [-2, 2, -2] }}
                           transition={{ duration: 1.5, repeat: Infinity }}
-                          className="absolute -top-8 left-1/2 transform -translate-x-1/2"
+                          className="absolute -top-6 left-1/2 transform -translate-x-1/2"
                         >
-                          <Badge className={`${trendConfig.bgColor} ${trendConfig.textColor} font-bold text-xs whitespace-nowrap`}>
+                          <Badge className={`${trendConfig.bgColor} ${trendConfig.textColor} font-bold text-[10px] whitespace-nowrap px-1 py-0`}>
                             {item.value > 0 ? "+" : ""}
                             {Math.round(item.value)}
                           </Badge>
@@ -186,7 +187,7 @@ export function MomentumChart({ leader }: MomentumChartProps) {
                       )}
                     </motion.div>
                   </div>
-                  <p className={`text-xs mt-2 font-medium ${isLast ? "text-foreground" : "text-muted-foreground"}`}>
+                  <p className={`text-[10px] mt-1 font-medium ${isLast ? "text-foreground" : "text-muted-foreground"}`}>
                     {item.week}
                   </p>
                 </div>
@@ -197,22 +198,17 @@ export function MomentumChart({ leader }: MomentumChartProps) {
 
         {/* Prediction */}
         {momentum !== 0 && (
-          <motion.div
-            initial={{ opacity: 0, y: 10 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 1 }}
-            className="mt-6 p-4 bg-muted/50 rounded-lg border border-border"
-          >
-            <p className="text-sm font-semibold text-foreground mb-2 flex items-center gap-2">
-              <TrendUp weight="bold" size={16} />
+          <div className="mt-4 p-3 bg-muted/50 rounded-lg border border-border">
+            <p className="text-xs font-semibold text-foreground mb-1 flex items-center gap-1">
+              <TrendUp weight="bold" size={14} />
               Projeção
             </p>
-            <p className="text-sm text-muted-foreground">
+            <p className="text-xs text-muted-foreground">
               {momentum > 0
-                ? `Mantendo esse ritmo, você pode ganhar aproximadamente +${Math.round(momentum * 4)} pontos este mês! 🚀`
-                : `Atenção: você pode perder até ${Math.round(Math.abs(momentum) * 4)} pontos este mês. Hora de reagir! 💪`}
+                ? `Pode ganhar ~+${Math.round(momentum * 4)} pts este mês 🚀`
+                : `Atenção: risco de perder ~${Math.round(Math.abs(momentum) * 4)} pts 💪`}
             </p>
-          </motion.div>
+          </div>
         )}
       </CardContent>
     </Card>

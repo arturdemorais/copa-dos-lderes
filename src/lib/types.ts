@@ -63,7 +63,17 @@ export interface Trophy {
 export interface Badge {
   id: string;
   name: string;
-  type: "hat-trick" | "invincible" | "shirt-10" | "wall" | "artilheiro" | "assistencia-rei" | "muro" | "fair-play" | "consistente" | "subida-relampago";
+  type:
+    | "hat-trick"
+    | "invincible"
+    | "shirt-10"
+    | "wall"
+    | "artilheiro"
+    | "assistencia-rei"
+    | "muro"
+    | "fair-play"
+    | "consistente"
+    | "subida-relampago";
   count: number;
   description: string;
   rarity: "common" | "rare" | "epic" | "legendary";
@@ -160,7 +170,13 @@ export interface MonthlyChampion {
 
 // Rankings por Atributo
 export interface AttributeRanking {
-  category: "tasks" | "assists" | "fanScore" | "rituals" | "energy" | "weeklyQuestions";
+  category:
+    | "tasks"
+    | "assists"
+    | "fanScore"
+    | "rituals"
+    | "energy"
+    | "weeklyQuestions";
   leaderId: string;
   leaderName: string;
   value: number;

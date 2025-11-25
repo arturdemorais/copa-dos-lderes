@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Trophy, TrendUp, ChartLine, Target, Medal, Coins } from "@phosphor-icons/react";
+import { Trophy, TrendUp, ChartLine, Target, Medal } from "@phosphor-icons/react";
 import { GoalCelebration } from "@/components/gamification/GoalCelebration";
 import { InsightsPanel } from "@/components/analytics/InsightsPanel";
 import { ComparativeAnalytics } from "@/components/analytics/ComparativeAnalytics";
@@ -10,13 +10,11 @@ import { LeaderHeroCard } from "@/components/dashboard/LeaderHeroCard";
 import { LeaderStatsRadar } from "@/components/dashboard/LeaderStatsRadar";
 import { WeeklyMatches } from "@/components/dashboard/WeeklyMatches";
 import { LeaderPodium } from "@/components/dashboard/LeaderPodium";
-import { LeaderInterview } from "@/components/dashboard/LeaderInterview";
 import { EnergyCard } from "@/components/dashboard/EnergyCard";
 import { WeeklyQuestionCard } from "@/components/dashboard/WeeklyQuestionCard";
 import { EnergyCheckInModal } from "@/components/modals/EnergyCheckInModal";
 import { MoodCheckInModal } from "@/components/modals/MoodCheckInModal";
 import { RandomFeedbackModal } from "@/components/modals/RandomFeedbackModal";
-import { MomentumChart } from "@/components/dashboard/MomentumChart";
 import { VorpCoinsCard } from "@/components/dashboard/VorpCoinsCard";
 import { AttributeRankings } from "@/components/dashboard/AttributeRankings";
 import { MonthlyChampions } from "@/components/dashboard/MonthlyChampions";
@@ -165,7 +163,7 @@ export function LeaderDashboard({
         </TabsList>
 
         <TabsContent value="overview" className="space-y-6">
-          {/* Vorp Coins e Momentum */}
+          {/* Vorp Coins + Estádio Top 3 */}
           <div className="grid md:grid-cols-2 gap-5 items-stretch">
             <VorpCoinsCard
               leader={currentLeader}
@@ -174,10 +172,10 @@ export function LeaderDashboard({
                 console.log("Abrir loja de prêmios");
               }}
             />
-            <MomentumChart leader={currentLeader} />
+            <LeaderPodium topThreeLeaders={topThreeLeaders} />
           </div>
 
-          {/* Sprint 2: Engagement Cards */}
+          {/* Engagement Cards */}
           <div className="grid md:grid-cols-2 gap-5 items-stretch">
             <EnergyCard
               leaderId={currentLeader.id}
@@ -194,18 +192,6 @@ export function LeaderDashboard({
           />
 
           <LeaderStatsRadar currentLeader={currentLeader} />
-
-          {/* Pódio e Entrevista */}
-          <div className="grid md:grid-cols-2 gap-5 items-stretch">
-            <LeaderPodium topThreeLeaders={topThreeLeaders} />
-            <LeaderInterview />
-          </div>
-
-          {/* Monthly Champions */}
-          <MonthlyChampions
-            champions={currentLeader.monthlyChampionships ?? []}
-            currentYear={2026}
-          />
         </TabsContent>
 
         <TabsContent value="analytics">
@@ -213,7 +199,15 @@ export function LeaderDashboard({
         </TabsContent>
 
         <TabsContent value="insights">
-          <InsightsPanel leader={currentLeader} leaders={leaders} />
+          <div className="space-y-6">
+            <InsightsPanel leader={currentLeader} leaders={leaders} />
+            
+            {/* Monthly Champions */}
+            <MonthlyChampions
+              champions={currentLeader.monthlyChampionships ?? []}
+              currentYear={2026}
+            />
+          </div>
         </TabsContent>
 
         <TabsContent value="breakdown">

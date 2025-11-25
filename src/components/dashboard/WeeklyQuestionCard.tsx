@@ -83,52 +83,54 @@ export function WeeklyQuestionCard({ leaderId }: WeeklyQuestionCardProps) {
   if (!question) return null;
 
   return (
-    <Card className="p-6 space-y-4 h-full flex flex-col">
-      <div className="flex items-start gap-3">
-        <div className="p-3 rounded-xl bg-primary/10">
-          <ChatCircleDots size={24} weight="fill" className="text-primary" />
+    <Card className="p-4 space-y-3 h-full flex flex-col">
+      <div className="flex items-start gap-2">
+        <div className="p-2 rounded-xl bg-primary/10">
+          <ChatCircleDots size={20} weight="fill" className="text-primary" />
         </div>
         <div className="flex-1">
-          <h3 className="font-bold text-lg">Pergunta da Semana</h3>
-          <p className="text-sm text-muted-foreground">
-            Semana {question.weekNumber} • {question.year}
+          <h3 className="font-bold text-sm">Pergunta da Semana</h3>
+          <p className="text-xs text-muted-foreground">
+            Sem {question.weekNumber} • {question.year}
           </p>
         </div>
       </div>
 
-      <div className="p-4 bg-accent/50 rounded-lg">
-        <p className="text-lg font-medium">{question.question}</p>
+      <div className="p-3 bg-accent/50 rounded-lg">
+        <p className="text-sm font-medium">{question.question}</p>
       </div>
 
       {!hasAnswered ? (
-        <div className="space-y-3 flex-1 flex flex-col justify-end">
+        <div className="space-y-2 flex-1 flex flex-col justify-end">
           <Textarea
             placeholder="Sua resposta... (máx 500 caracteres)"
             value={answer}
             onChange={(e) => setAnswer(e.target.value)}
-            rows={4}
+            rows={3}
             maxLength={500}
+            className="text-sm"
           />
           <div className="flex justify-between items-center">
-            <p className="text-xs text-muted-foreground">{answer.length}/500</p>
-            <Button onClick={handleSubmit} disabled={!answer.trim() || loading}>
-              <PaperPlaneTilt size={16} weight="fill" className="mr-2" />
-              {loading ? "Enviando..." : "Enviar Resposta"}
+            <p className="text-[10px] text-muted-foreground">{answer.length}/500</p>
+            <Button onClick={handleSubmit} disabled={!answer.trim() || loading} size="sm">
+              <PaperPlaneTilt size={14} weight="fill" className="mr-1" />
+              {loading ? "Enviando..." : "Enviar"}
             </Button>
           </div>
         </div>
       ) : (
-        <div className="space-y-3 flex-1 flex flex-col justify-end">
+        <div className="space-y-2 flex-1 flex flex-col justify-end">
           <div className="flex items-center gap-2 text-green-600 dark:text-green-400">
-            <Heart size={20} weight="fill" />
-            <span className="text-sm font-medium">
-              Você já respondeu esta pergunta!
+            <Heart size={16} weight="fill" />
+            <span className="text-xs font-medium">
+              Você já respondeu!
             </span>
           </div>
           <Button
             variant="outline"
             onClick={() => setShowAnswers(!showAnswers)}
             className="w-full"
+            size="sm"
           >
             {showAnswers ? "Ocultar" : "Ver"} Respostas ({answers.length})
           </Button>

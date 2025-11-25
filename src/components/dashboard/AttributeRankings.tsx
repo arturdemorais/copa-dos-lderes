@@ -1,5 +1,11 @@
 import { motion } from "framer-motion";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -20,7 +26,10 @@ interface AttributeRankingsProps {
   currentLeaderId?: string;
 }
 
-export function AttributeRankings({ leaders, currentLeaderId }: AttributeRankingsProps) {
+export function AttributeRankings({
+  leaders,
+  currentLeaderId,
+}: AttributeRankingsProps) {
   const getInitials = (name: string) => {
     return name
       .split(" ")
@@ -143,7 +152,9 @@ export function AttributeRankings({ leaders, currentLeaderId }: AttributeRanking
               {ranking.icon}
               {ranking.title}
             </h3>
-            <p className="text-sm text-muted-foreground">{ranking.description}</p>
+            <p className="text-sm text-muted-foreground">
+              {ranking.description}
+            </p>
           </div>
         </div>
 
@@ -293,11 +304,21 @@ export function AttributeRankings({ leaders, currentLeaderId }: AttributeRanking
           </TabsList>
 
           <TabsContent value="tasks">{renderRankingList("tasks")}</TabsContent>
-          <TabsContent value="assists">{renderRankingList("assists")}</TabsContent>
-          <TabsContent value="fanScore">{renderRankingList("fanScore")}</TabsContent>
-          <TabsContent value="rituals">{renderRankingList("rituals")}</TabsContent>
-          <TabsContent value="momentum">{renderRankingList("momentum")}</TabsContent>
-          <TabsContent value="overall">{renderRankingList("overall")}</TabsContent>
+          <TabsContent value="assists">
+            {renderRankingList("assists")}
+          </TabsContent>
+          <TabsContent value="fanScore">
+            {renderRankingList("fanScore")}
+          </TabsContent>
+          <TabsContent value="rituals">
+            {renderRankingList("rituals")}
+          </TabsContent>
+          <TabsContent value="momentum">
+            {renderRankingList("momentum")}
+          </TabsContent>
+          <TabsContent value="overall">
+            {renderRankingList("overall")}
+          </TabsContent>
         </Tabs>
       </CardContent>
     </Card>

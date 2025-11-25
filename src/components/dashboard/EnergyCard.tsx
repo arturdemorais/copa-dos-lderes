@@ -44,11 +44,11 @@ export function EnergyCard({ leaderId, onCheckInClick }: EnergyCardProps) {
   };
 
   return (
-    <Card className="p-6 h-full flex flex-col">
-      <div className="flex items-start justify-between mb-4">
+    <Card className="p-4 h-full flex flex-col">
+      <div className="flex items-start justify-between mb-3">
         <div className="flex items-center gap-2">
-          <FirstAid size={24} weight="fill" className="text-primary" />
-          <h3 className="font-bold">Departamento Médico</h3>
+          <FirstAid size={20} weight="fill" className="text-primary" />
+          <h3 className="font-bold text-sm">Depto. Médico</h3>
         </div>
         {streak > 0 && (
           <motion.div
@@ -63,42 +63,42 @@ export function EnergyCard({ leaderId, onCheckInClick }: EnergyCardProps) {
       </div>
 
       {!todayCheckIn ? (
-        <div className="space-y-3 flex-1 flex flex-col justify-center">
-          <p className="text-sm text-muted-foreground">
+        <div className="space-y-2 flex-1 flex flex-col justify-center">
+          <p className="text-xs text-muted-foreground">
             Ainda não fez seu check-in hoje
           </p>
-          <Button onClick={onCheckInClick} className="w-full">
-            Fazer Check-in Agora
+          <Button onClick={onCheckInClick} className="w-full" size="sm">
+            Fazer Check-in
           </Button>
         </div>
       ) : (
-        <div className="space-y-4 flex-1 flex flex-col justify-between">
-          <div className="flex items-center justify-between p-4 bg-accent/50 rounded-lg">
+        <div className="space-y-3 flex-1 flex flex-col justify-between">
+          <div className="flex items-center justify-between p-3 bg-accent/50 rounded-lg">
             <div>
-              <p className="text-sm text-muted-foreground">Energia de hoje</p>
-              <p className="text-2xl font-bold">
+              <p className="text-xs text-muted-foreground">Energia de hoje</p>
+              <p className="text-xl font-bold">
                 {getEnergyEmoji(todayCheckIn.energyLevel)}{" "}
                 {todayCheckIn.energyLevel}/5
               </p>
             </div>
             {average > 0 && (
               <div className="text-right">
-                <p className="text-sm text-muted-foreground">Média 7 dias</p>
-                <p className="text-lg font-bold">{average}/5</p>
+                <p className="text-xs text-muted-foreground">Média 7d</p>
+                <p className="text-sm font-bold">{average}/5</p>
               </div>
             )}
           </div>
 
           {history.length > 1 && (
             <div>
-              <p className="text-xs text-muted-foreground mb-2">
+              <p className="text-[10px] text-muted-foreground mb-1">
                 Últimos 7 dias
               </p>
               <div className="flex gap-1">
                 {history.map((checkIn, idx) => (
                   <div
                     key={idx}
-                    className="flex-1 h-2 rounded-full bg-accent"
+                    className="flex-1 h-1.5 rounded-full bg-accent"
                     style={{
                       background: `linear-gradient(to right, 
                         hsl(${(checkIn.energyLevel / 5) * 120}, 70%, 50%), 

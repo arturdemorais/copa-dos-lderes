@@ -414,33 +414,26 @@ export function LeaderHeroCard({
                 </motion.div>
 
                 <motion.div
-                  className="relative glass rounded-xl p-4 border-2 border-sky-blue/30 overflow-hidden shadow-card-md"
+                  className="relative glass rounded-xl p-4 border-2 border-yellow-500/30 overflow-hidden shadow-card-md"
                   whileHover={{ scale: 1.03, y: -2 }}
                 >
-                  <div className="absolute inset-0 bg-gradient-secondary opacity-10" />
+                  <div className="absolute inset-0 bg-gradient-to-br from-yellow-500/10 to-orange-500/10" />
                   <div className="relative">
                     <div className="flex items-center justify-between mb-3">
                       <span className="text-sm font-bold uppercase tracking-wider text-foreground/70">
-                        Momentum
+                        Esta Semana
                       </span>
-                      <span
-                        className={`text-3xl font-black ${
-                          (currentLeader.momentum ?? 0) > 0
-                            ? "text-stadium-green"
-                            : "text-penalty-red"
-                        }`}
-                      >
-                        {currentLeader.momentum > 0 ? "+" : ""}
-                        {Math.round(currentLeader.momentum ?? 0)}
+                      <span className="text-3xl font-black bg-gradient-secondary bg-clip-text text-transparent">
+                        {currentLeader.weeklyPoints ?? 0}
                       </span>
                     </div>
-                    <div className="h-4 bg-muted rounded-full overflow-hidden border-2 border-sky-blue/20">
+                    <div className="h-4 bg-muted rounded-full overflow-hidden border-2 border-yellow-500/20">
                       <motion.div
                         initial={{ width: 0 }}
                         animate={{
                           width: `${Math.min(
                             100,
-                            Math.abs(currentLeader.momentum ?? 0) * 2
+                            ((currentLeader.weeklyPoints ?? 0) / 50) * 100
                           )}%`,
                         }}
                         transition={{
@@ -448,11 +441,7 @@ export function LeaderHeroCard({
                           ease: "easeOut",
                           delay: 0.3,
                         }}
-                        className={`h-full ${
-                          (currentLeader.momentum ?? 0) > 0
-                            ? "bg-gradient-to-r from-stadium-green to-sky-blue shadow-glow-success"
-                            : "bg-gradient-to-r from-penalty-red to-energy-orange shadow-glow-accent"
-                        }`}
+                        className="h-full bg-gradient-to-r from-yellow-400 to-orange-500 shadow-glow-gold"
                       />
                     </div>
                   </div>
