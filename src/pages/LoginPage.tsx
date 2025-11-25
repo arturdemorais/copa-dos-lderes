@@ -19,28 +19,22 @@ import {
   Star,
 } from "@phosphor-icons/react";
 import { toast } from "sonner";
-import { authService } from "@/lib/services";
-import type { User } from "@/lib/types";
+import { useAuth } from "@/hooks/useAuth";
 
-interface LoginPageProps {
-  onLogin: (user: User) => void;
-}
-
-export function LoginPage({ onLogin }: LoginPageProps) {
+export function LoginPage() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
+  const { signIn } = useAuth();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
 
     try {
-      // AUTH REAL do Supabase
-      const { user } = await authService.signIn(email, password);
-
-      onLogin(user);
-      toast.success(`Bem-vindo, ${user.name}! ⚽`);
+      // Use Supabase Auth through useAuth hook
+      await signIn(email, password);
+      toast.success(`Bem-vindo! ⚽`);
     } catch (error: any) {
       console.error("Login error:", error);
 

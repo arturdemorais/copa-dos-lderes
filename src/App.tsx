@@ -10,6 +10,7 @@ import { AdminDashboard } from "@/pages/AdminDashboard";
 import { LeaderProfileModal } from "@/components/modals/LeaderProfileModal";
 import { PeerEvaluationModal } from "@/components/modals/PeerEvaluationModal";
 import { useGameData } from "@/hooks/useGameData";
+import { useAuth } from "@/hooks/useAuth";
 import type { Leader } from "@/lib/types";
 import {
   BrowserRouter,
@@ -104,8 +105,10 @@ function Layout({
 }
 
 function AppContent() {
+  // Use Supabase Auth for authentication
+  const { user: currentUser, loading: authLoading, signIn, signOut } = useAuth();
+
   const {
-    currentUser,
     leaders,
     tasks,
     activities,
@@ -113,8 +116,6 @@ function AppContent() {
     evaluatingLeader,
     leadersLoading,
     getCurrentLeader,
-    handleLogin,
-    handleLogout,
     handleTaskComplete,
     handlePeerEvaluation,
     handleUpdateLeader,
@@ -123,15 +124,34 @@ function AppContent() {
     handleInitializeSampleData,
     setSelectedLeader,
     setEvaluatingLeader,
-  } = useGameData();
+  } = useGameData({ currentUser });
 
   const navigate = useNavigate();
+
+  // Wrapper function for logout
+  const handleLogout = async () => {
+    await signOut();
+  };
+
+  // Show loading state while checking authentication
+  if (authLoading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-background">
+        <div className="flex flex-col items-center gap-4">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary"></div>
+          <p className="text-muted-foreground animate-pulse">
+            Verificando sessão...
+          </p>
+        </div>
+      </div>
+    );
+  }
 
   if (!currentUser) {
     return (
       <>
         <Routes>
-          <Route path="/" element={<LoginPage onLogin={handleLogin} />} />
+          <Route path="/" element={<LoginPage />} />
           <Route path="*" element={<Navigate to="/" />} />
         </Routes>
         <Toaster />

@@ -9,12 +9,11 @@ import { useLeaders } from "@/hooks/useLeaders";
 import { calculateOverallScore } from "@/lib/scoring";
 import type { User, Leader, Task, Activity } from "@/lib/types";
 
-export function useGameData() {
-  const [currentUser, setCurrentUser] = useState<User | null>(() => {
-    const saved = localStorage.getItem("currentUser");
-    return saved ? JSON.parse(saved) : null;
-  });
+interface UseGameDataProps {
+  currentUser: User | null;
+}
 
+export function useGameData({ currentUser }: UseGameDataProps) {
   const {
     leaders,
     loading: leadersLoading,
@@ -90,16 +89,6 @@ export function useGameData() {
       unsubscribeActivities();
     };
   }, [currentUser, leaders]);
-
-  const handleLogin = (user: User) => {
-    setCurrentUser(user);
-    localStorage.setItem("currentUser", JSON.stringify(user));
-  };
-
-  const handleLogout = () => {
-    setCurrentUser(null);
-    localStorage.removeItem("currentUser");
-  };
 
   const handleTaskComplete = async (taskId: string) => {
     const task = tasks?.find((t) => t.id === taskId);
@@ -270,7 +259,6 @@ export function useGameData() {
   };
 
   return {
-    currentUser,
     leaders,
     tasks,
     activities,
@@ -278,8 +266,6 @@ export function useGameData() {
     evaluatingLeader,
     leadersLoading,
     getCurrentLeader,
-    handleLogin,
-    handleLogout,
     handleTaskComplete,
     handlePeerEvaluation,
     handleUpdateLeader,
