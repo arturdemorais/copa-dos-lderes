@@ -11,7 +11,7 @@ import {
 } from "@phosphor-icons/react";
 import { toast } from "sonner";
 import { feedbackSuggestionService } from "@/lib/services/feedbackSuggestionService";
-import { peerEvaluationService } from "@/lib/services";
+import { anonymousFeedbackService } from "@/lib/services";
 import type { Leader } from "@/lib/types";
 import { Confetti } from "@/components/gamification/Confetti";
 
@@ -23,14 +23,29 @@ interface RandomFeedbackModalProps {
   onSuccess?: () => void;
 }
 
-const suggestedQualities = [
-  "Liderança inspiradora",
-  "Comunicação clara",
-  "Resolução de problemas",
-  "Trabalho em equipe",
-  "Inovação",
-  "Empatia",
-];
+const FEEDBACK_TYPES = [
+  { value: "positive", label: "Ponto Forte 💪", color: "bg-green-500" },
+  { value: "improvement", label: "Ponto de Melhoria 📈", color: "bg-blue-500" },
+] as const;
+
+const suggestedQualities = {
+  positive: [
+    "Liderança inspiradora",
+    "Comunicação clara",
+    "Resolução de problemas",
+    "Trabalho em equipe",
+    "Inovação",
+    "Empatia",
+  ],
+  improvement: [
+    "Gestão de tempo",
+    "Delegação de tarefas",
+    "Feedback mais frequente",
+    "Planejamento estratégico",
+    "Escuta ativa",
+    "Tomada de decisão",
+  ],
+};
 
 export function RandomFeedbackModal({
   isOpen,
@@ -40,6 +55,9 @@ export function RandomFeedbackModal({
   onSuccess,
 }: RandomFeedbackModalProps) {
   const [suggestedLeader, setSuggestedLeader] = useState<Leader | null>(null);
+  const [feedbackType, setFeedbackType] = useState<"positive" | "improvement">(
+    "positive"
+  );
   const [selectedQualities, setSelectedQualities] = useState<string[]>([]);
   const [comment, setComment] = useState("");
   const [loading, setLoading] = useState(false);
@@ -59,12 +77,30 @@ export function RandomFeedbackModal({
       const leaderId = await feedbackSuggestionService.suggestLeader(
         fromLeader.id
       );
+
       if (leaderId) {
-        const leader = leaders.find((l) => l.id === leaderId);
+        let leader = leaders.find((l) => l.id === leaderId);
+
+        // Se não encontrou, pode ser porque está na lista filtrada
+        if (!leader) {
+          leader = leaders[Math.floor(Math.random() * leaders.length)];
+        }
+
         setSuggestedLeader(leader || null);
+      } else {
+        // FALLBACK: Escolher um líder aleatório
+        const randomLeader =
+          leaders[Math.floor(Math.random() * leaders.length)];
+        setSuggestedLeader(randomLeader || null);
       }
     } catch (error) {
-      console.error("Error loading suggestion:", error);
+      console.error("Erro ao carregar sugestão:", error);
+      // FALLBACK: Escolher um líder aleatório
+      if (leaders.length > 0) {
+        const randomLeader =
+          leaders[Math.floor(Math.random() * leaders.length)];
+        setSuggestedLeader(randomLeader || null);
+      }
     }
   };
 
@@ -88,13 +124,19 @@ export function RandomFeedbackModal({
       return;
     }
 
+    if (!comment.trim()) {
+      toast.error("Adicione um comentário explicando o feedback!");
+      return;
+    }
+
     setLoading(true);
     try {
-      await peerEvaluationService.create(
+      // Send anonymous feedback
+      const result = await anonymousFeedbackService.sendFeedback(
         fromLeader.id,
         suggestedLeader.id,
-        comment || `Reconhecimento: ${selectedQualities.join(", ")}`,
-        selectedQualities
+        comment,
+        feedbackType
       );
 
       await feedbackSuggestionService.recordSuggestion(
@@ -104,18 +146,34 @@ export function RandomFeedbackModal({
       );
 
       setShowConfetti(true);
-      toast.success(`Feedback enviado! +5 pontos para você ⭐`, {
-        description: `${suggestedLeader.name} recebeu +10 pontos`,
-      });
+      toast.success(
+        `Feedback enviado! +${result.pointsEarned} pontos + 10 Vorp Coins ⭐`,
+        {
+          description: `Feedback anônimo enviado com sucesso`,
+        }
+      );
 
       setTimeout(() => {
         onSuccess?.();
         onClose();
         resetForm();
       }, 2000);
-    } catch (error) {
+    } catch (error: any) {
       console.error("Error submitting feedback:", error);
-      toast.error("Erro ao enviar feedback");
+
+      // Se já enviou feedback para este líder hoje, sugerir outro
+      if (error.message?.includes("já enviou feedback")) {
+        toast.error("Você já deu feedback para este líder hoje!", {
+          description: "Vamos sugerir outro líder...",
+        });
+
+        // Aguardar 1 segundo e trocar o líder
+        setTimeout(() => {
+          handleShuffle();
+        }, 1000);
+      } else {
+        toast.error(error.message || "Erro ao enviar feedback");
+      }
     } finally {
       setLoading(false);
     }
@@ -135,6 +193,7 @@ export function RandomFeedbackModal({
 
   const resetForm = () => {
     setSuggestedLeader(null);
+    setFeedbackType("positive");
     setSelectedQualities([]);
     setComment("");
     setShowConfetti(false);
@@ -149,30 +208,30 @@ export function RandomFeedbackModal({
         onComplete={() => setShowConfetti(false)}
       />
       <Dialog open={isOpen} onOpenChange={onClose}>
-        <DialogContent className="sm:max-w-[500px] overflow-hidden">
+        <DialogContent className="sm:max-w-[450px]">
           <button
             onClick={handleSkip}
             className="absolute right-4 top-4 rounded-sm opacity-70 ring-offset-background transition-opacity hover:opacity-100 z-50"
           >
-            <X size={20} />
+            <X size={16} />
           </button>
 
           <motion.div
-            initial={{ scale: 0.8, opacity: 0 }}
+            initial={{ scale: 0.95, opacity: 0 }}
             animate={{ scale: 1, opacity: 1 }}
-            className="space-y-6 py-4"
+            className="space-y-3 py-1"
           >
-            <div className="text-center space-y-2">
+            <div className="text-center">
               <motion.div
                 animate={{ rotate: [0, 10, -10, 0] }}
                 transition={{ repeat: Infinity, duration: 2 }}
-                className="inline-block"
+                className="inline-block mb-1"
               >
-                <Sparkle size={32} weight="fill" className="text-yellow-500" />
+                <Sparkle size={24} weight="fill" className="text-yellow-500" />
               </motion.div>
-              <h2 className="text-2xl font-bold">Momento de Reconhecer!</h2>
-              <p className="text-sm text-muted-foreground">
-                Que tal dar um feedback positivo?
+              <h2 className="text-lg font-bold">Momento de Reconhecer!</h2>
+              <p className="text-[11px] text-muted-foreground">
+                Dê um feedback construtivo
               </p>
             </div>
 
@@ -185,18 +244,18 @@ export function RandomFeedbackModal({
                 transition={{ duration: 0.5 }}
                 className="relative"
               >
-                <div className="p-6 bg-gradient-to-br from-primary/10 to-primary/5 rounded-2xl border-2 border-primary/20">
-                  <div className="flex items-center gap-4 mb-4">
+                <div className="p-3 bg-gradient-to-br from-primary/10 to-primary/5 rounded-lg border border-primary/20">
+                  <div className="flex items-center gap-2.5">
                     <img
                       src={suggestedLeader.photo}
                       alt={suggestedLeader.name}
-                      className="w-16 h-16 rounded-full border-2 border-primary"
+                      className="w-10 h-10 rounded-full border-2 border-primary"
                     />
-                    <div className="flex-1">
-                      <h3 className="font-bold text-lg">
+                    <div className="flex-1 min-w-0">
+                      <h3 className="font-bold text-sm truncate">
                         {suggestedLeader.name}
                       </h3>
-                      <p className="text-sm text-muted-foreground">
+                      <p className="text-[11px] text-muted-foreground truncate">
                         {suggestedLeader.team}
                       </p>
                     </div>
@@ -205,8 +264,9 @@ export function RandomFeedbackModal({
                       size="sm"
                       onClick={handleShuffle}
                       disabled={isRevealing}
+                      className="h-7 w-7 p-0 flex-shrink-0"
                     >
-                      <ShuffleSimple size={20} />
+                      <ShuffleSimple size={14} />
                     </Button>
                   </div>
 
@@ -228,12 +288,36 @@ export function RandomFeedbackModal({
               </motion.div>
             </AnimatePresence>
 
-            <div className="space-y-2">
-              <label className="text-sm font-medium">
+            <div className="space-y-1">
+              <label className="text-[11px] font-medium">
+                Tipo de Feedback
+              </label>
+              <div className="grid grid-cols-2 gap-1.5">
+                {FEEDBACK_TYPES.map((type) => (
+                  <Button
+                    key={type.value}
+                    variant={
+                      feedbackType === type.value ? "default" : "outline"
+                    }
+                    onClick={() => {
+                      setFeedbackType(type.value);
+                      setSelectedQualities([]); // Reset qualities when changing type
+                    }}
+                    className="w-full h-7 text-[11px] px-2"
+                    size="sm"
+                  >
+                    {type.label}
+                  </Button>
+                ))}
+              </div>
+            </div>
+
+            <div className="space-y-1">
+              <label className="text-[11px] font-medium">
                 Selecione qualidades (até 3)
               </label>
-              <div className="grid grid-cols-2 gap-2">
-                {suggestedQualities.map((quality) => {
+              <div className="grid grid-cols-2 gap-1.5">
+                {suggestedQualities[feedbackType].map((quality) => {
                   const isSelected = selectedQualities.includes(quality);
                   return (
                     <motion.button
@@ -241,7 +325,7 @@ export function RandomFeedbackModal({
                       onClick={() => handleQualityToggle(quality)}
                       disabled={!isSelected && selectedQualities.length >= 3}
                       className={`
-                        p-3 rounded-lg border-2 text-sm font-medium transition-all
+                        p-1.5 rounded-md border text-[11px] font-medium transition-all
                         ${
                           isSelected
                             ? "border-primary bg-primary/10 text-primary"
@@ -266,35 +350,41 @@ export function RandomFeedbackModal({
               </div>
             </div>
 
-            <div className="space-y-2">
-              <label className="text-sm font-medium">
-                Comentário (opcional)
+            <div className="space-y-1">
+              <label className="text-[11px] font-medium">
+                Comentário (obrigatório)
               </label>
               <Textarea
-                placeholder="Adicione uma mensagem pessoal..."
+                placeholder="Explique seu feedback..."
                 value={comment}
                 onChange={(e) => setComment(e.target.value)}
-                rows={3}
-                maxLength={200}
+                rows={2}
+                maxLength={300}
+                className="text-xs resize-none p-2"
               />
+              <p className="text-[10px] text-muted-foreground text-right">
+                {comment.length}/300
+              </p>
             </div>
 
-            <div className="flex gap-2">
+            <div className="flex gap-2 pt-1">
               <Button
                 variant="outline"
                 onClick={handleSkip}
-                className="flex-1"
+                className="flex-1 h-8 text-[11px]"
                 disabled={loading}
+                size="sm"
               >
                 Agora não
               </Button>
               <Button
                 onClick={handleSubmit}
-                className="flex-1"
+                className="flex-1 h-8 text-[11px]"
                 disabled={selectedQualities.length === 0 || loading}
+                size="sm"
               >
-                <PaperPlaneTilt size={16} weight="fill" className="mr-2" />
-                {loading ? "Enviando..." : "Enviar Feedback"}
+                <PaperPlaneTilt size={12} weight="fill" className="mr-1" />
+                {loading ? "Enviando..." : "Enviar"}
               </Button>
             </div>
           </motion.div>

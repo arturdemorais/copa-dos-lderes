@@ -18,7 +18,9 @@ export { activityService } from "./activityService";
 export { feedbackSuggestionService } from "./feedbackSuggestionService";
 export { vorpCoinsService } from "./vorpCoinsService";
 export { storeService } from "./storeService";
+export { anonymousFeedbackService } from "./anonymousFeedbackService";
 
 // Re-export types
 export type { VorpCoinTransaction } from "./vorpCoinsService";
 export type { StoreItem, StorePurchase } from "./storeService";
+export type { AnonymousFeedback } from "./anonymousFeedbackService";
