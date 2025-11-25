@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Trophy, TrendUp, ChartLine, Target } from "@phosphor-icons/react";
-import { Confetti } from "@/components/gamification/Confetti";
+import { Trophy, TrendUp, ChartLine, Target, Medal, Coins } from "@phosphor-icons/react";
+import { GoalCelebration } from "@/components/gamification/GoalCelebration";
 import { InsightsPanel } from "@/components/analytics/InsightsPanel";
 import { ComparativeAnalytics } from "@/components/analytics/ComparativeAnalytics";
 import { ScoreBreakdown } from "@/components/analytics/ScoreBreakdown";
@@ -16,6 +16,10 @@ import { WeeklyQuestionCard } from "@/components/dashboard/WeeklyQuestionCard";
 import { EnergyCheckInModal } from "@/components/modals/EnergyCheckInModal";
 import { MoodCheckInModal } from "@/components/modals/MoodCheckInModal";
 import { RandomFeedbackModal } from "@/components/modals/RandomFeedbackModal";
+import { MomentumChart } from "@/components/dashboard/MomentumChart";
+import { VorpCoinsCard } from "@/components/dashboard/VorpCoinsCard";
+import { AttributeRankings } from "@/components/dashboard/AttributeRankings";
+import { MonthlyChampions } from "@/components/dashboard/MonthlyChampions";
 import { energyService } from "@/lib/services/energyService";
 import { feedbackSuggestionService } from "@/lib/services/feedbackSuggestionService";
 
@@ -32,7 +36,12 @@ export function LeaderDashboard({
   leaders,
   onTaskComplete,
 }: LeaderDashboardProps) {
-  const [showConfetti, setShowConfetti] = useState(false);
+  const [showCelebration, setShowCelebration] = useState(false);
+  const [celebrationData, setCelebrationData] = useState<{
+    type: "task" | "badge" | "level-up" | "coins" | "champion";
+    points: number;
+    message?: string;
+  }>({ type: "task", points: 0 });
   const [showEnergyModal, setShowEnergyModal] = useState(false);
   const [showMoodModal, setShowMoodModal] = useState(false);
   const [showFeedbackModal, setShowFeedbackModal] = useState(false);
@@ -85,9 +94,15 @@ export function LeaderDashboard({
 
     onTaskComplete(taskId);
 
-    // Só mostrar confetti se estiver COMPLETANDO (não desmarcando)
+    // Só mostrar celebração se estiver COMPLETANDO (não desmarcando)
     if (isCompleting) {
-      setShowConfetti(true);
+      const points = task.points ?? 10;
+      setCelebrationData({
+        type: "task",
+        points,
+        message: task.title,
+      });
+      setShowCelebration(true);
     }
   };
 
@@ -109,9 +124,12 @@ export function LeaderDashboard({
 
   return (
     <div className="space-y-6 max-w-6xl mx-auto">
-      <Confetti
-        trigger={showConfetti}
-        onComplete={() => setShowConfetti(false)}
+      <GoalCelebration
+        trigger={showCelebration}
+        onComplete={() => setShowCelebration(false)}
+        type={celebrationData.type}
+        points={celebrationData.points}
+        message={celebrationData.message}
       />
 
       {/* Hero Section - Card de Jogador Estilo FIFA */}
@@ -123,7 +141,7 @@ export function LeaderDashboard({
       />
 
       <Tabs defaultValue="overview" className="space-y-6">
-        <TabsList className="grid w-full grid-cols-4">
+        <TabsList className="grid w-full grid-cols-5">
           <TabsTrigger value="overview" className="flex items-center gap-2">
             <Trophy size={16} />
             <span className="hidden sm:inline">Visão Geral</span>
@@ -140,9 +158,25 @@ export function LeaderDashboard({
             <Target size={16} />
             <span className="hidden sm:inline">Pontuação</span>
           </TabsTrigger>
+          <TabsTrigger value="rankings" className="flex items-center gap-2">
+            <Medal size={16} />
+            <span className="hidden sm:inline">Rankings</span>
+          </TabsTrigger>
         </TabsList>
 
         <TabsContent value="overview" className="space-y-6">
+          {/* Vorp Coins e Momentum */}
+          <div className="grid md:grid-cols-2 gap-5 items-stretch">
+            <VorpCoinsCard
+              leader={currentLeader}
+              onShopClick={() => {
+                // TODO: Implementar loja de prêmios
+                console.log("Abrir loja de prêmios");
+              }}
+            />
+            <MomentumChart leader={currentLeader} />
+          </div>
+
           {/* Sprint 2: Engagement Cards */}
           <div className="grid md:grid-cols-2 gap-5 items-stretch">
             <EnergyCard
@@ -166,6 +200,12 @@ export function LeaderDashboard({
             <LeaderPodium topThreeLeaders={topThreeLeaders} />
             <LeaderInterview />
           </div>
+
+          {/* Monthly Champions */}
+          <MonthlyChampions
+            champions={currentLeader.monthlyChampionships ?? []}
+            currentYear={2026}
+          />
         </TabsContent>
 
         <TabsContent value="analytics">
@@ -178,6 +218,10 @@ export function LeaderDashboard({
 
         <TabsContent value="breakdown">
           <ScoreBreakdown leader={currentLeader} />
+        </TabsContent>
+
+        <TabsContent value="rankings">
+          <AttributeRankings leaders={leaders} currentLeaderId={currentLeader.id} />
         </TabsContent>
       </Tabs>
 

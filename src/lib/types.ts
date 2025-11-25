@@ -21,6 +21,7 @@ export interface Leader {
   fanScore: number;
   assistPoints: number;
   ritualPoints: number;
+  vorpCoins: number; // Moeda acumulativa para loja de prêmios
   attributes: {
     communication: number;
     technique: number;
@@ -38,6 +39,7 @@ export interface Leader {
   trend: "rising" | "falling" | "stable";
   rankChange: number;
   consistencyScore: number;
+  monthlyChampionships: MonthlyChampion[]; // Histórico de campeões mensais
   isAdmin?: boolean; // Flag para identificar admins
 }
 
@@ -61,9 +63,12 @@ export interface Trophy {
 export interface Badge {
   id: string;
   name: string;
-  type: "hat-trick" | "invincible" | "shirt-10" | "wall";
+  type: "hat-trick" | "invincible" | "shirt-10" | "wall" | "artilheiro" | "assistencia-rei" | "muro" | "fair-play" | "consistente" | "subida-relampago";
   count: number;
   description: string;
+  rarity: "common" | "rare" | "epic" | "legendary";
+  earnedAt: string;
+  vorpCoinsReward: number; // Quantidade de Vorp Coins ganhas ao conquistar
 }
 
 export interface Ritual {
@@ -129,4 +134,64 @@ export interface Insight {
   category: string;
   message: string;
   actionable?: string;
+}
+
+// Sistema de Temporada 2026
+export interface Season {
+  id: string;
+  name: string; // "Vorp League 2026"
+  year: number;
+  startDate: string;
+  endDate: string;
+  currentMonth: number;
+  status: "active" | "completed";
+}
+
+// Campeões Mensais
+export interface MonthlyChampion {
+  month: number; // 1-12
+  year: number;
+  leaderId: string;
+  leaderName: string;
+  finalScore: number;
+  vorpCoinsEarned: number;
+  badgeEarned?: string;
+}
+
+// Rankings por Atributo
+export interface AttributeRanking {
+  category: "tasks" | "assists" | "fanScore" | "rituals" | "energy" | "weeklyQuestions";
+  leaderId: string;
+  leaderName: string;
+  value: number;
+  position: number;
+}
+
+// Sistema de Vorp Coins
+export interface VorpCoinTransaction {
+  id: string;
+  leaderId: string;
+  amount: number;
+  type: "earned" | "spent";
+  reason: string; // "Completou task", "Comprou prêmio X"
+  timestamp: string;
+}
+
+// Loja de Prêmios
+export interface StoreItem {
+  id: string;
+  name: string;
+  description: string;
+  price: number; // Custo em Vorp Coins
+  category: "experience" | "physical" | "digital" | "benefit";
+  stock: number;
+  imageUrl?: string;
+  isAvailable: boolean;
+}
+
+// Histórico de Momentum (para gráfico)
+export interface MomentumHistory {
+  week: string;
+  value: number;
+  trend: "up" | "down" | "stable";
 }

@@ -36,6 +36,7 @@ export function createSampleLeaders(): Leader[] {
       fanScore: 8.5,
       assistPoints: 35,
       ritualPoints: 45,
+      vorpCoins: 450,
       momentum: 12,
       trend: 'rising',
       rankChange: 2,
@@ -52,6 +53,7 @@ export function createSampleLeaders(): Leader[] {
       improvements: ['Delegação de tarefas', 'Gestão de conflitos'],
       trophies: [],
       badges: [],
+      monthlyChampionships: [],
       history: generateHistory(4, 250)
     },
     {
@@ -66,6 +68,7 @@ export function createSampleLeaders(): Leader[] {
       fanScore: 7.8,
       assistPoints: 42,
       ritualPoints: 38,
+      vorpCoins: 380,
       momentum: -5,
       trend: 'stable',
       rankChange: -1,
@@ -82,6 +85,7 @@ export function createSampleLeaders(): Leader[] {
       improvements: ['Conhecimento técnico', 'Feedback construtivo'],
       trophies: [],
       badges: [],
+      monthlyChampionships: [],
       history: generateHistory(4, 275)
     },
     {
@@ -96,6 +100,7 @@ export function createSampleLeaders(): Leader[] {
       fanScore: 9.2,
       assistPoints: 48,
       ritualPoints: 52,
+      vorpCoins: 620,
       momentum: 18,
       trend: 'rising',
       rankChange: 3,
@@ -112,6 +117,7 @@ export function createSampleLeaders(): Leader[] {
       improvements: ['Work-life balance', 'Delegar mais'],
       trophies: [],
       badges: [],
+      monthlyChampionships: [],
       history: generateHistory(4, 280)
     },
     {
@@ -126,6 +132,7 @@ export function createSampleLeaders(): Leader[] {
       fanScore: 7.2,
       assistPoints: 28,
       ritualPoints: 42,
+      vorpCoins: 245,
       momentum: -8,
       trend: 'falling',
       rankChange: -2,
@@ -142,6 +149,7 @@ export function createSampleLeaders(): Leader[] {
       improvements: ['Gestão de tempo', 'Comunicação com stakeholders', 'Liderança de equipe'],
       trophies: [],
       badges: [],
+      monthlyChampionships: [],
       history: generateHistory(4, 260)
     },
     {
@@ -156,6 +164,7 @@ export function createSampleLeaders(): Leader[] {
       fanScore: 8.8,
       assistPoints: 45,
       ritualPoints: 48,
+      vorpCoins: 540,
       momentum: 10,
       trend: 'rising',
       rankChange: 1,
@@ -172,6 +181,7 @@ export function createSampleLeaders(): Leader[] {
       improvements: ['Profundidade técnica', 'Gestão de prioridades'],
       trophies: [],
       badges: [],
+      monthlyChampionships: [],
       history: generateHistory(4, 270)
     },
     {
@@ -186,6 +196,7 @@ export function createSampleLeaders(): Leader[] {
       fanScore: 6.5,
       assistPoints: 25,
       ritualPoints: 35,
+      vorpCoins: 225,
       momentum: 5,
       trend: 'stable',
       rankChange: 0,
@@ -202,6 +213,7 @@ export function createSampleLeaders(): Leader[] {
       improvements: ['Liderança de equipe', 'Comunicação executiva', 'Agilidade'],
       trophies: [],
       badges: [],
+      monthlyChampionships: [],
       history: generateHistory(4, 220)
     }
   ]
