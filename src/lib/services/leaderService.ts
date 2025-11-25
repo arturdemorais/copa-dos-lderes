@@ -144,17 +144,10 @@ export const leaderService = {
    * Buscar TODOS os líderes incluindo admins (apenas para admin dashboard)
    */
   async getAllIncludingAdmins(): Promise<Leader[]> {
-    console.log("[leaderService] getAllIncludingAdmins called");
     const { data, error } = await supabase
       .from("leaders")
       .select("*")
       .order("overall", { ascending: false });
-
-    console.log("[leaderService] getAllIncludingAdmins result:", {
-      data,
-      error,
-      count: data?.length,
-    });
 
     if (error) throw error;
 
@@ -189,10 +182,6 @@ export const leaderService = {
         .maybeSingle();
 
       if (error) {
-        console.error(
-          `[leaderService] Error fetching leader by email (${email}):`,
-          error
-        );
         throw error;
       }
 
@@ -202,7 +191,6 @@ export const leaderService = {
 
       return this.mapToLeader(data);
     } catch (err) {
-      console.error("[leaderService] Exception in getByEmail:", err);
       throw err;
     }
   },

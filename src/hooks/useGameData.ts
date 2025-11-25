@@ -31,19 +31,6 @@ export function useGameData({ currentUser }: UseGameDataProps) {
 
   const currentLeader = allLeaders?.find((l) => l.email === currentUser?.email);
 
-  // Debug detalhado
-  useEffect(() => {
-    console.log("[useGameData] Debug completo:", {
-      currentUserEmail: currentUser?.email,
-      currentUserRole: currentUser?.role,
-      allLeadersCount: allLeaders?.length || 0,
-      allLeadersEmails: allLeaders?.map((l) => l.email) || [],
-      currentLeaderFound: !!currentLeader,
-      currentLeaderEmail: currentLeader?.email,
-      leadersLoading,
-    });
-  }, [allLeaders, currentUser, currentLeader, leadersLoading]);
-
   const getCurrentLeader = (): Leader | undefined => {
     return currentLeader;
   };

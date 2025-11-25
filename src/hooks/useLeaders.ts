@@ -42,16 +42,9 @@ export function useLeaders(includeAdmins = false) {
   const fetchLeaders = useCallback(async () => {
     try {
       setLoading(true);
-      console.log(
-        "[useLeaders] Fetching leaders, includeAdmins:",
-        includeAdmins,
-        "sessionReady:",
-        sessionReady
-      );
 
       // IMPORTANTE: Só buscar se a sessão estiver pronta
       if (!sessionReady) {
-        console.log("[useLeaders] Session not ready yet, skipping fetch");
         setLeaders([]);
         setLoading(false);
         return;
@@ -62,8 +55,6 @@ export function useLeaders(includeAdmins = false) {
       const data = includeAdmins
         ? await leaderService.getAllIncludingAdmins()
         : await leaderService.getAll();
-
-      console.log("[useLeaders] Raw data from service:", data);
 
       // Recalcular scores
       const updated = data.map((leader) => {
@@ -84,12 +75,6 @@ export function useLeaders(includeAdmins = false) {
           trend,
           rankChange,
         };
-      });
-
-      console.log("[useLeaders] Fetched leaders:", {
-        includeAdmins,
-        count: updated.length,
-        emails: updated.map((l) => ({ email: l.email, isAdmin: l.isAdmin })),
       });
 
       setLeaders(updated);
