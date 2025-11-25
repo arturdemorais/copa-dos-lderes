@@ -249,16 +249,11 @@ export function AttributeRankings({
 
                   {/* Trophy for #1 */}
                   {item.position === 1 && (
-                    <motion.div
-                      animate={{ rotate: [0, 10, -10, 0] }}
-                      transition={{ duration: 2, repeat: Infinity }}
-                    >
-                      <Trophy
-                        weight="fill"
-                        size={28}
-                        className="text-yellow-600"
-                      />
-                    </motion.div>
+                    <Trophy
+                      weight="fill"
+                      size={28}
+                      className="text-yellow-600"
+                    />
                   )}
                 </div>
               </motion.div>
