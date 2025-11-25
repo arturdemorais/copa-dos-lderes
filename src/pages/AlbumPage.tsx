@@ -28,13 +28,16 @@ interface AlbumPageProps {
 }
 
 export function AlbumPage({ leaders, onLeaderClick }: AlbumPageProps) {
+  // Filtrar apenas líderes que participam da gamificação (não admins)
+  const gamificationLeaders = leaders.filter((l) => !l.isAdmin);
+  
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedRarity, setSelectedRarity] = useState<
     "all" | "legendary" | "elite" | "rare"
   >("all");
   const [viewMode, setViewMode] = useState<"grid" | "list">("grid");
 
-  let filteredLeaders = leaders.filter(
+  let filteredLeaders = gamificationLeaders.filter(
     (leader) =>
       leader.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
       leader.team.toLowerCase().includes(searchTerm.toLowerCase())
@@ -51,11 +54,11 @@ export function AlbumPage({ leaders, onLeaderClick }: AlbumPageProps) {
   }
 
   const stats = {
-    total: leaders.length,
-    legendary: leaders.filter(
+    total: gamificationLeaders.length,
+    legendary: gamificationLeaders.filter(
       (l) => getPerformanceCategory(l.overall ?? 0).label === "Lendário"
     ).length,
-    elite: leaders.filter(
+    elite: gamificationLeaders.filter(
       (l) => getPerformanceCategory(l.overall ?? 0).label === "Elite"
     ).length,
     collected: filteredLeaders.length,
@@ -146,7 +149,7 @@ export function AlbumPage({ leaders, onLeaderClick }: AlbumPageProps) {
                 Coleção Completa
               </CardTitle>
               <CardDescription className="mt-1">
-                {filteredLeaders.length} de {leaders.length} figurinhas • Clique
+                {filteredLeaders.length} de {gamificationLeaders.length} figurinhas • Clique
                 para ver detalhes
               </CardDescription>
             </div>
@@ -177,7 +180,7 @@ export function AlbumPage({ leaders, onLeaderClick }: AlbumPageProps) {
               className="cursor-pointer px-3 py-1"
               onClick={() => setSelectedRarity("all")}
             >
-              Todas ({leaders.length})
+              Todas ({gamificationLeaders.length})
             </Badge>
             <Badge
               variant={selectedRarity === "legendary" ? "default" : "outline"}

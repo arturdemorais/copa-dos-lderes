@@ -50,8 +50,13 @@ import {
   UserPlus,
   Upload,
   X,
+  VideoCamera,
+  ClockClockwise,
 } from "@phosphor-icons/react";
 import { CreateLeaderModal } from "@/components/modals/CreateLeaderModal";
+import { VarAdminPanel } from "@/components/admin/VarAdminPanel";
+import { ActivityTimeline } from "@/components/admin/ActivityTimeline";
+import { AdminStats } from "@/components/admin/AdminStats";
 import type { Leader, Task, Ritual } from "@/lib/types";
 import { createSampleLeaders } from "@/lib/sampleData";
 import { toast } from "sonner";
@@ -69,6 +74,7 @@ interface AdminDashboardProps {
   onCreateTask: (task: Omit<Task, "id" | "leaderId" | "completed">) => void;
   onDeleteTask: (taskId: string) => void;
   onInitializeSampleData?: () => void;
+  adminId: string; // ID do admin para painel VAR
 }
 
 export function AdminDashboard({
@@ -78,6 +84,7 @@ export function AdminDashboard({
   onCreateTask,
   onDeleteTask,
   onInitializeSampleData,
+  adminId,
 }: AdminDashboardProps) {
   const [editingLeader, setEditingLeader] = useState<Leader | null>(null);
   const [deletingLeader, setDeletingLeader] = useState<Leader | null>(null);
@@ -212,7 +219,7 @@ export function AdminDashboard({
         <div>
           <h1 className="text-3xl font-bold mb-2">Painel do Administrador</h1>
           <p className="text-muted-foreground">
-            Gerencie líderes, tarefas e registre os rituais
+            Controle total: líderes, tarefas, VARs e auditoria
           </p>
         </div>
 
@@ -228,6 +235,9 @@ export function AdminDashboard({
         )}
       </div>
 
+      {/* Estatísticas Gerais */}
+      <AdminStats leaders={leaders} />
+
       <Tabs defaultValue="leaders" className="space-y-6">
         <TabsList>
           <TabsTrigger value="leaders" className="flex items-center gap-2">
@@ -241,6 +251,14 @@ export function AdminDashboard({
           <TabsTrigger value="rituals" className="flex items-center gap-2">
             <CalendarCheck size={18} />
             Registrar Rituais
+          </TabsTrigger>
+          <TabsTrigger value="var" className="flex items-center gap-2">
+            <VideoCamera size={18} />
+            Sistema VAR
+          </TabsTrigger>
+          <TabsTrigger value="audit" className="flex items-center gap-2">
+            <ClockClockwise size={18} />
+            Auditoria
           </TabsTrigger>
         </TabsList>
 
@@ -677,6 +695,14 @@ export function AdminDashboard({
               </div>
             </CardContent>
           </Card>
+        </TabsContent>
+
+        <TabsContent value="var">
+          <VarAdminPanel adminId={adminId} />
+        </TabsContent>
+
+        <TabsContent value="audit">
+          <ActivityTimeline limit={200} />
         </TabsContent>
       </Tabs>
 

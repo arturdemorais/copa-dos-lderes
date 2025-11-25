@@ -20,7 +20,7 @@ export function useGameData() {
     loading: leadersLoading,
     updateLeader,
     refetch: refetchLeaders,
-  } = useLeaders(currentUser?.role === "admin"); // Admin vê todos, leader vê só participantes
+  } = useLeaders(currentUser?.role === "admin"); // Admin vê todos para gerenciar, mas filtra na exibição
 
   const [tasks, setTasks] = useState<Task[]>([]);
   const [activities, setActivities] = useState<Activity[]>([]);

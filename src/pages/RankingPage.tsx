@@ -47,6 +47,8 @@ export function RankingPage({
   activities,
   onLeaderClick,
 }: RankingPageProps) {
+  // Filtrar apenas líderes que participam da gamificação (não admins)
+  const gamificationLeaders = leaders.filter((l) => !l.isAdmin);
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedFilter, setSelectedFilter] = useState<
     "all" | "rising" | "top10"
@@ -62,7 +64,7 @@ export function RankingPage({
       .slice(0, 2);
   };
 
-  const sortedLeaders = [...leaders].sort(
+  const sortedLeaders = [...gamificationLeaders].sort(
     (a, b) => (b.overall ?? 0) - (a.overall ?? 0)
   );
 
@@ -191,7 +193,7 @@ export function RankingPage({
                   transition={{ duration: 2, repeat: Infinity }}
                   className="inline-block w-3 h-3 bg-red-500 rounded-full shadow-glow-accent"
                 />
-                AO VIVO • {leaders.length} técnicos competindo
+                AO VIVO • {gamificationLeaders.length} técnicos competindo
               </p>
             </div>
 
@@ -213,7 +215,7 @@ export function RankingPage({
                 className="glass rounded-xl p-3 sm:p-4 text-center min-w-[100px] sm:min-w-[120px] border border-border shadow-glow-sm"
               >
                 <div className="text-3xl font-black text-green-600">
-                  {leaders.filter((l) => (l.momentum ?? 0) > 0).length}
+                  {gamificationLeaders.filter((l) => (l.momentum ?? 0) > 0).length}
                 </div>
                 <div className="text-xs text-muted-foreground uppercase tracking-wider mt-1">
                   Em Ascensão
@@ -513,7 +515,7 @@ export function RankingPage({
                   className="cursor-pointer transition-all hover:scale-105"
                   onClick={() => setSelectedFilter("all")}
                 >
-                  Todos ({leaders.length})
+                  Todos ({gamificationLeaders.length})
                 </Badge>
                 <Badge
                   variant={selectedFilter === "top10" ? "default" : "outline"}
@@ -530,7 +532,7 @@ export function RankingPage({
                 >
                   <TrendUp weight="fill" size={14} className="mr-1" />
                   Em Ascensão (
-                  {leaders.filter((l) => (l.momentum ?? 0) > 0).length})
+                  {gamificationLeaders.filter((l) => (l.momentum ?? 0) > 0).length})
                 </Badge>
               </div>
 

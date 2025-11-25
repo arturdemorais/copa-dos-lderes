@@ -224,6 +224,7 @@ function AppContent() {
                   onCreateTask={handleCreateTask}
                   onDeleteTask={handleDeleteTask}
                   onInitializeSampleData={handleInitializeSampleData}
+                  adminId={currentUser.id}
                 />
               ) : (
                 <Navigate to="/" />

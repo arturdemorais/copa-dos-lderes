@@ -257,6 +257,10 @@ export const varService = {
       pointsAtRisk: row.points_at_risk,
       createdAt: row.created_at,
       updatedAt: row.updated_at,
-    };
+      // Incluir dados de join
+      leader: row.leader,
+      ritual: row.ritual,
+      task: row.task,
+    } as any;
   },
 };
