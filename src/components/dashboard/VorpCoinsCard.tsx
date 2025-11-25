@@ -147,14 +147,15 @@ export function VorpCoinsCard({ leader, onShopClick }: VorpCoinsCardProps) {
           </div>
         </div>
 
-        {/* Shop Button */}
+        {/* Shop Button - Coming Soon */}
         <Button
           onClick={onShopClick}
-          className="w-full bg-gradient-to-r from-amber-500 to-orange-600 hover:from-amber-600 hover:to-orange-700 text-white font-bold"
+          disabled
+          className="w-full bg-gradient-to-r from-gray-400 to-gray-500 text-white font-bold cursor-not-allowed opacity-60"
           size="sm"
         >
           <ShoppingCart weight="fill" size={16} className="mr-2" />
-          Loja de Prêmios
+          Loja de Prêmios - Em Breve 🚀
         </Button>
       </CardContent>
     </Card>

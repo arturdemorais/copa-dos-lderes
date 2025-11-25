@@ -338,6 +338,7 @@ export const leaderService = {
       momentum: row.momentum,
       trend: row.trend,
       rankChange: row.rank_change,
+      vorpCoins: row.vorp_coins || 0,
       attributes: {
         communication: row.attr_communication,
         technique: row.attr_technique,
@@ -351,6 +352,7 @@ export const leaderService = {
       trophies: [],
       badges: [],
       history: [],
+      monthlyChampionships: [],
       isAdmin: row.is_admin || false, // Mapear is_admin do banco
     };
   },

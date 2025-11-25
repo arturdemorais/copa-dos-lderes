@@ -205,6 +205,18 @@ export interface StoreItem {
   isAvailable: boolean;
 }
 
+// Compras da Loja
+export interface StorePurchase {
+  id: string;
+  leaderId: string;
+  storeItemId?: string | null;
+  itemName: string;
+  pricePaid: number;
+  status: "pending" | "approved" | "delivered" | "cancelled";
+  createdAt: string;
+  updatedAt: string;
+}
+
 // Histórico de Momentum (para gráfico)
 export interface MomentumHistory {
   week: string;
