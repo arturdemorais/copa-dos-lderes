@@ -1,17 +1,28 @@
+import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Checkbox } from "@/components/ui/checkbox";
-import { SoccerBall } from "@phosphor-icons/react";
+import { Button } from "@/components/ui/button";
+import { SoccerBall, VideoCamera } from "@phosphor-icons/react";
+import { VarRequestModal } from "@/components/modals/VarRequestModal";
 import type { Task } from "@/lib/types";
 
 interface WeeklyMatchesProps {
   tasks: Task[];
   completedTasks: number;
   onTaskCheck: (taskId: string) => void;
+  leaderId: string;
 }
 
-export function WeeklyMatches({ tasks, completedTasks, onTaskCheck }: WeeklyMatchesProps) {
+export function WeeklyMatches({ tasks, completedTasks, onTaskCheck, leaderId }: WeeklyMatchesProps) {
+  const [varModalOpen, setVarModalOpen] = useState(false);
+  const [selectedTask, setSelectedTask] = useState<Task | null>(null);
+
+  const handleVarRequest = (task: Task) => {
+    setSelectedTask(task);
+    setVarModalOpen(true);
+  };
   return (
     <Card className="overflow-hidden">
       <CardHeader className="bg-gradient-to-r from-primary/5 to-accent/5">
@@ -107,13 +118,27 @@ export function WeeklyMatches({ tasks, completedTasks, onTaskCheck }: WeeklyMatc
                         </p>
                       </div>
 
-                      <div className="flex items-center gap-3">
+                      <div className="flex items-center gap-2">
                         <Badge
                           variant={task.completed ? "secondary" : "default"}
                           className="text-lg font-bold px-3 py-1"
                         >
                           +{task.points}
                         </Badge>
+                        
+                        {/* Botão VAR - aparece se tarefa NÃO foi completada */}
+                        {!task.completed && (
+                          <Button
+                            variant="outline"
+                            size="sm"
+                            onClick={() => handleVarRequest(task)}
+                            className="h-8 px-2 border-blue-500/50 hover:border-blue-500 hover:bg-blue-50 dark:hover:bg-blue-950/20"
+                            title="Solicitar VAR (justificar atraso)"
+                          >
+                            <VideoCamera size={16} weight="fill" className="text-blue-600" />
+                          </Button>
+                        )}
+                        
                         <div className="text-3xl">
                           {task.completed ? "🏆" : "⚔️"}
                         </div>
@@ -126,6 +151,25 @@ export function WeeklyMatches({ tasks, completedTasks, onTaskCheck }: WeeklyMatc
           </div>
         )}
       </CardContent>
+
+      {/* Modal VAR */}
+      {selectedTask && (
+        <VarRequestModal
+          isOpen={varModalOpen}
+          onClose={() => {
+            setVarModalOpen(false);
+            setSelectedTask(null);
+          }}
+          leaderId={leaderId}
+          requestType="task_delay"
+          taskId={selectedTask.id}
+          taskName={selectedTask.title}
+          pointsAtRisk={selectedTask.points || 0}
+          onSuccess={() => {
+            // Opcional: atualizar lista de tasks
+          }}
+        />
+      )}
     </Card>
   );
 }

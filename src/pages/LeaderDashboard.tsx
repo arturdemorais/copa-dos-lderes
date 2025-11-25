@@ -24,6 +24,7 @@ import { RandomFeedbackModal } from "@/components/modals/RandomFeedbackModal";
 import { VorpCoinsCard } from "@/components/dashboard/VorpCoinsCard";
 import { AttributeRankings } from "@/components/dashboard/AttributeRankings";
 import { MonthlyChampions } from "@/components/dashboard/MonthlyChampions";
+import { VarHistoryCard } from "@/components/dashboard/VarHistoryCard";
 import { energyService } from "@/lib/services/energyService";
 import { feedbackSuggestionService } from "@/lib/services/feedbackSuggestionService";
 
@@ -195,6 +196,7 @@ export function LeaderDashboard({
             tasks={tasks}
             completedTasks={completedTasks}
             onTaskCheck={handleTaskCheck}
+            leaderId={currentLeader.id}
           />
 
           <LeaderStatsRadar currentLeader={currentLeader} />
@@ -208,11 +210,14 @@ export function LeaderDashboard({
           <div className="space-y-6">
             <InsightsPanel leader={currentLeader} leaders={leaders} />
 
-            {/* Monthly Champions */}
-            <MonthlyChampions
-              champions={currentLeader.monthlyChampionships ?? []}
-              currentYear={2026}
-            />
+            {/* Monthly Champions + VAR History */}
+            <div className="grid md:grid-cols-2 gap-5 items-start">
+              <MonthlyChampions
+                champions={currentLeader.monthlyChampionships ?? []}
+                currentYear={2026}
+              />
+              <VarHistoryCard leaderId={currentLeader.id} />
+            </div>
           </div>
         </TabsContent>
 
