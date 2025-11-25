@@ -26,9 +26,10 @@ export function useGameData({ currentUser }: UseGameDataProps) {
   const [selectedLeader, setSelectedLeader] = useState<Leader | null>(null);
   const [evaluatingLeader, setEvaluatingLeader] = useState<Leader | null>(null);
 
+  const currentLeader = leaders?.find((l) => l.email === currentUser?.email);
+
   const getCurrentLeader = (): Leader | undefined => {
-    if (!currentUser || currentUser.role === "admin") return undefined;
-    return leaders?.find((l) => l.email === currentUser.email);
+    return currentLeader;
   };
 
   const loadLeaderTasks = async (leaderId: string) => {
@@ -59,22 +60,47 @@ export function useGameData({ currentUser }: UseGameDataProps) {
   };
 
   useEffect(() => {
-    if (currentUser && currentUser.role === "leader") {
-      const leader = getCurrentLeader();
-      if (leader) {
-        loadLeaderTasks(leader.id);
+    // Não executar se o usuário ainda não estiver pronto
+    if (!currentUser) {
+      return;
+    }
+
+    // Se for leader, esperar os leaders carregarem
+    if (currentUser.role === "leader") {
+      if (leadersLoading) {
+        return;
       }
-    } else if (currentUser && currentUser.role === "admin") {
+      if (!currentLeader) {
+        return;
+      }
+      loadLeaderTasks(currentLeader.id);
+    } else if (currentUser.role === "admin") {
       loadAllTasks();
+    }
+  }, [currentUser?.role, currentLeader?.id, leadersLoading]);
+
+  useEffect(() => {
+    // Não executar se o usuário ainda não estiver pronto
+    if (!currentUser) {
+      return;
+    }
+
+    // Se for leader, esperar os leaders carregarem
+    if (currentUser.role === "leader") {
+      if (leadersLoading) {
+        return;
+      }
+      if (!currentLeader) {
+        return;
+      }
     }
 
     loadActivities();
 
     const unsubscribeTasks = taskService.subscribeToChanges(() => {
-      if (currentUser?.role === "admin") loadAllTasks();
-      else if (currentUser?.role === "leader") {
-        const leader = getCurrentLeader();
-        if (leader) loadLeaderTasks(leader.id);
+      if (currentUser.role === "admin") loadAllTasks();
+      else if (currentUser.role === "leader" && currentLeader) {
+        loadLeaderTasks(currentLeader.id);
       }
     });
 
@@ -88,7 +114,7 @@ export function useGameData({ currentUser }: UseGameDataProps) {
       unsubscribeTasks();
       unsubscribeActivities();
     };
-  }, [currentUser, leaders]);
+  }, [currentUser?.role, currentLeader?.id, leadersLoading]);
 
   const handleTaskComplete = async (taskId: string) => {
     const task = tasks?.find((t) => t.id === taskId);

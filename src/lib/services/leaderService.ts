@@ -174,23 +174,27 @@ export const leaderService = {
    * Buscar líder por email
    */
   async getByEmail(email: string): Promise<Leader | null> {
-    const { data, error } = await supabase
-      .from("leaders")
-      .select("*")
-      .eq("email", email)
-      .maybeSingle(); // Changed from .single() to avoid 406 error
+    try {
+      const { data, error } = await supabase
+        .from("leaders")
+        .select("*")
+        .eq("email", email)
+        .maybeSingle();
 
-    if (error) {
-      console.error(`Error fetching leader by email (${email}):`, error);
-      throw error;
+      if (error) {
+        console.error(`[leaderService] Error fetching leader by email (${email}):`, error);
+        throw error;
+      }
+
+      if (!data) {
+        return null;
+      }
+
+      return this.mapToLeader(data);
+    } catch (err) {
+      console.error("[leaderService] Exception in getByEmail:", err);
+      throw err;
     }
-
-    if (!data) {
-      console.log(`No leader found for email: ${email}`);
-      return null;
-    }
-
-    return this.mapToLeader(data);
   },
 
   /**

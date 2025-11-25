@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { leaderService } from "@/lib/services";
 import type { Leader } from "@/lib/types";
 import {
@@ -14,7 +14,7 @@ export function useLeaders(includeAdmins = false) {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<Error | null>(null);
 
-  const fetchLeaders = async () => {
+  const fetchLeaders = useCallback(async () => {
     try {
       setLoading(true);
       // Se includeAdmins = true, busca todos (admin dashboard)
@@ -52,7 +52,7 @@ export function useLeaders(includeAdmins = false) {
     } finally {
       setLoading(false);
     }
-  };
+  }, [includeAdmins]);
 
   useEffect(() => {
     fetchLeaders();
@@ -86,7 +86,7 @@ export function useLeaders(includeAdmins = false) {
     return () => {
       unsubscribe();
     };
-  }, []);
+  }, [fetchLeaders]);
 
   const updateLeader = async (id: string, updates: Partial<Leader>) => {
     try {
