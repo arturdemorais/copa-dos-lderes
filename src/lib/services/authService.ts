@@ -166,48 +166,38 @@ export const authService = {
    */
   async getCurrentUser(): Promise<User | null> {
     try {
-      // Timeout de 10 segundos para evitar travamento
-      const timeoutPromise = new Promise<never>((_, reject) => 
-        setTimeout(() => reject(new Error("getCurrentUser timeout after 10s")), 10000)
-      );
-
-      const getUserPromise = (async () => {
-        const {
-          data: { user },
-          error: authError,
-        } = await supabase.auth.getUser();
-        
-        if (authError) {
-          // AuthSessionMissingError é normal após logout
-          if (authError.message?.includes("Auth session missing")) {
-            return null;
-          }
-          console.error("[authService] Auth error:", authError);
-          throw authError;
-        }
-
-        if (!user || !user.email) {
+      const {
+        data: { user },
+        error: authError,
+      } = await supabase.auth.getUser();
+      
+      if (authError) {
+        // AuthSessionMissingError é normal após logout
+        if (authError.message?.includes("Auth session missing")) {
           return null;
         }
+        throw authError;
+      }
 
-        const leader = await leaderService.getByEmail(user.email);
+      if (!user || !user.email) {
+        return null;
+      }
 
-        if (!leader) {
-          return null;
-        }
+      const leader = await leaderService.getByEmail(user.email);
 
-        const isAdmin = leader.isAdmin || false;
+      if (!leader) {
+        return null;
+      }
 
-        return {
-          id: user.id,
-          name: leader.name,
-          email: user.email,
-          role: isAdmin ? "admin" : "leader",
-          photo: leader.photo,
-        } as User;
-      })();
+      const isAdmin = leader.isAdmin || false;
 
-      return await Promise.race([getUserPromise, timeoutPromise]);
+      return {
+        id: user.id,
+        name: leader.name,
+        email: user.email,
+        role: isAdmin ? "admin" : "leader",
+        photo: leader.photo,
+      };
     } catch (error: any) {
       // AuthSessionMissingError é normal após logout
       if (error?.message?.includes("Auth session missing")) {
@@ -219,81 +209,17 @@ export const authService = {
   },
 
   /**
-   * Listener de mudanças de autenticação
+   * Listener de mudanças de autenticação (REMOVIDO - causava problemas)
+   * Mantido apenas para compatibilidade, mas não faz nada
    */
   onAuthStateChange(callback: (user: User | null) => void) {
-    let lastUserId: string | null = null;
-    let lastEvent: string | null = null;
-    let processing = false;
-    let debounceTimer: NodeJS.Timeout | null = null;
-
-    return supabase.auth.onAuthStateChange(async (event, session) => {
-      // Se já está processando, ignorar
-      if (processing && event !== "SIGNED_OUT") {
-        return;
-      }
-
-      const currentUserId = session?.user?.id || null;
-      
-      // Evitar processar o mesmo evento+usuário múltiplas vezes
-      const eventKey = `${event}-${currentUserId}`;
-      if (eventKey === lastEvent && event !== "TOKEN_REFRESHED") {
-        return;
-      }
-
-      if (event === "SIGNED_OUT") {
-        lastUserId = null;
-        lastEvent = null;
-        processing = false;
-        if (debounceTimer) clearTimeout(debounceTimer);
-        callback(null);
-        return;
-      }
-
-      // Ignorar INITIAL_SESSION se não houver usuário
-      if (event === "INITIAL_SESSION" && !session?.user) {
-        callback(null);
-        return;
-      }
-
-      if (session?.user && session.user.email) {
-        // Só buscar dados do leader em eventos relevantes
-        const shouldFetch = 
-          event === "SIGNED_IN" || 
-          event === "INITIAL_SESSION" ||
-          (event === "TOKEN_REFRESHED" && currentUserId !== lastUserId);
-
-        if (shouldFetch) {
-          // Debounce para evitar múltiplas chamadas rápidas
-          if (debounceTimer) {
-            clearTimeout(debounceTimer);
-          }
-
-          debounceTimer = setTimeout(async () => {
-            if (processing) {
-              return;
-            }
-
-            processing = true;
-            lastEvent = eventKey;
-            
-            try {
-              lastUserId = currentUserId;
-              const user = await this.getCurrentUser();
-              callback(user);
-            } catch (error) {
-              console.error("[authService] Error in onAuthStateChange:", error);
-              callback(null);
-            } finally {
-              processing = false;
-            }
-          }, 100); // 100ms debounce
-        }
-      } else {
-        lastUserId = null;
-        lastEvent = null;
-        callback(null);
-      }
-    });
+    // Retornar um subscription vazio para compatibilidade
+    return {
+      data: {
+        subscription: {
+          unsubscribe: () => {},
+        },
+      },
+    };
   },
 };

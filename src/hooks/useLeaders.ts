@@ -44,6 +44,12 @@ export function useLeaders(includeAdmins = false) {
         };
       });
 
+      console.log("[useLeaders] Fetched leaders:", {
+        includeAdmins,
+        count: updated.length,
+        emails: updated.map(l => ({ email: l.email, isAdmin: l.isAdmin })),
+      });
+
       setLeaders(updated);
       setError(null);
     } catch (err) {

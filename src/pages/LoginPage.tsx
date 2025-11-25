@@ -20,12 +20,14 @@ import {
 } from "@phosphor-icons/react";
 import { toast } from "sonner";
 import { useAuth } from "@/hooks/useAuth";
+import { useNavigate } from "react-router-dom";
 
 export function LoginPage() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
   const { signIn } = useAuth();
+  const navigate = useNavigate();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -33,8 +35,15 @@ export function LoginPage() {
 
     try {
       // Use Supabase Auth through useAuth hook
-      await signIn(email, password);
+      const user = await signIn(email, password);
       toast.success(`Bem-vindo! ⚽`);
+      
+      // Redirecionar baseado no role
+      if (user.role === "admin") {
+        navigate("/admin");
+      } else {
+        navigate("/dashboard");
+      }
     } catch (error: any) {
       console.error("Login error:", error);
 

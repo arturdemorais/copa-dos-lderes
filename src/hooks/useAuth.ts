@@ -1,63 +1,34 @@
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect } from "react";
 import { authService } from "@/lib/services";
 import type { User } from "@/lib/types";
 
 export function useAuth() {
   const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
-  const processingRef = useRef(false);
 
+  // Verificar sessão apenas uma vez no mount
   useEffect(() => {
-    let mounted = true;
-
-    // Verificar sessão existente
-    const initAuth = async () => {
-      if (processingRef.current) return;
-      processingRef.current = true;
-
-      try {
-        const currentUser = await authService.getCurrentUser();
-        
-        if (mounted) {
-          setUser(currentUser);
-          setLoading(false);
-        }
-      } catch (error: any) {
-        // Ignorar erro de sessão ausente (normal após logout)
-        if (!error?.message?.includes("Auth session missing")) {
-          console.error("[useAuth] Error getting current user:", error);
-        }
-        if (mounted) {
-          setUser(null);
-          setLoading(false);
-        }
-      } finally {
-        processingRef.current = false;
-      }
-    };
-
-    initAuth();
-
-    // Listener de mudanças de auth
-    const {
-      data: { subscription },
-    } = authService.onAuthStateChange(async (currentUser) => {
-      if (!mounted) return;
-      
-      setUser(currentUser);
-      setLoading(false);
-    });
-
-    return () => {
-      mounted = false;
-      subscription.unsubscribe();
-    };
+    checkSession();
   }, []);
 
+  const checkSession = async () => {
+    try {
+      const currentUser = await authService.getCurrentUser();
+      setUser(currentUser);
+    } catch (error: any) {
+      if (!error?.message?.includes("Auth session missing")) {
+        console.error("[useAuth] Error checking session:", error);
+      }
+      setUser(null);
+    } finally {
+      setLoading(false);
+    }
+  };
+
   const signIn = async (email: string, password: string) => {
-    const { user } = await authService.signIn(email, password);
-    setUser(user);
-    return user;
+    const { user: newUser } = await authService.signIn(email, password);
+    setUser(newUser);
+    return newUser;
   };
 
   const signUp = async (

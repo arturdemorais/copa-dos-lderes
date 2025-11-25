@@ -15,31 +15,36 @@ interface UseGameDataProps {
 
 export function useGameData({ currentUser }: UseGameDataProps) {
   const {
-    leaders,
+    leaders: allLeaders,
     loading: leadersLoading,
     updateLeader,
     refetch: refetchLeaders,
-  } = useLeaders(true); // Sempre buscar todos (incluindo admins) - filtro será feito na exibição
+  } = useLeaders(true); // Sempre buscar todos (incluindo admins) para encontrar currentLeader
+
+  // Filtrar admins para exibição em rankings/modais
+  const leaders = allLeaders?.filter((l) => !l.isAdmin) || [];
 
   const [tasks, setTasks] = useState<Task[]>([]);
   const [activities, setActivities] = useState<Activity[]>([]);
   const [selectedLeader, setSelectedLeader] = useState<Leader | null>(null);
   const [evaluatingLeader, setEvaluatingLeader] = useState<Leader | null>(null);
 
-  const currentLeader = leaders?.find((l) => l.email === currentUser?.email);
+  const currentLeader = allLeaders?.find((l) => l.email === currentUser?.email);
 
   // Debug: Log quando leaders mudam
   useEffect(() => {
     if (currentUser?.role === "leader") {
       console.log("[useGameData] Leaders update:", {
-        leadersCount: leaders?.length || 0,
+        allLeadersCount: allLeaders?.length || 0,
+        visibleLeadersCount: leaders?.length || 0,
         currentUserEmail: currentUser?.email,
         currentLeaderFound: !!currentLeader,
+        currentLeaderIsAdmin: currentLeader?.isAdmin,
         currentLeaderId: currentLeader?.id,
         leadersLoading,
       });
     }
-  }, [leaders, currentUser?.email, currentLeader, leadersLoading]);
+  }, [allLeaders, currentUser?.email, currentLeader, leadersLoading]);
 
   const getCurrentLeader = (): Leader | undefined => {
     return currentLeader;
