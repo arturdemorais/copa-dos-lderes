@@ -19,15 +19,13 @@ import {
   Star,
 } from "@phosphor-icons/react";
 import { toast } from "sonner";
-import { useAuth } from "@/hooks/useAuth";
-import { useNavigate } from "react-router-dom";
+import { useAuth } from "@/contexts/AuthContext";
 
 export function LoginPage() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
   const { signIn } = useAuth();
-  const navigate = useNavigate();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -36,14 +34,9 @@ export function LoginPage() {
     try {
       // Use Supabase Auth through useAuth hook
       const user = await signIn(email, password);
-      toast.success(`Bem-vindo! ⚽`);
-      
-      // Redirecionar baseado no role
-      if (user.role === "admin") {
-        navigate("/admin");
-      } else {
-        navigate("/dashboard");
-      }
+      toast.success(`Bem-vindo, ${user.name}! ⚽`);
+      // O redirecionamento será feito automaticamente pelo App.tsx
+      // quando o estado do user for atualizado
     } catch (error: any) {
       console.error("Login error:", error);
 

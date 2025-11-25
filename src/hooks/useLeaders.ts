@@ -1,4 +1,5 @@
 import { useState, useEffect, useCallback } from "react";
+import { supabase } from "@/lib/supabaseClient";
 import { leaderService } from "@/lib/services";
 import type { Leader } from "@/lib/types";
 import {
@@ -13,15 +14,56 @@ export function useLeaders(includeAdmins = false) {
   const [leaders, setLeaders] = useState<Leader[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<Error | null>(null);
+  const [sessionReady, setSessionReady] = useState(false);
+
+  // Monitorar quando a sessão estiver pronta
+  useEffect(() => {
+    const checkSession = async () => {
+      const {
+        data: { session },
+      } = await supabase.auth.getSession();
+      setSessionReady(!!session);
+    };
+
+    checkSession();
+
+    // Escutar mudanças de autenticação
+    const {
+      data: { subscription },
+    } = supabase.auth.onAuthStateChange((_event, session) => {
+      setSessionReady(!!session);
+    });
+
+    return () => {
+      subscription.unsubscribe();
+    };
+  }, []);
 
   const fetchLeaders = useCallback(async () => {
     try {
       setLoading(true);
+      console.log(
+        "[useLeaders] Fetching leaders, includeAdmins:",
+        includeAdmins,
+        "sessionReady:",
+        sessionReady
+      );
+
+      // IMPORTANTE: Só buscar se a sessão estiver pronta
+      if (!sessionReady) {
+        console.log("[useLeaders] Session not ready yet, skipping fetch");
+        setLeaders([]);
+        setLoading(false);
+        return;
+      }
+
       // Se includeAdmins = true, busca todos (admin dashboard)
       // Senão, busca apenas líderes (gamificação)
       const data = includeAdmins
         ? await leaderService.getAllIncludingAdmins()
         : await leaderService.getAll();
+
+      console.log("[useLeaders] Raw data from service:", data);
 
       // Recalcular scores
       const updated = data.map((leader) => {
@@ -47,7 +89,7 @@ export function useLeaders(includeAdmins = false) {
       console.log("[useLeaders] Fetched leaders:", {
         includeAdmins,
         count: updated.length,
-        emails: updated.map(l => ({ email: l.email, isAdmin: l.isAdmin })),
+        emails: updated.map((l) => ({ email: l.email, isAdmin: l.isAdmin })),
       });
 
       setLeaders(updated);
@@ -58,7 +100,7 @@ export function useLeaders(includeAdmins = false) {
     } finally {
       setLoading(false);
     }
-  }, [includeAdmins]);
+  }, [includeAdmins, sessionReady]); // IMPORTANTE: Adicionar sessionReady como dependência
 
   useEffect(() => {
     fetchLeaders();

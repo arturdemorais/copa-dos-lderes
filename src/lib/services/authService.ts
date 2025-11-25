@@ -7,6 +7,8 @@ export const authService = {
    * Login com email e senha (AUTH REAL)
    */
   async signIn(email: string, password: string) {
+    console.log("[authService] signIn starting for:", email);
+
     // 1. Autenticar no Supabase Auth
     const { data, error } = await supabase.auth.signInWithPassword({
       email,
@@ -14,16 +16,23 @@ export const authService = {
     });
 
     if (error) {
-      console.error("Auth error:", error);
+      console.error("[authService] Auth error:", error);
       throw error;
     }
 
+    console.log("[authService] Auth successful, user ID:", data.user.id);
+
     // 2. Buscar leader associado
     try {
+      console.log("[authService] Fetching leader for email:", email);
       const leader = await leaderService.getByEmail(email);
 
+      console.log("[authService] Leader fetch result:", leader);
+
       if (!leader) {
-        console.error(`Leader não encontrado para email: ${email}`);
+        console.error(
+          `[authService] Leader não encontrado para email: ${email}`
+        );
         throw new Error(
           `Perfil de líder não encontrado para ${email}. Execute o SQL de criação do perfil admin.`
         );
@@ -40,9 +49,12 @@ export const authService = {
         photo: leader.photo,
       };
 
-      console.log(`Login bem-sucedido: ${user.name} (${user.role})`);
+      console.log(
+        `[authService] Login bem-sucedido: ${user.name} (${user.role})`
+      );
       return { user, session: data.session };
     } catch (err) {
+      console.error("[authService] Error fetching leader:", err);
       // Fazer logout se der erro ao buscar leader
       await supabase.auth.signOut();
       throw err;
@@ -170,7 +182,7 @@ export const authService = {
         data: { user },
         error: authError,
       } = await supabase.auth.getUser();
-      
+
       if (authError) {
         // AuthSessionMissingError é normal após logout
         if (authError.message?.includes("Auth session missing")) {

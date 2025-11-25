@@ -27,7 +27,9 @@ export function useAuth() {
 
   const signIn = async (email: string, password: string) => {
     const { user: newUser } = await authService.signIn(email, password);
+    console.log("[useAuth] Setting user state:", newUser);
     setUser(newUser);
+    console.log("[useAuth] User state updated, should trigger re-render");
     return newUser;
   };
 

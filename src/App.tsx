@@ -10,7 +10,7 @@ import { AdminDashboard } from "@/pages/AdminDashboard";
 import { LeaderProfileModal } from "@/components/modals/LeaderProfileModal";
 import { PeerEvaluationModal } from "@/components/modals/PeerEvaluationModal";
 import { useGameData } from "@/hooks/useGameData";
-import { useAuth } from "@/hooks/useAuth";
+import { useAuth, AuthProvider } from "@/contexts/AuthContext";
 import type { Leader } from "@/lib/types";
 import {
   BrowserRouter,
@@ -106,7 +106,12 @@ function Layout({
 
 function AppContent() {
   // Use Supabase Auth for authentication
-  const { user: currentUser, loading: authLoading, signIn, signOut } = useAuth();
+  const {
+    user: currentUser,
+    loading: authLoading,
+    signIn,
+    signOut,
+  } = useAuth();
 
   const {
     leaders,
@@ -147,32 +152,37 @@ function AppContent() {
     );
   }
 
+  // Se não está autenticado, mostrar apenas a página de login
   if (!currentUser) {
     return (
       <>
         <Routes>
           <Route path="/" element={<LoginPage />} />
-          <Route path="*" element={<Navigate to="/" />} />
+          <Route path="*" element={<Navigate to="/" replace />} />
         </Routes>
         <Toaster />
       </>
     );
   }
 
-  // Show loading state while fetching leaders
-  if (currentUser.role === "leader" && leadersLoading) {
+  // IMPORTANTE: Se for leader, SEMPRE esperar os leaders carregarem
+  // Isso evita race condition onde tentamos acessar currentLeader antes dos dados chegarem
+  if (leadersLoading) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-background">
         <div className="flex flex-col items-center gap-4">
           <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary"></div>
           <p className="text-muted-foreground animate-pulse">
-            Carregando vestiário...
+            {currentUser.role === "leader"
+              ? "Carregando vestiário..."
+              : "Carregando dados..."}
           </p>
         </div>
       </div>
     );
   }
 
+  // Agora que os leaders carregaram, pegar o currentLeader
   const currentLeader = getCurrentLeader();
 
   const leaderTasks = currentLeader
@@ -188,6 +198,7 @@ function AppContent() {
             element={
               <Navigate
                 to={currentUser.role === "admin" ? "/admin" : "/dashboard"}
+                replace
               />
             }
           />
@@ -202,27 +213,21 @@ function AppContent() {
                     leaders={leaders || []}
                     onTaskComplete={handleTaskComplete}
                   />
-                ) : leadersLoading ? (
-                  // Mostrar loading enquanto leaders estão carregando
-                  <div className="min-h-screen flex items-center justify-center bg-background">
-                    <div className="flex flex-col items-center gap-4">
-                      <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary"></div>
-                      <p className="text-muted-foreground animate-pulse">
-                        Carregando dados...
-                      </p>
-                    </div>
-                  </div>
                 ) : (
                   // Leaders carregaram mas currentLeader não foi encontrado
                   <div className="min-h-screen flex items-center justify-center bg-background">
                     <div className="flex flex-col items-center gap-4 max-w-md text-center">
                       <div className="text-4xl">⚠️</div>
-                      <h2 className="text-xl font-bold">Perfil não encontrado</h2>
+                      <h2 className="text-xl font-bold">
+                        Perfil não encontrado
+                      </h2>
                       <p className="text-muted-foreground">
-                        Não foi possível encontrar seu perfil de líder para o email: {currentUser.email}
+                        Não foi possível encontrar seu perfil de líder para o
+                        email: {currentUser.email}
                       </p>
                       <p className="text-sm text-muted-foreground">
-                        Entre em contato com o administrador ou tente fazer logout e login novamente.
+                        Entre em contato com o administrador ou tente fazer
+                        logout e login novamente.
                       </p>
                       <Button onClick={handleLogout} variant="outline">
                         Fazer Logout
@@ -309,7 +314,9 @@ function AppContent() {
 function App() {
   return (
     <BrowserRouter>
-      <AppContent />
+      <AuthProvider>
+        <AppContent />
+      </AuthProvider>
     </BrowserRouter>
   );
 }
