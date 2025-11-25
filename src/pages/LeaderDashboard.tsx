@@ -1,6 +1,12 @@
 import { useState, useEffect } from "react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Trophy, TrendUp, ChartLine, Target, Medal } from "@phosphor-icons/react";
+import {
+  Trophy,
+  TrendUp,
+  ChartLine,
+  Target,
+  Medal,
+} from "@phosphor-icons/react";
 import { GoalCelebration } from "@/components/gamification/GoalCelebration";
 import { InsightsPanel } from "@/components/analytics/InsightsPanel";
 import { ComparativeAnalytics } from "@/components/analytics/ComparativeAnalytics";
@@ -201,7 +207,7 @@ export function LeaderDashboard({
         <TabsContent value="insights">
           <div className="space-y-6">
             <InsightsPanel leader={currentLeader} leaders={leaders} />
-            
+
             {/* Monthly Champions */}
             <MonthlyChampions
               champions={currentLeader.monthlyChampionships ?? []}
@@ -215,7 +221,10 @@ export function LeaderDashboard({
         </TabsContent>
 
         <TabsContent value="rankings">
-          <AttributeRankings leaders={leaders} currentLeaderId={currentLeader.id} />
+          <AttributeRankings
+            leaders={leaders}
+            currentLeaderId={currentLeader.id}
+          />
         </TabsContent>
       </Tabs>
 

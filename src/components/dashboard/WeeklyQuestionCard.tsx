@@ -111,8 +111,14 @@ export function WeeklyQuestionCard({ leaderId }: WeeklyQuestionCardProps) {
             className="text-sm"
           />
           <div className="flex justify-between items-center">
-            <p className="text-[10px] text-muted-foreground">{answer.length}/500</p>
-            <Button onClick={handleSubmit} disabled={!answer.trim() || loading} size="sm">
+            <p className="text-[10px] text-muted-foreground">
+              {answer.length}/500
+            </p>
+            <Button
+              onClick={handleSubmit}
+              disabled={!answer.trim() || loading}
+              size="sm"
+            >
               <PaperPlaneTilt size={14} weight="fill" className="mr-1" />
               {loading ? "Enviando..." : "Enviar"}
             </Button>
@@ -122,9 +128,7 @@ export function WeeklyQuestionCard({ leaderId }: WeeklyQuestionCardProps) {
         <div className="space-y-2 flex-1 flex flex-col justify-end">
           <div className="flex items-center gap-2 text-green-600 dark:text-green-400">
             <Heart size={16} weight="fill" />
-            <span className="text-xs font-medium">
-              Você já respondeu!
-            </span>
+            <span className="text-xs font-medium">Você já respondeu!</span>
           </div>
           <Button
             variant="outline"

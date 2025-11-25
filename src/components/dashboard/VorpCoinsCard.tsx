@@ -103,7 +103,9 @@ export function VorpCoinsCard({ leader, onShopClick }: VorpCoinsCardProps) {
           <div className="bg-green-500/10 border border-green-500/30 rounded-lg p-2 flex items-center justify-between">
             <div className="flex items-center gap-2">
               <TrendUp weight="bold" size={16} className="text-green-600" />
-              <span className="text-xs font-semibold text-foreground">Esta semana</span>
+              <span className="text-xs font-semibold text-foreground">
+                Esta semana
+              </span>
             </div>
             <span className="text-lg font-bold text-green-600">
               +{weeklyEarnings}
@@ -114,9 +116,7 @@ export function VorpCoinsCard({ leader, onShopClick }: VorpCoinsCardProps) {
         {/* Progress to next tier */}
         <div className="space-y-1">
           <div className="flex items-center justify-between text-xs">
-            <span className="text-muted-foreground">
-              Próximo nível
-            </span>
+            <span className="text-muted-foreground">Próximo nível</span>
             <span className="font-bold text-foreground">
               {coins < 200
                 ? `${coins}/200`

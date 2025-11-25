@@ -113,12 +113,18 @@ export function MomentumChart({ leader }: MomentumChartProps) {
       </CardHeader>
       <CardContent className="pb-4">
         {/* Momentum Score Display */}
-        <div className={`${trendConfig.bgColor} rounded-xl p-4 mb-4 border ${trendConfig.borderColor}`}>
+        <div
+          className={`${trendConfig.bgColor} rounded-xl p-4 mb-4 border ${trendConfig.borderColor}`}
+        >
           <div className="flex items-center justify-between">
             <div>
-              <p className="text-xs text-muted-foreground mb-1">Momentum Semanal</p>
+              <p className="text-xs text-muted-foreground mb-1">
+                Momentum Semanal
+              </p>
               <div className="flex items-baseline gap-2">
-                <span className={`text-3xl font-black ${trendConfig.textColor}`}>
+                <span
+                  className={`text-3xl font-black ${trendConfig.textColor}`}
+                >
                   {momentum > 0 ? "+" : ""}
                   {Math.round(momentum)}
                 </span>
@@ -126,27 +132,40 @@ export function MomentumChart({ leader }: MomentumChartProps) {
               </div>
             </div>
             <div className="text-4xl">
-              {momentum > 20 ? "🔥" : momentum > 5 ? "⚡" : momentum < -10 ? "❄️" : "📊"}
+              {momentum > 20
+                ? "🔥"
+                : momentum > 5
+                ? "⚡"
+                : momentum < -10
+                ? "❄️"
+                : "📊"}
             </div>
           </div>
-          <p className="text-xs text-muted-foreground mt-2">{trendConfig.description}</p>
+          <p className="text-xs text-muted-foreground mt-2">
+            {trendConfig.description}
+          </p>
         </div>
 
         {/* Momentum Chart */}
         <div className="space-y-3">
-          <p className="text-xs font-semibold text-foreground">Evolução (5 semanas)</p>
-          
+          <p className="text-xs font-semibold text-foreground">
+            Evolução (5 semanas)
+          </p>
+
           <div className="relative h-32 flex items-end gap-1">
             {/* Zero line */}
             <div className="absolute top-1/2 left-0 right-0 h-px bg-border" />
-            
+
             {momentumHistory.map((item, idx) => {
               const heightPercent = (Math.abs(item.value) / maxValue) * 100;
               const isPositive = item.value >= 0;
               const isLast = idx === momentumHistory.length - 1;
 
               return (
-                <div key={item.week} className="flex-1 flex flex-col items-center">
+                <div
+                  key={item.week}
+                  className="flex-1 flex flex-col items-center"
+                >
                   <div
                     className="relative flex-1 w-full flex items-end justify-center"
                     style={{ minHeight: "64px" }}
@@ -163,8 +182,16 @@ export function MomentumChart({ leader }: MomentumChartProps) {
                       }}
                       className={`w-full rounded-t-lg ${
                         isPositive
-                          ? `bg-gradient-to-t ${isLast ? trendConfig.color : "from-green-400 to-green-600"}`
-                          : `bg-gradient-to-b ${isLast ? "from-red-400 to-red-600" : "from-orange-400 to-orange-600"}`
+                          ? `bg-gradient-to-t ${
+                              isLast
+                                ? trendConfig.color
+                                : "from-green-400 to-green-600"
+                            }`
+                          : `bg-gradient-to-b ${
+                              isLast
+                                ? "from-red-400 to-red-600"
+                                : "from-orange-400 to-orange-600"
+                            }`
                       } ${isLast ? "shadow-glow-md" : ""}`}
                       style={{
                         transformOrigin: "bottom",
@@ -179,7 +206,9 @@ export function MomentumChart({ leader }: MomentumChartProps) {
                           transition={{ duration: 1.5, repeat: Infinity }}
                           className="absolute -top-6 left-1/2 transform -translate-x-1/2"
                         >
-                          <Badge className={`${trendConfig.bgColor} ${trendConfig.textColor} font-bold text-[10px] whitespace-nowrap px-1 py-0`}>
+                          <Badge
+                            className={`${trendConfig.bgColor} ${trendConfig.textColor} font-bold text-[10px] whitespace-nowrap px-1 py-0`}
+                          >
                             {item.value > 0 ? "+" : ""}
                             {Math.round(item.value)}
                           </Badge>
@@ -187,7 +216,11 @@ export function MomentumChart({ leader }: MomentumChartProps) {
                       )}
                     </motion.div>
                   </div>
-                  <p className={`text-[10px] mt-1 font-medium ${isLast ? "text-foreground" : "text-muted-foreground"}`}>
+                  <p
+                    className={`text-[10px] mt-1 font-medium ${
+                      isLast ? "text-foreground" : "text-muted-foreground"
+                    }`}
+                  >
                     {item.week}
                   </p>
                 </div>
@@ -206,7 +239,9 @@ export function MomentumChart({ leader }: MomentumChartProps) {
             <p className="text-xs text-muted-foreground">
               {momentum > 0
                 ? `Pode ganhar ~+${Math.round(momentum * 4)} pts este mês 🚀`
-                : `Atenção: risco de perder ~${Math.round(Math.abs(momentum) * 4)} pts 💪`}
+                : `Atenção: risco de perder ~${Math.round(
+                    Math.abs(momentum) * 4
+                  )} pts 💪`}
             </p>
           </div>
         )}
