@@ -193,8 +193,8 @@ export function LeaderHeroCard({
                     </Badge>
                   </div>
 
-                  {/* Stats em Grid - Estilo FIFA */}
-                  <div className="grid grid-cols-3 gap-2 pt-2">
+                  {/* Stats em Grid - Estilo FIFA (2 colunas) */}
+                  <div className="grid grid-cols-2 gap-2 pt-2">
                     <motion.div
                       className="bg-black/30 rounded-lg p-2 backdrop-blur-sm border border-white/10 text-center"
                       whileHover={{ scale: 1.05, y: -2 }}
@@ -204,17 +204,6 @@ export function LeaderHeroCard({
                       </div>
                       <div className="text-[9px] uppercase opacity-80 font-bold tracking-wider">
                         Tarefas
-                      </div>
-                    </motion.div>
-                    <motion.div
-                      className="bg-black/30 rounded-lg p-2 backdrop-blur-sm border border-white/10 text-center"
-                      whileHover={{ scale: 1.05, y: -2 }}
-                    >
-                      <div className="text-2xl font-black mb-0.5">
-                        {currentLeader.fanScore ?? 0}
-                      </div>
-                      <div className="text-[9px] uppercase opacity-80 font-bold tracking-wider">
-                        Torcida
                       </div>
                     </motion.div>
                     <motion.div

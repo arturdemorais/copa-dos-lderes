@@ -10,6 +10,8 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import {
+  SoccerBall,
+  HandsClapping,
   Trophy,
   Target,
   HandHeart,
@@ -43,8 +45,8 @@ export function AttributeRankings({
   const rankings = {
     tasks: {
       title: "Artilharia",
-      icon: <Trophy weight="fill" size={20} className="text-yellow-600" />,
-      description: "Mais tasks completadas",
+      icon: <SoccerBall weight="fill" size={20} className="text-primary" />,
+      description: "Mais tarefas completadas",
       data: [...leaders]
         .sort((a, b) => (b.taskPoints ?? 0) - (a.taskPoints ?? 0))
         .slice(0, 5)
@@ -52,14 +54,14 @@ export function AttributeRankings({
           leader: l,
           value: l.taskPoints ?? 0,
           position: idx + 1,
-          label: "pontos",
+          label: "tarefas",
         })),
       emoji: "⚽",
     },
     assists: {
       title: "Rei das Assistências",
-      icon: <HandHeart weight="fill" size={20} className="text-blue-600" />,
-      description: "Mais feedbacks positivos dados",
+      icon: <HandsClapping weight="fill" size={20} className="text-blue-600" />,
+      description: "Mais assistências para outros líderes",
       data: [...leaders]
         .sort((a, b) => (b.assistPoints ?? 0) - (a.assistPoints ?? 0))
         .slice(0, 5)
@@ -70,21 +72,6 @@ export function AttributeRankings({
           label: "assists",
         })),
       emoji: "🤝",
-    },
-    fanScore: {
-      title: "Torcida Apaixonada",
-      icon: <Fire weight="fill" size={20} className="text-orange-600" />,
-      description: "Melhor avaliação do time",
-      data: [...leaders]
-        .sort((a, b) => (b.fanScore ?? 0) - (a.fanScore ?? 0))
-        .slice(0, 5)
-        .map((l, idx) => ({
-          leader: l,
-          value: l.fanScore ?? 0,
-          position: idx + 1,
-          label: "pontos",
-        })),
-      emoji: "❤️",
     },
     rituals: {
       title: "Disciplina",
@@ -277,15 +264,12 @@ export function AttributeRankings({
       </CardHeader>
       <CardContent>
         <Tabs defaultValue="tasks" className="w-full">
-          <TabsList className="grid w-full grid-cols-3 lg:grid-cols-6 mb-6">
+          <TabsList className="grid w-full grid-cols-3 lg:grid-cols-5 mb-6">
             <TabsTrigger value="tasks" className="text-xs">
               ⚽ Artilharia
             </TabsTrigger>
             <TabsTrigger value="assists" className="text-xs">
               🤝 Assists
-            </TabsTrigger>
-            <TabsTrigger value="fanScore" className="text-xs">
-              ❤️ Torcida
             </TabsTrigger>
             <TabsTrigger value="rituals" className="text-xs">
               🎯 Disciplina
@@ -301,9 +285,6 @@ export function AttributeRankings({
           <TabsContent value="tasks">{renderRankingList("tasks")}</TabsContent>
           <TabsContent value="assists">
             {renderRankingList("assists")}
-          </TabsContent>
-          <TabsContent value="fanScore">
-            {renderRankingList("fanScore")}
           </TabsContent>
           <TabsContent value="rituals">
             {renderRankingList("rituals")}

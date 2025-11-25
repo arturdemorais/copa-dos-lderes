@@ -13,7 +13,6 @@ export function PerformanceChart({ leader }: PerformanceChartProps) {
     week: h.week,
     Overall: h.overall,
     Tarefas: h.taskPoints,
-    'Nota da Torcida': h.fanScore * 10,
     Assistências: h.assistPoints,
     Rituais: h.ritualPoints
   })) || []
@@ -125,7 +124,7 @@ export function PerformanceChart({ leader }: PerformanceChartProps) {
             </ResponsiveContainer>
           </div>
           
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+          <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
             <div className="flex items-center gap-2">
               <div className="w-3 h-3 rounded-full bg-primary" />
               <span className="text-xs text-muted-foreground">Overall</span>
@@ -133,10 +132,6 @@ export function PerformanceChart({ leader }: PerformanceChartProps) {
             <div className="flex items-center gap-2">
               <div className="w-3 h-3 rounded-full bg-secondary" />
               <span className="text-xs text-muted-foreground">Tarefas</span>
-            </div>
-            <div className="flex items-center gap-2">
-              <div className="w-3 h-3 rounded-full bg-accent" />
-              <span className="text-xs text-muted-foreground">Nota Time</span>
             </div>
             <div className="flex items-center gap-2">
               <div className="w-3 h-3 rounded-full bg-primary/50" />

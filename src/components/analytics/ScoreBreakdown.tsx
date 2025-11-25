@@ -31,13 +31,6 @@ export function ScoreBreakdown({ leader }: ScoreBreakdownProps) {
       description: "Pontos ganhos completando tarefas semanais (Gols de Placa)",
     },
     {
-      name: "Nota da Torcida",
-      value: leader.fanScore ?? 0,
-      contribution: leader.fanScore ?? 0,
-      color: "bg-accent",
-      description: "Pontos de feedback do seu time sobre liderança e suporte",
-    },
-    {
       name: "Assistências",
       value: leader.assistPoints ?? 0,
       contribution: leader.assistPoints ?? 0,
@@ -136,9 +129,6 @@ export function ScoreBreakdown({ leader }: ScoreBreakdownProps) {
               <ul className="list-disc list-inside space-y-1 ml-2">
                 {(leader.taskPoints ?? 0) < 100 && (
                   <li>Complete mais tarefas semanais para somar pontos</li>
-                )}
-                {(leader.fanScore ?? 0) < 50 && (
-                  <li>Melhore o feedback do time para ganhar mais pontos</li>
                 )}
                 {(leader.assistPoints ?? 0) < 30 && (
                   <li>

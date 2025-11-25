@@ -26,8 +26,6 @@ export function ComparativeAnalytics({
       leaders.reduce((sum, l) => sum + (l.overall ?? 0), 0) / leaders.length,
     taskPoints:
       leaders.reduce((sum, l) => sum + (l.taskPoints ?? 0), 0) / leaders.length,
-    fanScore:
-      leaders.reduce((sum, l) => sum + (l.fanScore ?? 0), 0) / leaders.length,
     assistPoints:
       leaders.reduce((sum, l) => sum + (l.assistPoints ?? 0), 0) /
       leaders.length,
@@ -51,13 +49,6 @@ export function ComparativeAnalytics({
       avg: allLeadersAvg.taskPoints,
       teamAvg: teamBenchmarks?.avgTaskPoints || 0,
       color: "bg-primary",
-    },
-    {
-      name: "Nota da Torcida",
-      value: leader.fanScore ?? 0,
-      avg: allLeadersAvg.fanScore,
-      teamAvg: teamBenchmarks ? teamBenchmarks.avgFanScore : 0,
-      color: "bg-accent",
     },
     {
       name: "Assistências",
