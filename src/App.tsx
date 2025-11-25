@@ -194,13 +194,42 @@ function AppContent() {
           <Route
             path="/dashboard"
             element={
-              currentUser.role === "leader" && currentLeader ? (
-                <LeaderDashboard
-                  currentLeader={currentLeader}
-                  tasks={leaderTasks}
-                  leaders={leaders || []}
-                  onTaskComplete={handleTaskComplete}
-                />
+              currentUser.role === "leader" ? (
+                currentLeader ? (
+                  <LeaderDashboard
+                    currentLeader={currentLeader}
+                    tasks={leaderTasks}
+                    leaders={leaders || []}
+                    onTaskComplete={handleTaskComplete}
+                  />
+                ) : leadersLoading ? (
+                  // Mostrar loading enquanto leaders estão carregando
+                  <div className="min-h-screen flex items-center justify-center bg-background">
+                    <div className="flex flex-col items-center gap-4">
+                      <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary"></div>
+                      <p className="text-muted-foreground animate-pulse">
+                        Carregando dados...
+                      </p>
+                    </div>
+                  </div>
+                ) : (
+                  // Leaders carregaram mas currentLeader não foi encontrado
+                  <div className="min-h-screen flex items-center justify-center bg-background">
+                    <div className="flex flex-col items-center gap-4 max-w-md text-center">
+                      <div className="text-4xl">⚠️</div>
+                      <h2 className="text-xl font-bold">Perfil não encontrado</h2>
+                      <p className="text-muted-foreground">
+                        Não foi possível encontrar seu perfil de líder para o email: {currentUser.email}
+                      </p>
+                      <p className="text-sm text-muted-foreground">
+                        Entre em contato com o administrador ou tente fazer logout e login novamente.
+                      </p>
+                      <Button onClick={handleLogout} variant="outline">
+                        Fazer Logout
+                      </Button>
+                    </div>
+                  </div>
+                )
               ) : (
                 <Navigate to="/" />
               )

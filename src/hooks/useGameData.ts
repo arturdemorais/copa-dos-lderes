@@ -19,7 +19,7 @@ export function useGameData({ currentUser }: UseGameDataProps) {
     loading: leadersLoading,
     updateLeader,
     refetch: refetchLeaders,
-  } = useLeaders(currentUser?.role === "admin"); // Admin vê todos para gerenciar, mas filtra na exibição
+  } = useLeaders(true); // Sempre buscar todos (incluindo admins) - filtro será feito na exibição
 
   const [tasks, setTasks] = useState<Task[]>([]);
   const [activities, setActivities] = useState<Activity[]>([]);
@@ -27,6 +27,19 @@ export function useGameData({ currentUser }: UseGameDataProps) {
   const [evaluatingLeader, setEvaluatingLeader] = useState<Leader | null>(null);
 
   const currentLeader = leaders?.find((l) => l.email === currentUser?.email);
+
+  // Debug: Log quando leaders mudam
+  useEffect(() => {
+    if (currentUser?.role === "leader") {
+      console.log("[useGameData] Leaders update:", {
+        leadersCount: leaders?.length || 0,
+        currentUserEmail: currentUser?.email,
+        currentLeaderFound: !!currentLeader,
+        currentLeaderId: currentLeader?.id,
+        leadersLoading,
+      });
+    }
+  }, [leaders, currentUser?.email, currentLeader, leadersLoading]);
 
   const getCurrentLeader = (): Leader | undefined => {
     return currentLeader;
