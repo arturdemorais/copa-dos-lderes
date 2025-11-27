@@ -279,39 +279,19 @@ export const leaderService = {
         updateData.attr_development = updates.attributes.development;
     }
 
-    console.log("Updating leader with ID:", id);
-    console.log("Update data:", updateData);
-
-    // Verificar sessão atual para debug de RLS
-    const {
-      data: { session },
-    } = await supabase.auth.getSession();
-    console.log("Current session user_id:", session?.user?.id);
-    console.log("Current session user email:", session?.user?.email);
-
     const { data, error } = await supabase
       .from("leaders")
       .update(updateData)
       .eq("id", id)
       .select("*");
 
-    console.log("Update response:", { data, error });
-
     if (error) {
-      console.error("Supabase update error:", error);
       throw error;
     }
 
     if (!data || data.length === 0) {
-      console.error("No leader found with ID:", id);
-      console.error(
-        "This is likely a Row Level Security (RLS) issue. The current user does not have permission to update this leader."
-      );
-      console.error(
-        "To fix this, you need to add RLS policies in Supabase that allow admins to update any leader."
-      );
       throw new Error(
-        `Leader not found with ID: ${id}. This is a Row Level Security (RLS) issue. Check the console for details.`
+        `Leader not found with ID: ${id}. This is a Row Level Security (RLS) issue.`
       );
     }
 
