@@ -98,7 +98,8 @@ export function CreateLeaderModal({
 
     setLoading(true);
     try {
-      const result = await authService.signUp(
+      // Usar createLeaderAsAdmin para não deslogar o admin
+      const result = await authService.createLeaderAsAdmin(
         formData.email,
         formData.password,
         formData.name,

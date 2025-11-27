@@ -48,6 +48,8 @@ export const authService = {
 
   /**
    * Criar nova conta + leader (signup)
+   * NOTA: Este método faz login automático com o novo usuário.
+   * Para criar usuários como admin SEM fazer login, use createLeaderAsAdmin()
    */
   async signUp(
     email: string,
@@ -118,6 +120,106 @@ export const authService = {
       try {
         await supabase.auth.admin.deleteUser(data.user.id);
       } catch {}
+      throw err;
+    }
+  },
+
+  /**
+   * Criar líder como ADMIN (preservando a sessão do admin)
+   * Este método salva a sessão atual, cria o líder, e restaura a sessão do admin
+   */
+  async createLeaderAsAdmin(
+    email: string,
+    password: string,
+    name: string,
+    team: string,
+    position: string,
+    photo?: string,
+    isAdmin?: boolean
+  ) {
+    // 1. Salvar a sessão atual do admin
+    const {
+      data: { session: adminSession },
+    } = await supabase.auth.getSession();
+
+    if (!adminSession) {
+      throw new Error("Você precisa estar logado como admin para criar líderes");
+    }
+
+    try {
+      // 2. Criar o novo usuário (isso vai criar uma nova sessão temporariamente)
+      const { data, error } = await supabase.auth.signUp({
+        email,
+        password,
+        options: {
+          data: {
+            name,
+            team,
+            position,
+            photo,
+          },
+        },
+      });
+
+      if (error) throw error;
+      if (!data.user) throw new Error("Erro ao criar usuário");
+
+      // 3. Criar leader manualmente
+      try {
+        const { data: leaderData, error: leaderError } = await supabase
+          .from("leaders")
+          .insert({
+            user_id: data.user.id,
+            name,
+            email,
+            team,
+            position,
+            overall: 0,
+            weekly_points: 0,
+            task_points: 0,
+            assist_points: 0,
+            ritual_points: 0,
+            consistency_score: 0,
+            photo:
+              photo || `https://api.dicebear.com/7.x/avataaars/svg?seed=${email}`,
+            strengths: [],
+            improvements: [],
+            attr_communication: 50,
+            attr_technique: 50,
+            attr_management: 50,
+            attr_pace: 50,
+            attr_leadership: 50,
+            attr_development: 50,
+            is_admin: isAdmin || false,
+          })
+          .select()
+          .single();
+
+        if (leaderError) {
+          throw new Error(`Erro ao criar perfil: ${leaderError.message}`);
+        }
+
+        // 4. IMPORTANTE: Restaurar a sessão do admin
+        await supabase.auth.setSession({
+          access_token: adminSession.access_token,
+          refresh_token: adminSession.refresh_token,
+        });
+
+        return { user: data.user, leader: leaderService.mapToLeader(leaderData) };
+      } catch (err: any) {
+        // Restaurar sessão do admin mesmo em caso de erro
+        await supabase.auth.setSession({
+          access_token: adminSession.access_token,
+          refresh_token: adminSession.refresh_token,
+        });
+        throw err;
+      }
+    } catch (err: any) {
+      // Restaurar sessão do admin em caso de erro no signUp
+      await supabase.auth.setSession({
+        access_token: adminSession.access_token,
+        refresh_token: adminSession.refresh_token,
+      });
       throw err;
     }
   },
