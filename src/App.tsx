@@ -7,6 +7,7 @@ import { LeaderDashboard } from "@/pages/LeaderDashboard";
 import { RankingPage } from "@/pages/RankingPage";
 import { AlbumPage } from "@/pages/AlbumPage";
 import { AdminDashboard } from "@/pages/AdminDashboard";
+import { NotFoundPage } from "@/pages/NotFoundPage";
 import { LeaderProfileModal } from "@/components/modals/LeaderProfileModal";
 import { PeerEvaluationModal } from "@/components/modals/PeerEvaluationModal";
 import { useGameData } from "@/hooks/useGameData";
@@ -286,6 +287,7 @@ function AppContent() {
             }
           />
           <Route path="/login" element={<Navigate to="/" />} />
+          <Route path="*" element={<NotFoundPage />} />
         </Routes>
       </Layout>
 
