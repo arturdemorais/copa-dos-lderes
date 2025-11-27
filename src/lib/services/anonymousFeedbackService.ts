@@ -35,6 +35,12 @@ export const anonymousFeedbackService = {
     const today = new Date().toISOString().split("T")[0];
     const hashString = `${fromLeaderId}-${toLeaderId}-${today}`;
     const feedbackHash = await this.createHash(hashString);
+    
+    // Get config
+    const config = await import("./configService").then(m => m.configService.getConfig());
+    const pointsReceiver = config.anonymous_feedback_points_receiver;
+    const pointsSender = config.anonymous_feedback_points_sender;
+    const coinsSender = config.anonymous_feedback_coins_sender;
 
     try {
       // 1. Insert anonymous feedback
@@ -45,8 +51,8 @@ export const anonymousFeedbackService = {
           feedback_text: feedbackText,
           feedback_type: feedbackType,
           feedback_hash: feedbackHash,
-          points_to_receiver: 10,
-          points_to_sender: 5,
+          points_to_receiver: pointsReceiver,
+          points_to_sender: pointsSender,
           is_approved: true,
         })
         .select()
@@ -60,12 +66,12 @@ export const anonymousFeedbackService = {
         throw feedbackError;
       }
 
-      // 2. Award points to RECEIVER (+10 points)
+      // 2. Award points to RECEIVER
       const { error: receiverError } = await supabase.rpc(
         "add_points_to_leader",
         {
           leader_id: toLeaderId,
-          points_to_add: 10,
+          points_to_add: pointsReceiver,
           point_type: "assist_points",
         }
       );
@@ -74,12 +80,12 @@ export const anonymousFeedbackService = {
         console.error("Error adding points to receiver:", receiverError);
       }
 
-      // 3. Award points to SENDER (+5 points for giving feedback)
+      // 3. Award points to SENDER
       const { error: senderError } = await supabase.rpc(
         "add_points_to_leader",
         {
           leader_id: fromLeaderId,
-          points_to_add: 5,
+          points_to_add: pointsSender,
           point_type: "assist_points",
         }
       );
@@ -91,7 +97,7 @@ export const anonymousFeedbackService = {
       // 4. Create Vorp Coins transaction for sender
       await supabase.from("vorp_coin_transactions").insert({
         leader_id: fromLeaderId,
-        amount: 10, // Bonus Vorp Coins for giving feedback
+        amount: coinsSender, // Bonus Vorp Coins for giving feedback
         type: "earned",
         reason: `Feedback enviado (anônimo)`,
       });
@@ -99,12 +105,12 @@ export const anonymousFeedbackService = {
       // 5. Update leader's vorp_coins
       await supabase.rpc("add_vorp_coins", {
         leader_id: fromLeaderId,
-        coins_to_add: 10,
+        coins_to_add: coinsSender,
       });
 
       return {
         success: true,
-        pointsEarned: 5, // Points earned by sender
+        pointsEarned: pointsSender, // Points earned by sender
       };
     } catch (error) {
       console.error("Error sending feedback:", error);

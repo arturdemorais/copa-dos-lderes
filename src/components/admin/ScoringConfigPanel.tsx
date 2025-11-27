@@ -126,6 +126,74 @@ export function ScoringConfigPanel() {
                 Pontos máximos mensais baseados na frequência em rituais.
               </p>
             </div>
+
+            <div className="space-y-2">
+              <Label htmlFor="energy_checkin_points">
+                Pontos por Check-in de Energia
+              </Label>
+              <Input
+                id="energy_checkin_points"
+                type="number"
+                value={config.energy_checkin_points}
+                onChange={(e) =>
+                  handleChange("energy_checkin_points", e.target.value)
+                }
+              />
+              <p className="text-xs text-muted-foreground">
+                Pontos ganhos ao realizar o check-in diário de energia.
+              </p>
+            </div>
+
+            <div className="space-y-2">
+              <Label htmlFor="anonymous_feedback_points_receiver">
+                Feedback Anônimo (Recebedor)
+              </Label>
+              <Input
+                id="anonymous_feedback_points_receiver"
+                type="number"
+                value={config.anonymous_feedback_points_receiver}
+                onChange={(e) =>
+                  handleChange("anonymous_feedback_points_receiver", e.target.value)
+                }
+              />
+              <p className="text-xs text-muted-foreground">
+                Pontos que o líder ganha ao RECEBER um feedback anônimo.
+              </p>
+            </div>
+
+            <div className="space-y-2">
+              <Label htmlFor="anonymous_feedback_points_sender">
+                Feedback Anônimo (Enviador)
+              </Label>
+              <Input
+                id="anonymous_feedback_points_sender"
+                type="number"
+                value={config.anonymous_feedback_points_sender}
+                onChange={(e) =>
+                  handleChange("anonymous_feedback_points_sender", e.target.value)
+                }
+              />
+              <p className="text-xs text-muted-foreground">
+                Pontos que o líder ganha ao ENVIAR um feedback anônimo.
+              </p>
+            </div>
+
+            <div className="space-y-2">
+              <Label htmlFor="anonymous_feedback_coins_sender">
+                Vorp Coins por Feedback
+              </Label>
+              <Input
+                id="anonymous_feedback_coins_sender"
+                type="number"
+                value={config.anonymous_feedback_coins_sender}
+                onChange={(e) =>
+                  handleChange("anonymous_feedback_coins_sender", e.target.value)
+                }
+              />
+              <p className="text-xs text-muted-foreground">
+                Moedas que o líder ganha ao ENVIAR um feedback anônimo.
+              </p>
+            </div>
           </div>
         </CardContent>
       </Card>
