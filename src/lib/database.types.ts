@@ -56,7 +56,6 @@ export interface Database {
           overall: number;
           weekly_points: number;
           task_points: number;
-          fan_score: number;
           assist_points: number;
           ritual_points: number;
           consistency_score: number;
@@ -85,7 +84,6 @@ export interface Database {
           overall?: number;
           weekly_points?: number;
           task_points?: number;
-          fan_score?: number;
           assist_points?: number;
           ritual_points?: number;
           consistency_score?: number;
@@ -114,7 +112,6 @@ export interface Database {
           overall?: number;
           weekly_points?: number;
           task_points?: number;
-          fan_score?: number;
           assist_points?: number;
           ritual_points?: number;
           consistency_score?: number;
@@ -285,7 +282,6 @@ export interface Database {
           week: string;
           overall: number;
           task_points: number;
-          fan_score: number;
           assist_points: number;
           ritual_points: number;
           created_at: string;
@@ -296,7 +292,6 @@ export interface Database {
           week: string;
           overall: number;
           task_points?: number;
-          fan_score?: number;
           assist_points?: number;
           ritual_points?: number;
           created_at?: string;
@@ -307,7 +302,6 @@ export interface Database {
           week?: string;
           overall?: number;
           task_points?: number;
-          fan_score?: number;
           assist_points?: number;
           ritual_points?: number;
           created_at?: string;

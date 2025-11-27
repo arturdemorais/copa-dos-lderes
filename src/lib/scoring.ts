@@ -2,7 +2,6 @@ import type { Leader, ScoreWeights, ScoreHistory, Insight } from "./types";
 
 export const DEFAULT_WEIGHTS: ScoreWeights = {
   tasks: 0.4,
-  fanScore: 0.25,
   assists: 0.15,
   rituals: 0.15,
   consistency: 0.05,
@@ -15,7 +14,6 @@ export function calculateOverallScore(
   // Overall é a soma direta de todos os pontos ganhos
   const baseScore =
     (leader.taskPoints ?? 0) +
-    (leader.fanScore ?? 0) +
     (leader.assistPoints ?? 0) +
     (leader.ritualPoints ?? 0);
 
@@ -97,13 +95,10 @@ export function generateInsights(leader: Leader, leaders: Leader[]): Insight[] {
 
   const avgTaskPoints =
     leaders.reduce((sum, l) => sum + (l.taskPoints ?? 0), 0) / leaders.length;
-  const avgFanScore =
-    leaders.reduce((sum, l) => sum + (l.fanScore ?? 0), 0) / leaders.length;
   const avgAssistPoints =
     leaders.reduce((sum, l) => sum + (l.assistPoints ?? 0), 0) / leaders.length;
 
   const leaderTaskPoints = leader.taskPoints ?? 0;
-  const leaderFanScore = leader.fanScore ?? 0;
   const leaderAssistPoints = leader.assistPoints ?? 0;
 
   if (leaderTaskPoints > avgTaskPoints * 1.2) {
@@ -123,23 +118,6 @@ export function generateInsights(leader: Leader, leaders: Leader[]): Insight[] {
         (1 - leaderTaskPoints / avgTaskPoints) * 100
       )}% abaixo da média`,
       actionable: "Priorize completar as tarefas pendentes desta semana",
-    });
-  }
-
-  if (leaderFanScore > avgFanScore * 1.15) {
-    insights.push({
-      type: "positive",
-      category: "Nota da Torcida",
-      message: "Seu time está muito satisfeito! Nota acima da média geral",
-      actionable: "Compartilhe suas práticas com outros técnicos",
-    });
-  } else if (leaderFanScore < avgFanScore * 0.85) {
-    insights.push({
-      type: "warning",
-      category: "Nota da Torcida",
-      message: "Atenção: feedback do seu time está abaixo da média",
-      actionable:
-        "Considere fazer 1-on-1s para entender melhor as necessidades",
     });
   }
 
@@ -240,9 +218,6 @@ export function getTeamBenchmarks(leaders: Leader[], team: string) {
   return {
     avgOverall:
       teamLeaders.reduce((sum, l) => sum + (l.overall ?? 0), 0) /
-      teamLeaders.length,
-    avgFanScore:
-      teamLeaders.reduce((sum, l) => sum + (l.fanScore ?? 0), 0) /
       teamLeaders.length,
     avgTaskPoints:
       teamLeaders.reduce((sum, l) => sum + (l.taskPoints ?? 0), 0) /

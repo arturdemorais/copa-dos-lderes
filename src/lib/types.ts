@@ -18,7 +18,6 @@ export interface Leader {
   overall: number;
   weeklyPoints: number;
   taskPoints: number;
-  fanScore: number;
   assistPoints: number;
   ritualPoints: number;
   vorpCoins: number; // Moeda acumulativa para loja de prêmios
@@ -125,7 +124,6 @@ export interface ScoreHistory {
   week: string;
   overall: number;
   taskPoints: number;
-  fanScore: number;
   assistPoints: number;
   ritualPoints: number;
   timestamp: string;
@@ -133,7 +131,6 @@ export interface ScoreHistory {
 
 export interface ScoreWeights {
   tasks: number;
-  fanScore: number;
   assists: number;
   rituals: number;
   consistency: number;
@@ -173,7 +170,6 @@ export interface AttributeRanking {
   category:
     | "tasks"
     | "assists"
-    | "fanScore"
     | "rituals"
     | "energy"
     | "weeklyQuestions";

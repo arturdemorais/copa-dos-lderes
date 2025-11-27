@@ -88,7 +88,6 @@ export const authService = {
           overall: 0,
           weekly_points: 0,
           task_points: 0,
-          fan_score: 0,
           assist_points: 0,
           ritual_points: 0,
           consistency_score: 0,

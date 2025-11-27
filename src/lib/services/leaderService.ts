@@ -208,7 +208,6 @@ export const leaderService = {
       overall: leader.overall || 0,
       weekly_points: leader.weeklyPoints || 0,
       task_points: leader.taskPoints || 0,
-      fan_score: leader.fanScore || 0,
       assist_points: leader.assistPoints || 0,
       ritual_points: leader.ritualPoints || 0,
       consistency_score: leader.consistencyScore || 0,
@@ -252,7 +251,6 @@ export const leaderService = {
       updateData.weekly_points = updates.weeklyPoints;
     if (updates.taskPoints !== undefined)
       updateData.task_points = updates.taskPoints;
-    if (updates.fanScore !== undefined) updateData.fan_score = updates.fanScore;
     if (updates.assistPoints !== undefined)
       updateData.assist_points = updates.assistPoints;
     if (updates.ritualPoints !== undefined)
@@ -333,7 +331,6 @@ export const leaderService = {
       overall: row.overall,
       weeklyPoints: row.weekly_points,
       taskPoints: row.task_points,
-      fanScore: row.fan_score,
       assistPoints: row.assist_points,
       ritualPoints: row.ritual_points,
       consistencyScore: row.consistency_score,
