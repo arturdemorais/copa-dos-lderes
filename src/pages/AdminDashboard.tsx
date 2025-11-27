@@ -87,6 +87,7 @@ export function AdminDashboard({
   adminId,
 }: AdminDashboardProps) {
   const [editingLeader, setEditingLeader] = useState<Leader | null>(null);
+  const [editModalOpen, setEditModalOpen] = useState(false);
   const [deletingLeader, setDeletingLeader] = useState<Leader | null>(null);
   const [newTask, setNewTask] = useState({
     title: "",
@@ -122,9 +123,13 @@ export function AdminDashboard({
   const handleUpdateLeader = () => {
     if (!editingLeader) return;
     onUpdateLeader(editingLeader);
-    setEditingLeader(null);
-    setPhotoPreview(null);
-    toast.success("Líder atualizado com sucesso!");
+    setEditModalOpen(false);
+    
+    // Limpar estados após a animação de fechamento do modal (300ms)
+    setTimeout(() => {
+      setEditingLeader(null);
+      setPhotoPreview(null);
+    }, 300);
   };
 
   const handlePhotoUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -322,12 +327,18 @@ export function AdminDashboard({
                         </TableCell>
                         <TableCell className="text-right">
                           <div className="flex items-center justify-end gap-2">
-                            <Dialog>
+                            <Dialog
+                              open={editModalOpen}
+                              onOpenChange={setEditModalOpen}
+                            >
                               <DialogTrigger asChild>
                                 <Button
                                   variant="ghost"
                                   size="sm"
-                                  onClick={() => setEditingLeader(leader)}
+                                  onClick={() => {
+                                    setEditingLeader(leader);
+                                    setEditModalOpen(true);
+                                  }}
                                 >
                                   <Pencil size={16} />
                                 </Button>
