@@ -4,9 +4,11 @@ import {
   taskService,
   activityService,
   peerEvaluationService,
+  configService,
 } from "@/lib/services";
 import { useLeaders } from "@/hooks/useLeaders";
 import { calculateOverallScore } from "@/lib/scoring";
+import { DEFAULT_SCORING_CONFIG, type ScoringConfig } from "@/lib/services/configService";
 import type { User, Leader, Task, Activity } from "@/lib/types";
 
 interface UseGameDataProps {
@@ -28,6 +30,7 @@ export function useGameData({ currentUser }: UseGameDataProps) {
   const [activities, setActivities] = useState<Activity[]>([]);
   const [selectedLeader, setSelectedLeader] = useState<Leader | null>(null);
   const [evaluatingLeader, setEvaluatingLeader] = useState<Leader | null>(null);
+  const [scoringConfig, setScoringConfig] = useState<ScoringConfig>(DEFAULT_SCORING_CONFIG);
 
   const currentLeader = allLeaders?.find((l) => l.email === currentUser?.email);
 
@@ -59,6 +62,15 @@ export function useGameData({ currentUser }: UseGameDataProps) {
       setActivities(allActivities);
     } catch (error) {
       console.error("Error loading activities:", error);
+    }
+  };
+
+  const loadConfig = async () => {
+    try {
+      const config = await configService.getConfig();
+      setScoringConfig(config);
+    } catch (error) {
+      console.error("Error loading config:", error);
     }
   };
 
@@ -99,6 +111,7 @@ export function useGameData({ currentUser }: UseGameDataProps) {
     }
 
     loadActivities();
+    loadConfig();
 
     const unsubscribeTasks = taskService.subscribeToChanges(() => {
       if (currentUser.role === "admin") loadAllTasks();
@@ -141,7 +154,7 @@ export function useGameData({ currentUser }: UseGameDataProps) {
           ...leader,
           taskPoints: newTaskPoints,
         };
-        const newOverall = calculateOverallScore(updatedLeader);
+        const newOverall = calculateOverallScore(updatedLeader, scoringConfig);
 
         await updateLeader(leader.id, {
           taskPoints: newTaskPoints,
@@ -172,7 +185,7 @@ export function useGameData({ currentUser }: UseGameDataProps) {
         ...leader,
         taskPoints: newTaskPoints,
       };
-      const newOverall = calculateOverallScore(updatedLeader);
+      const newOverall = calculateOverallScore(updatedLeader, scoringConfig);
 
       await updateLeader(leader.id, {
         taskPoints: newTaskPoints,
@@ -213,12 +226,12 @@ export function useGameData({ currentUser }: UseGameDataProps) {
         qualities
       );
 
-      const newAssistPoints = toLeader.assistPoints + 10;
+      const newAssistPoints = toLeader.assistPoints + scoringConfig.assist_points;
       const updatedLeader = {
         ...toLeader,
         assistPoints: newAssistPoints,
       };
-      const newOverall = calculateOverallScore(updatedLeader);
+      const newOverall = calculateOverallScore(updatedLeader, scoringConfig);
 
       await updateLeader(leaderId, {
         assistPoints: newAssistPoints,
@@ -237,7 +250,7 @@ export function useGameData({ currentUser }: UseGameDataProps) {
 
       // Não precisa refetch - real-time subscription atualiza automaticamente
       toast.success(
-        "Avaliação enviada! +10 pontos para " + toLeader.name + " 🎖️"
+        "Avaliação enviada! +" + scoringConfig.assist_points + " pontos para " + toLeader.name + " 🎖️"
       );
     } catch (error) {
       console.error("Error submitting evaluation:", error);

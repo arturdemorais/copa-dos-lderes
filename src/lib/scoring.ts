@@ -1,4 +1,5 @@
 import type { Leader, ScoreWeights, ScoreHistory, Insight } from "./types";
+import type { ScoringConfig } from "./services/configService";
 
 export const DEFAULT_WEIGHTS: ScoreWeights = {
   tasks: 0.4,
@@ -9,13 +10,21 @@ export const DEFAULT_WEIGHTS: ScoreWeights = {
 
 export function calculateOverallScore(
   leader: Leader,
-  weights: ScoreWeights = DEFAULT_WEIGHTS
+  config?: ScoringConfig
 ): number {
-  // Overall é a soma direta de todos os pontos ganhos
+  const multipliers = config?.multipliers || {
+    tasks: 1,
+    assists: 1,
+    rituals: 1,
+    consistency: 1,
+  };
+
+  // Overall é a soma dos pontos ponderada pelos multiplicadores
   const baseScore =
-    (leader.taskPoints ?? 0) +
-    (leader.assistPoints ?? 0) +
-    (leader.ritualPoints ?? 0);
+    (leader.taskPoints ?? 0) * multipliers.tasks +
+    (leader.assistPoints ?? 0) * multipliers.assists +
+    (leader.ritualPoints ?? 0) * multipliers.rituals +
+    (leader.consistencyScore ?? 0) * 100 * multipliers.consistency; // Consistency é 0-1, multiplicamos por 100
 
   return Math.round(baseScore);
 }

@@ -182,10 +182,10 @@ export const ritualService = {
   async calculateRitualPoints(leaderId: string): Promise<number> {
     const attendanceRate = await this.calculateAttendanceRate(leaderId, 30);
 
+    const config = await import("./configService").then(m => m.configService.getConfig());
+    const maxPoints = config.ritual_max_points;
+
     // Fórmula: Taxa de presença convertida em pontos
-    // 100% presença = 50 pontos
-    // 80% presença = 40 pontos
-    // etc.
-    return Math.round((attendanceRate / 100) * 50);
+    return Math.round((attendanceRate / 100) * maxPoints);
   },
 };

@@ -52,9 +52,11 @@ import {
   X,
   VideoCamera,
   ClockClockwise,
+  Gear,
 } from "@phosphor-icons/react";
 import { CreateLeaderModal } from "@/components/modals/CreateLeaderModal";
 import { VarAdminPanel } from "@/components/admin/VarAdminPanel";
+import { ScoringConfigPanel } from "@/components/admin/ScoringConfigPanel";
 import { ActivityTimeline } from "@/components/admin/ActivityTimeline";
 import { AdminStats } from "@/components/admin/AdminStats";
 import type { Leader, Task, Ritual } from "@/lib/types";
@@ -264,6 +266,10 @@ export function AdminDashboard({
           <TabsTrigger value="audit" className="flex items-center gap-2">
             <ClockClockwise size={18} />
             Auditoria
+          </TabsTrigger>
+          <TabsTrigger value="config" className="flex items-center gap-2">
+            <Gear size={18} />
+            Regras de Pontuação
           </TabsTrigger>
         </TabsList>
 
@@ -714,6 +720,10 @@ export function AdminDashboard({
 
         <TabsContent value="audit">
           <ActivityTimeline limit={200} />
+        </TabsContent>
+
+        <TabsContent value="config">
+          <ScoringConfigPanel />
         </TabsContent>
       </Tabs>
 
