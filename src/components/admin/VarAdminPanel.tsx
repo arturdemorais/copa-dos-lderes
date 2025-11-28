@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, memo } from "react";
 import { motion } from "framer-motion";
 import {
   Card,
@@ -25,7 +25,7 @@ interface VarAdminPanelProps {
   adminId: string;
 }
 
-export function VarAdminPanel({ adminId }: VarAdminPanelProps) {
+export const VarAdminPanel = memo(function VarAdminPanel({ adminId }: VarAdminPanelProps) {
   const [requests, setRequests] = useState<VarRequest[]>([]);
   const [loading, setLoading] = useState(true);
   const [processing, setProcessing] = useState<string | null>(null);
@@ -308,4 +308,4 @@ export function VarAdminPanel({ adminId }: VarAdminPanelProps) {
       </CardContent>
     </Card>
   );
-}
+});

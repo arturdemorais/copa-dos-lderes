@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, memo } from "react";
 import { motion } from "framer-motion";
 import {
   Card,
@@ -23,7 +23,7 @@ interface AdminStatsProps {
   leaders: Leader[];
 }
 
-export function AdminStats({ leaders }: AdminStatsProps) {
+export const AdminStats = memo(function AdminStats({ leaders }: AdminStatsProps) {
   // Filtrar apenas líderes que participam da gamificação (não admins)
   const gamificationLeaders = leaders.filter(
     (l) => !l.email?.includes("@admin") && l.team !== "Admin"
@@ -189,4 +189,4 @@ export function AdminStats({ leaders }: AdminStatsProps) {
       ))}
     </div>
   );
-}
+});

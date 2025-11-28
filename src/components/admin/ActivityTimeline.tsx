@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, memo } from "react";
 import { motion } from "framer-motion";
 import {
   Card,
@@ -31,7 +31,7 @@ interface ActivityTimelineProps {
   limit?: number;
 }
 
-export function ActivityTimeline({
+export const ActivityTimeline = memo(function ActivityTimeline({
   leaderId,
   limit = 100,
 }: ActivityTimelineProps) {
@@ -256,4 +256,4 @@ export function ActivityTimeline({
       </CardContent>
     </Card>
   );
-}
+});

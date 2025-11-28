@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from "react";
+import { memo, useCallback } from "react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Button } from "@/components/ui/button";
 import {
@@ -19,9 +19,8 @@ import { RitualAttendanceModal } from "@/components/admin/RitualAttendanceModal"
 import { RitualAttendanceSummary } from "@/components/admin/RitualAttendanceSummary";
 import { LeadersTab } from "@/components/admin/tabs";
 import { TasksTab } from "@/components/admin/tabs";
-import type { Leader, Task, Ritual } from "@/lib/types";
-import { toast } from "sonner";
-import { leaderService, ritualService } from "@/lib/services";
+import type { Leader, Task } from "@/lib/types";
+import { useAdminDashboard } from "@/hooks/useAdminDashboard";
 import {
   Card,
   CardContent,
@@ -41,7 +40,7 @@ interface AdminDashboardProps {
   adminId: string; // ID do admin para painel VAR
 }
 
-export function AdminDashboard({
+export const AdminDashboard = memo(function AdminDashboard({
   leaders,
   tasks,
   onUpdateLeader,
@@ -51,47 +50,25 @@ export function AdminDashboard({
   onRefetchLeaders,
   adminId,
 }: AdminDashboardProps) {
-  const [showCreateLeaderModal, setShowCreateLeaderModal] = useState(false);
-  const [rituals, setRituals] = useState<Ritual[]>([]);
-  const [showRitualAttendanceModal, setShowRitualAttendanceModal] =
-    useState(false);
+  const {
+    rituals,
+    isLoadingRituals,
+    showCreateLeaderModal,
+    showRitualAttendanceModal,
+    handleDeleteLeader,
+    handleInitializeData,
+    openCreateLeaderModal,
+    closeCreateLeaderModal,
+    openRitualAttendanceModal,
+    closeRitualAttendanceModal,
+    handleCreateLeaderSuccess,
+    handleRitualAttendanceSuccess,
+  } = useAdminDashboard({ onRefetchLeaders });
 
-  // Load active rituals on mount
-  useEffect(() => {
-    loadActiveRituals();
-  }, []);
-
-  const loadActiveRituals = async () => {
-    try {
-      const activeRituals = await ritualService.getActiveRituals();
-      setRituals(activeRituals);
-    } catch (error) {
-      console.error("Error loading rituals:", error);
-      toast.error("Erro ao carregar rituais");
-    }
-  };
-
-  const handleInitializeData = useCallback(() => {
-    if (onInitializeSampleData) {
-      onInitializeSampleData();
-      toast.success("Dados de exemplo carregados com sucesso!");
-    }
-  }, [onInitializeSampleData]);
-
-  const handleDeleteLeader = useCallback(async (leaderId: string) => {
-    try {
-      await leaderService.delete(leaderId);
-      toast.success("Líder removido com sucesso!");
-
-      // Refetch leaders sem reload da página
-      if (onRefetchLeaders) {
-        onRefetchLeaders();
-      }
-    } catch (error) {
-      console.error("Error deleting leader:", error);
-      toast.error("Erro ao deletar líder");
-    }
-  }, [onRefetchLeaders]);
+  // Wrap callbacks to ensure stable references
+  const handleInitializeDataClick = useCallback(() => {
+    handleInitializeData(onInitializeSampleData);
+  }, [handleInitializeData, onInitializeSampleData]);
 
   return (
     <div className="space-y-6 max-w-6xl mx-auto">
@@ -105,7 +82,7 @@ export function AdminDashboard({
 
         {leaders.length === 0 && onInitializeSampleData && (
           <Button
-            onClick={handleInitializeData}
+            onClick={handleInitializeDataClick}
             variant="outline"
             className="gap-2"
           >
@@ -149,7 +126,7 @@ export function AdminDashboard({
         <TabsContent value="leaders">
           <LeadersTab
             leaders={leaders}
-            onCreateLeader={() => setShowCreateLeaderModal(true)}
+            onCreateLeader={openCreateLeaderModal}
             onUpdateLeader={onUpdateLeader}
             onDeleteLeader={handleDeleteLeader}
           />
@@ -176,7 +153,7 @@ export function AdminDashboard({
                     </CardDescription>
                   </div>
                   <Button
-                    onClick={() => setShowRitualAttendanceModal(true)}
+                    onClick={openRitualAttendanceModal}
                     className="gap-2"
                   >
                     <CalendarCheck size={18} weight="bold" />
@@ -218,23 +195,18 @@ export function AdminDashboard({
       {/* Modal de Cadastro de Líder */}
       <CreateLeaderModal
         isOpen={showCreateLeaderModal}
-        onClose={() => setShowCreateLeaderModal(false)}
-        onSuccess={() => {
-          // Recarregar lista de líderes (será atualizado via real-time)
-          toast.success("Líder cadastrado! Atualize a página para ver.");
-        }}
+        onClose={closeCreateLeaderModal}
+        onSuccess={handleCreateLeaderSuccess}
       />
 
       {/* Modal de Registro de Presença em Rituais */}
       <RitualAttendanceModal
         isOpen={showRitualAttendanceModal}
-        onClose={() => setShowRitualAttendanceModal(false)}
+        onClose={closeRitualAttendanceModal}
         leaders={leaders}
         rituals={rituals}
-        onSuccess={() => {
-          toast.success("Presenças registradas com sucesso!");
-        }}
+        onSuccess={handleRitualAttendanceSuccess}
       />
     </div>
   );
-}
+});

@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, memo } from "react";
 import {
   Card,
   CardContent,
@@ -24,7 +24,7 @@ import {
   TooltipTrigger,
 } from "@/components/ui/tooltip";
 
-export function ScoringConfigPanel() {
+export const ScoringConfigPanel = memo(function ScoringConfigPanel() {
   const [config, setConfig] = useState<ScoringConfig>(DEFAULT_SCORING_CONFIG);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
@@ -286,4 +286,4 @@ export function ScoringConfigPanel() {
       </Card>
     </div>
   );
-}
+});
