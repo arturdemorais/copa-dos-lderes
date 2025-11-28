@@ -5,7 +5,6 @@ export interface ScoringConfig {
   ritual_max_points: number;
   task_completion_bonus: number;
   energy_checkin_points: number;
-  anonymous_feedback_points_receiver: number;
   anonymous_feedback_points_sender: number;
   anonymous_feedback_coins_sender: number;
   multipliers: {
@@ -21,7 +20,6 @@ export const DEFAULT_SCORING_CONFIG: ScoringConfig = {
   ritual_max_points: 50,
   task_completion_bonus: 0,
   energy_checkin_points: 5,
-  anonymous_feedback_points_receiver: 10,
   anonymous_feedback_points_sender: 5,
   anonymous_feedback_coins_sender: 10,
   multipliers: {

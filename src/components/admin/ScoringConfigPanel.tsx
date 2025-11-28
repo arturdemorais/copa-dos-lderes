@@ -145,23 +145,6 @@ export function ScoringConfigPanel() {
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="anonymous_feedback_points_receiver">
-                Feedback Anônimo (Recebedor)
-              </Label>
-              <Input
-                id="anonymous_feedback_points_receiver"
-                type="number"
-                value={config.anonymous_feedback_points_receiver}
-                onChange={(e) =>
-                  handleChange("anonymous_feedback_points_receiver", e.target.value)
-                }
-              />
-              <p className="text-xs text-muted-foreground">
-                Pontos que o líder ganha ao RECEBER um feedback anônimo.
-              </p>
-            </div>
-
-            <div className="space-y-2">
               <Label htmlFor="anonymous_feedback_points_sender">
                 Feedback Anônimo (Enviador)
               </Label>
