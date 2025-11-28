@@ -1,4 +1,4 @@
-import { useState, memo } from "react";
+import { useState, memo, useMemo } from "react";
 import {
   Card,
   CardContent,
@@ -31,6 +31,10 @@ import { UserPlus, Pencil, Trash } from "@phosphor-icons/react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import type { Leader } from "@/lib/types";
 import { LeaderEditModal } from "@/components/admin/modals";
+import {
+  LeaderFiltersPanel,
+  type LeaderFilters,
+} from "@/components/admin/LeaderFiltersPanel";
 
 interface LeadersTabProps {
   leaders: Leader[];
@@ -48,9 +52,47 @@ export const LeadersTab = memo(function LeadersTab({
   const [editingLeader, setEditingLeader] = useState<Leader | null>(null);
   const [deletingLeaderId, setDeletingLeaderId] = useState<string | null>(null);
   const [isDeleting, setIsDeleting] = useState(false);
+  const [selectedLeaderId, setSelectedLeaderId] = useState<string | undefined>(
+    undefined
+  );
+  const [filters, setFilters] = useState<LeaderFilters>({
+    team: "all",
+    trend: "all",
+    minOverall: 0,
+    maxOverall: 100,
+  });
+
+  // Filter leaders based on active filters
+  const filteredLeaders = useMemo(() => {
+    return leaders.filter((leader) => {
+      // Filter out admins
+      if (leader.email?.includes("@admin") || leader.team === "Admin") {
+        return false;
+      }
+
+      // Apply team filter
+      if (filters.team !== "all" && leader.team !== filters.team) {
+        return false;
+      }
+
+      // Apply trend filter
+      if (filters.trend !== "all" && leader.trend !== filters.trend) {
+        return false;
+      }
+
+      // Apply overall range filter
+      const overall = leader.overall ?? 0;
+      if (overall < filters.minOverall || overall > filters.maxOverall) {
+        return false;
+      }
+
+      return true;
+    });
+  }, [leaders, filters]);
 
   const handleEdit = (leader: Leader) => {
     setEditingLeader(leader);
+    setSelectedLeaderId(leader.id); // Also select for chart
   };
 
   const handleSaveEdit = (updatedLeader: Leader) => {
@@ -70,15 +112,29 @@ export const LeadersTab = memo(function LeadersTab({
     }
   };
 
+  const handleRowClick = (leader: Leader) => {
+    setSelectedLeaderId(
+      selectedLeaderId === leader.id ? undefined : leader.id
+    );
+  };
+
   return (
     <>
+      {/* Filters */}
+      <LeaderFiltersPanel
+        leaders={leaders}
+        filters={filters}
+        onFiltersChange={setFilters}
+      />
+
       <Card>
         <CardHeader>
           <div className="flex items-center justify-between">
             <div>
               <CardTitle>Líderes Cadastrados</CardTitle>
               <CardDescription>
-                Visualize e edite os perfis dos líderes
+                {filteredLeaders.length} de {leaders.filter(l => !l.email?.includes("@admin") && l.team !== "Admin").length} líderes
+                {selectedLeaderId && " • Clique na linha para ver/ocultar no gráfico"}
               </CardDescription>
             </div>
             <Button onClick={onCreateLeader} className="gap-2">
@@ -102,8 +158,16 @@ export const LeadersTab = memo(function LeadersTab({
                 </TableRow>
               </TableHeader>
               <TableBody>
-                {leaders.map((leader) => (
-                  <TableRow key={leader.id}>
+                {filteredLeaders.map((leader) => (
+                  <TableRow
+                    key={leader.id}
+                    className={`cursor-pointer transition-colors ${
+                      selectedLeaderId === leader.id
+                        ? "bg-primary/5 border-l-4 border-l-primary"
+                        : "hover:bg-muted/50"
+                    }`}
+                    onClick={() => handleRowClick(leader)}
+                  >
                     <TableCell>
                       <Avatar className="h-10 w-10">
                         <AvatarImage src={leader.photo} alt={leader.name} />

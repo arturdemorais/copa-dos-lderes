@@ -20,6 +20,7 @@ import {
   Target,
 } from "@phosphor-icons/react";
 import type { Leader } from "@/lib/types";
+import { PerformanceChart } from "@/components/admin/PerformanceChart";
 import { DashboardOverviewSkeleton } from "../SkeletonLoaders";
 
 interface OverviewTabProps {
@@ -129,6 +130,9 @@ export const OverviewTab = memo(function OverviewTab({
           </motion.div>
         ))}
       </div>
+
+      {/* Performance Chart - Moved here from LeadersTab */}
+      <PerformanceChart leaders={leaders} />
 
       {/* Main Content Grid */}
       <div className="grid lg:grid-cols-2 gap-6">

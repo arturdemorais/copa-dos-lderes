@@ -1,4 +1,4 @@
-import { memo, useCallback, useState } from "react";
+import { memo, useCallback, useState, useEffect } from "react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Button } from "@/components/ui/button";
 import {
@@ -21,6 +21,8 @@ import { RitualAttendanceSummary } from "@/components/admin/RitualAttendanceSumm
 import { LeadersTab, TasksTab, OverviewTab } from "@/components/admin/tabs";
 import type { Leader, Task } from "@/lib/types";
 import { useAdminDashboard } from "@/hooks/useAdminDashboard";
+import { useRealtimeNotifications } from "@/hooks/useRealtimeNotifications";
+import { toast } from "sonner";
 import {
   Card,
   CardContent,
@@ -51,6 +53,21 @@ export const AdminDashboard = memo(function AdminDashboard({
   adminId,
 }: AdminDashboardProps) {
   const [activeTab, setActiveTab] = useState("overview");
+
+  // Enable realtime notifications
+  useRealtimeNotifications(adminId);
+
+  // Listen for custom navigation events from notifications
+  useEffect(() => {
+    const handleNavigateToVar = () => {
+      setActiveTab("var");
+    };
+
+    window.addEventListener("navigate-to-var", handleNavigateToVar as EventListener);
+    return () => {
+      window.removeEventListener("navigate-to-var", handleNavigateToVar as EventListener);
+    };
+  }, []);
 
   const {
     rituals,
