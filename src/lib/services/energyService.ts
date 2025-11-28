@@ -12,14 +12,18 @@ export interface EnergyCheckIn {
 export const energyService = {
   /**
    * Criar check-in de energia
+   * Regras de pontuação:
+   * - 1 ponto base por check-in
+   * - +2 pontos de bônus a cada 5 dias consecutivos (streak de 5, 10, 15, etc.)
    */
   async create(
     leaderId: string,
     energyLevel: number,
     note?: string
-  ): Promise<EnergyCheckIn> {
+  ): Promise<{ checkIn: EnergyCheckIn; pointsEarned: number; bonusAwarded: boolean }> {
     const today = new Date().toISOString().split("T")[0];
 
+    // 1. Save check-in to database
     const { data, error } = await supabase
       .from("energy_check_ins")
       .upsert(
@@ -39,13 +43,38 @@ export const energyService = {
 
     if (error) throw error;
 
+    // 2. Calculate streak after saving check-in
+    const currentStreak = await this.getStreak(leaderId);
+
+    // 3. Calculate points
+    const basePoints = 1;
+    const bonusAwarded = currentStreak > 0 && currentStreak % 5 === 0;
+    const bonusPoints = bonusAwarded ? 2 : 0;
+    const totalPoints = basePoints + bonusPoints;
+
+    // 4. Add points to leader using RPC (similar to anonymousFeedbackService)
+    const { error: pointsError } = await supabase.rpc("add_points_to_leader", {
+      leader_id: leaderId,
+      points_to_add: totalPoints,
+      point_type: "ritual_points", // Energy check-ins count as ritual points
+    });
+
+    if (pointsError) {
+      console.error("Error adding energy check-in points:", pointsError);
+      throw pointsError;
+    }
+
     return {
-      id: data.id,
-      leaderId: data.leader_id,
-      energyLevel: data.energy_level,
-      note: data.note,
-      date: data.date,
-      createdAt: data.created_at,
+      checkIn: {
+        id: data.id,
+        leaderId: data.leader_id,
+        energyLevel: data.energy_level,
+        note: data.note,
+        date: data.date,
+        createdAt: data.created_at,
+      },
+      pointsEarned: totalPoints,
+      bonusAwarded,
     };
   },
 

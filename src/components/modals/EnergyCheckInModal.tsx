@@ -81,12 +81,16 @@ export function EnergyCheckInModal({
 
     setLoading(true);
     try {
-      await energyService.create(leaderId, selectedLevel, note || undefined);
+      const result = await energyService.create(leaderId, selectedLevel, note || undefined);
 
-      toast.success(`Check-in realizado! +2 pontos ⚡`, {
-        description: `Você está ${energyLevels[
-          selectedLevel - 1
-        ].label.toLowerCase()} hoje`,
+      // Show dynamic toast based on points earned
+      const baseMessage = `Check-in realizado! +${result.pointsEarned} pontos ⚡`;
+      const description = result.bonusAwarded
+        ? `🔥 Bônus de sequência! 5 dias seguidos completados!`
+        : `Você está ${energyLevels[selectedLevel - 1].label.toLowerCase()} hoje`;
+
+      toast.success(baseMessage, {
+        description,
       });
 
       onSuccess?.();
