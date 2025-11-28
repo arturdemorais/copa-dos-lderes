@@ -67,6 +67,7 @@ import { ScoringConfigPanel } from "@/components/admin/ScoringConfigPanel";
 import { ActivityTimeline } from "@/components/admin/ActivityTimeline";
 import { AdminStats } from "@/components/admin/AdminStats";
 import { RitualAttendanceModal } from "@/components/admin/RitualAttendanceModal";
+import { RitualAttendanceSummary } from "@/components/admin/RitualAttendanceSummary";
 import type { Leader, Task, Ritual } from "@/lib/types";
 import { createSampleLeaders } from "@/lib/sampleData";
 import { toast } from "sonner";
@@ -693,47 +694,40 @@ export function AdminDashboard({
         </TabsContent>
 
         <TabsContent value="rituals">
-          <Card>
-            <CardHeader>
-              <div className="flex items-center justify-between">
-                <div>
-                  <CardTitle>Registro de Presença nos Rituais</CardTitle>
-                  <CardDescription>
-                    Registre a presença dos líderes nos rituais de forma rápida e prática
-                  </CardDescription>
+          <div className="space-y-6">
+            <Card>
+              <CardHeader>
+                <div className="flex items-center justify-between">
+                  <div>
+                    <CardTitle>Registro de Presença nos Rituais</CardTitle>
+                    <CardDescription>
+                      Registre a presença dos líderes nos rituais de forma rápida e prática
+                    </CardDescription>
+                  </div>
+                  <Button
+                    onClick={() => setShowRitualAttendanceModal(true)}
+                    className="gap-2"
+                  >
+                    <CalendarCheck size={18} weight="bold" />
+                    Registrar Presença
+                  </Button>
                 </div>
-                <Button
-                  onClick={() => setShowRitualAttendanceModal(true)}
-                  className="gap-2"
-                >
-                  <CalendarCheck size={18} weight="bold" />
-                  Registrar Presença
-                </Button>
-              </div>
-            </CardHeader>
-            <CardContent>
-              <div className="text-center py-12">
-                <CalendarCheck size={64} className="mx-auto text-muted-foreground mb-4" />
-                <h3 className="text-lg font-semibold mb-2">
-                  Clique em "Registrar Presença" para começar
-                </h3>
-                <p className="text-sm text-muted-foreground max-w-md mx-auto">
-                  Escolha o ritual e marque rapidamente a presença, atraso ou ausência de cada líder.
-                  Os pontos serão calculados automaticamente com base na taxa de presença.
-                </p>
-              </div>
+              </CardHeader>
+              <CardContent>
+                <div className="p-4 bg-muted rounded-lg">
+                  <p className="text-sm text-muted-foreground">
+                    <strong>Sistema de Pontuação:</strong> Presente = 1.0 ponto |
+                    Atrasado = 0.5 ponto | Ausente = 0 pontos
+                  </p>
+                  <p className="text-sm text-muted-foreground mt-1">
+                    Os pontos de rituais são calculados com base na taxa de presença dos últimos 30 dias.
+                  </p>
+                </div>
+              </CardContent>
+            </Card>
 
-              <div className="mt-4 p-4 bg-muted rounded-lg">
-                <p className="text-sm text-muted-foreground">
-                  <strong>Sistema de Pontuação:</strong> Presente = 1.0 ponto |
-                  Atrasado = 0.5 ponto | Ausente = 0 pontos
-                </p>
-                <p className="text-sm text-muted-foreground mt-1">
-                  Os pontos de rituais são calculados com base na taxa de presença dos últimos 30 dias.
-                </p>
-              </div>
-            </CardContent>
-          </Card>
+            <RitualAttendanceSummary leaders={leaders} />
+          </div>
         </TabsContent>
 
         <TabsContent value="var">
