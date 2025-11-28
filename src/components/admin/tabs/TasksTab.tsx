@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, memo } from "react";
 import {
   Card,
   CardContent,
@@ -21,7 +21,7 @@ interface TasksTabProps {
   onDeleteTask: (taskId: string) => void;
 }
 
-export function TasksTab({ tasks, onCreateTask, onDeleteTask }: TasksTabProps) {
+export const TasksTab = memo(function TasksTab({ tasks, onCreateTask, onDeleteTask }: TasksTabProps) {
   const [newTask, setNewTask] = useState({
     title: "",
     description: "",
@@ -137,4 +137,4 @@ export function TasksTab({ tasks, onCreateTask, onDeleteTask }: TasksTabProps) {
       </Card>
     </div>
   );
-}
+});

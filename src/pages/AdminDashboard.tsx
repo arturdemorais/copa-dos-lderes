@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Button } from "@/components/ui/button";
 import {
@@ -37,6 +37,7 @@ interface AdminDashboardProps {
   onCreateTask: (task: Omit<Task, "id" | "leaderId" | "completed">) => void;
   onDeleteTask: (taskId: string) => void;
   onInitializeSampleData?: () => void;
+  onRefetchLeaders?: () => void; // Callback para refetch sem reload
   adminId: string; // ID do admin para painel VAR
 }
 
@@ -47,6 +48,7 @@ export function AdminDashboard({
   onCreateTask,
   onDeleteTask,
   onInitializeSampleData,
+  onRefetchLeaders,
   adminId,
 }: AdminDashboardProps) {
   const [showCreateLeaderModal, setShowCreateLeaderModal] = useState(false);
@@ -69,24 +71,27 @@ export function AdminDashboard({
     }
   };
 
-  const handleInitializeData = () => {
+  const handleInitializeData = useCallback(() => {
     if (onInitializeSampleData) {
       onInitializeSampleData();
       toast.success("Dados de exemplo carregados com sucesso!");
     }
-  };
+  }, [onInitializeSampleData]);
 
-  const handleDeleteLeader = async (leaderId: string) => {
+  const handleDeleteLeader = useCallback(async (leaderId: string) => {
     try {
       await leaderService.delete(leaderId);
       toast.success("Líder removido com sucesso!");
-      // Trigger parent refetch instead of reload
-      window.location.reload();
+
+      // Refetch leaders sem reload da página
+      if (onRefetchLeaders) {
+        onRefetchLeaders();
+      }
     } catch (error) {
       console.error("Error deleting leader:", error);
       toast.error("Erro ao deletar líder");
     }
-  };
+  }, [onRefetchLeaders]);
 
   return (
     <div className="space-y-6 max-w-6xl mx-auto">

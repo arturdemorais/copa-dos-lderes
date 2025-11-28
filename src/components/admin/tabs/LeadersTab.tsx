@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, memo } from "react";
 import {
   Card,
   CardContent,
@@ -39,7 +39,7 @@ interface LeadersTabProps {
   onDeleteLeader: (leaderId: string) => void;
 }
 
-export function LeadersTab({
+export const LeadersTab = memo(function LeadersTab({
   leaders,
   onCreateLeader,
   onUpdateLeader,
@@ -47,6 +47,7 @@ export function LeadersTab({
 }: LeadersTabProps) {
   const [editingLeader, setEditingLeader] = useState<Leader | null>(null);
   const [deletingLeaderId, setDeletingLeaderId] = useState<string | null>(null);
+  const [isDeleting, setIsDeleting] = useState(false);
 
   const handleEdit = (leader: Leader) => {
     setEditingLeader(leader);
@@ -57,10 +58,15 @@ export function LeadersTab({
     setEditingLeader(null);
   };
 
-  const handleDelete = () => {
+  const handleDelete = async () => {
     if (deletingLeaderId) {
-      onDeleteLeader(deletingLeaderId);
-      setDeletingLeaderId(null);
+      setIsDeleting(true);
+      try {
+        await onDeleteLeader(deletingLeaderId);
+        setDeletingLeaderId(null);
+      } finally {
+        setIsDeleting(false);
+      }
     }
   };
 
@@ -156,8 +162,9 @@ export function LeadersTab({
                               <AlertDialogAction
                                 onClick={handleDelete}
                                 className="bg-destructive hover:bg-destructive/90"
+                                disabled={isDeleting}
                               >
-                                Deletar
+                                {isDeleting ? "Deletando..." : "Deletar"}
                               </AlertDialogAction>
                             </AlertDialogFooter>
                           </AlertDialogContent>
@@ -180,4 +187,4 @@ export function LeadersTab({
       />
     </>
   );
-}
+});
