@@ -1,6 +1,6 @@
 import { useState, useEffect, useCallback } from "react";
 import { toast } from "sonner";
-import { leaderService, ritualService } from "@/lib/services";
+import { leaderService, ritualService, varService } from "@/lib/services";
 import type { Leader, Ritual } from "@/lib/types";
 
 interface UseAdminDashboardProps {
@@ -12,10 +12,12 @@ export function useAdminDashboard({ onRefetchLeaders }: UseAdminDashboardProps =
   const [isLoadingRituals, setIsLoadingRituals] = useState(true);
   const [showCreateLeaderModal, setShowCreateLeaderModal] = useState(false);
   const [showRitualAttendanceModal, setShowRitualAttendanceModal] = useState(false);
+  const [pendingVarsCount, setPendingVarsCount] = useState(0);
 
-  // Load active rituals on mount
+  // Load active rituals and VAR stats on mount
   useEffect(() => {
     loadActiveRituals();
+    loadVarStats();
   }, []);
 
   const loadActiveRituals = useCallback(async () => {
@@ -28,6 +30,15 @@ export function useAdminDashboard({ onRefetchLeaders }: UseAdminDashboardProps =
       toast.error("Erro ao carregar rituais");
     } finally {
       setIsLoadingRituals(false);
+    }
+  }, []);
+
+  const loadVarStats = useCallback(async () => {
+    try {
+      const stats = await varService.getStatistics();
+      setPendingVarsCount(stats.pending);
+    } catch (error) {
+      console.error("Error loading VAR stats:", error);
     }
   }, []);
 
@@ -91,11 +102,13 @@ export function useAdminDashboard({ onRefetchLeaders }: UseAdminDashboardProps =
     isLoadingRituals,
     showCreateLeaderModal,
     showRitualAttendanceModal,
+    pendingVarsCount,
 
     // Handlers
     handleDeleteLeader,
     handleInitializeData,
     loadActiveRituals,
+    loadVarStats,
 
     // Modal controls
     openCreateLeaderModal,

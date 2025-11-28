@@ -1,4 +1,4 @@
-import { memo, useCallback } from "react";
+import { memo, useCallback, useState } from "react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Button } from "@/components/ui/button";
 import {
@@ -9,6 +9,7 @@ import {
   VideoCamera,
   ClockClockwise,
   Gear,
+  House,
 } from "@phosphor-icons/react";
 import { CreateLeaderModal } from "@/components/modals/CreateLeaderModal";
 import { VarAdminPanel } from "@/components/admin/VarAdminPanel";
@@ -17,8 +18,7 @@ import { ActivityTimeline } from "@/components/admin/ActivityTimeline";
 import { AdminStats } from "@/components/admin/AdminStats";
 import { RitualAttendanceModal } from "@/components/admin/RitualAttendanceModal";
 import { RitualAttendanceSummary } from "@/components/admin/RitualAttendanceSummary";
-import { LeadersTab } from "@/components/admin/tabs";
-import { TasksTab } from "@/components/admin/tabs";
+import { LeadersTab, TasksTab, OverviewTab } from "@/components/admin/tabs";
 import type { Leader, Task } from "@/lib/types";
 import { useAdminDashboard } from "@/hooks/useAdminDashboard";
 import {
@@ -50,11 +50,14 @@ export const AdminDashboard = memo(function AdminDashboard({
   onRefetchLeaders,
   adminId,
 }: AdminDashboardProps) {
+  const [activeTab, setActiveTab] = useState("overview");
+
   const {
     rituals,
     isLoadingRituals,
     showCreateLeaderModal,
     showRitualAttendanceModal,
+    pendingVarsCount,
     handleDeleteLeader,
     handleInitializeData,
     openCreateLeaderModal,
@@ -69,6 +72,15 @@ export const AdminDashboard = memo(function AdminDashboard({
   const handleInitializeDataClick = useCallback(() => {
     handleInitializeData(onInitializeSampleData);
   }, [handleInitializeData, onInitializeSampleData]);
+
+  // Navigation handlers
+  const navigateToVar = useCallback(() => {
+    setActiveTab("var");
+  }, []);
+
+  const navigateToLeaders = useCallback(() => {
+    setActiveTab("leaders");
+  }, []);
 
   return (
     <div className="space-y-6 max-w-6xl mx-auto">
@@ -92,26 +104,29 @@ export const AdminDashboard = memo(function AdminDashboard({
         )}
       </div>
 
-      {/* Estatísticas Gerais */}
-      <AdminStats leaders={leaders} />
+      {/* Estatísticas Gerais - Removido, agora está na aba Overview */}
 
-      <Tabs defaultValue="leaders" className="space-y-6">
-        <TabsList>
+      <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-6">
+        <TabsList className="grid grid-cols-7 w-full">
+          <TabsTrigger value="overview" className="flex items-center gap-2">
+            <House size={18} />
+            Visão Geral
+          </TabsTrigger>
           <TabsTrigger value="leaders" className="flex items-center gap-2">
             <Users size={18} />
-            Gerenciar Líderes
+            Líderes
           </TabsTrigger>
           <TabsTrigger value="tasks" className="flex items-center gap-2">
             <SoccerBall size={18} />
-            Gerenciar Tasks
+            Tasks
           </TabsTrigger>
           <TabsTrigger value="rituals" className="flex items-center gap-2">
             <CalendarCheck size={18} />
-            Registrar Rituais
+            Rituais
           </TabsTrigger>
           <TabsTrigger value="var" className="flex items-center gap-2">
             <VideoCamera size={18} />
-            Sistema VAR
+            VAR
           </TabsTrigger>
           <TabsTrigger value="audit" className="flex items-center gap-2">
             <ClockClockwise size={18} />
@@ -119,9 +134,18 @@ export const AdminDashboard = memo(function AdminDashboard({
           </TabsTrigger>
           <TabsTrigger value="config" className="flex items-center gap-2">
             <Gear size={18} />
-            Regras de Pontuação
+            Config
           </TabsTrigger>
         </TabsList>
+
+        <TabsContent value="overview">
+          <OverviewTab
+            leaders={leaders}
+            pendingVarsCount={pendingVarsCount}
+            onNavigateToVar={navigateToVar}
+            onNavigateToLeaders={navigateToLeaders}
+          />
+        </TabsContent>
 
         <TabsContent value="leaders">
           <LeadersTab
