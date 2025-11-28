@@ -1,18 +1,5 @@
 import { supabase } from "../supabaseClient";
-
-interface Ritual {
-  id: string;
-  name: string;
-  type: "daily" | "weekly" | "rmr";
-  date: string;
-}
-
-interface RitualAttendance {
-  id: string;
-  ritualId: string;
-  leaderId: string;
-  present: boolean;
-}
+import type { Ritual, RitualAttendance, AttendanceStatus } from "../types";
 
 export const ritualService = {
   /**
@@ -64,12 +51,12 @@ export const ritualService = {
   },
 
   /**
-   * Marcar presença em ritual
+   * Marcar presença em ritual com status (presente/atrasado/ausente)
    */
   async markAttendance(
     ritualId: string,
     leaderId: string,
-    present: boolean
+    status: AttendanceStatus
   ): Promise<void> {
     const { error } = await supabase
       .from("ritual_attendance")
@@ -77,7 +64,7 @@ export const ritualService = {
         {
           ritual_id: ritualId,
           leader_id: leaderId,
-          present,
+          status,
         },
         {
           onConflict: "ritual_id,leader_id",
@@ -104,7 +91,7 @@ export const ritualService = {
         id,
         ritual_id,
         leader_id,
-        present,
+        status,
         rituals (
           name,
           type,
@@ -131,16 +118,17 @@ export const ritualService = {
 
     if (error) throw error;
 
-    return (data || []).map((row) => ({
+    return (data || []).map((row: any) => ({
       id: row.id,
       ritualId: row.ritual_id,
       leaderId: row.leader_id,
-      present: row.present,
+      date: row.rituals?.date || "",
+      status: row.status || "absent",
     }));
   },
 
   /**
-   * Calcular taxa de presença em rituais
+   * Calcular taxa de presença em rituais (considerando atrasos como meio ponto)
    */
   async calculateAttendanceRate(
     leaderId: string,
@@ -162,9 +150,8 @@ export const ritualService = {
 
     const { data: attendance, error: attendanceError } = await supabase
       .from("ritual_attendance")
-      .select("present")
+      .select("status")
       .eq("leader_id", leaderId)
-      .eq("present", true)
       .in(
         "ritual_id",
         (rituals || []).map((r) => r.id)
@@ -172,8 +159,14 @@ export const ritualService = {
 
     if (attendanceError) throw attendanceError;
 
-    const presentCount = attendance?.length || 0;
-    return Math.round((presentCount / totalRituals) * 100);
+    // Calculate weighted score: present = 1.0, late = 0.5, absent = 0
+    const score = (attendance || []).reduce((total, att: any) => {
+      if (att.status === "present") return total + 1.0;
+      if (att.status === "late") return total + 0.5;
+      return total; // absent = 0
+    }, 0);
+
+    return Math.round((score / totalRituals) * 100);
   },
 
   /**
@@ -187,5 +180,38 @@ export const ritualService = {
 
     // Fórmula: Taxa de presença convertida em pontos
     return Math.round((attendanceRate / 100) * maxPoints);
+  },
+
+  /**
+   * Buscar presença de um ritual específico
+   */
+  async getRitualAttendance(ritualId: string): Promise<RitualAttendance[]> {
+    const { data, error } = await supabase
+      .from("ritual_attendance")
+      .select("*")
+      .eq("ritual_id", ritualId);
+
+    if (error) throw error;
+
+    return (data || []).map((row) => ({
+      id: row.id,
+      ritualId: row.ritual_id,
+      leaderId: row.leader_id,
+      date: "",
+      status: row.status || "absent",
+    }));
+  },
+
+  /**
+   * Buscar todos os rituais ativos (configuráveis no futuro)
+   */
+  async getActiveRituals(): Promise<Ritual[]> {
+    // Por enquanto, retorna os rituais padrão
+    // No futuro, isso virá do banco de dados
+    return [
+      { id: "weekly-leaders", name: "Weekly de Líderes", type: "weekly" },
+      { id: "cumbuca", name: "Cumbuca", type: "weekly" },
+      { id: "rmr", name: "RMR", type: "rmr" },
+    ];
   },
 };

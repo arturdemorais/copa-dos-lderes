@@ -1,4 +1,4 @@
-import { useState, useRef } from "react";
+import { useState, useRef, useEffect } from "react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import {
   Card,
@@ -20,6 +20,13 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { Checkbox } from "@/components/ui/checkbox";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import {
   Dialog,
   DialogContent,
@@ -59,10 +66,12 @@ import { VarAdminPanel } from "@/components/admin/VarAdminPanel";
 import { ScoringConfigPanel } from "@/components/admin/ScoringConfigPanel";
 import { ActivityTimeline } from "@/components/admin/ActivityTimeline";
 import { AdminStats } from "@/components/admin/AdminStats";
+import { RitualAttendanceModal } from "@/components/admin/RitualAttendanceModal";
 import type { Leader, Task, Ritual } from "@/lib/types";
 import { createSampleLeaders } from "@/lib/sampleData";
 import { toast } from "sonner";
-import { leaderService } from "@/lib/services";
+import { leaderService, ritualService } from "@/lib/services";
+import type { AttendanceStatus } from "@/lib/types";
 import {
   uploadProfilePhoto,
   deleteProfilePhoto,
@@ -101,15 +110,24 @@ export function AdminDashboard({
   const [photoPreview, setPhotoPreview] = useState<string | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
-  const rituals: Ritual[] = [
-    { id: "r1", name: "Daily Seg", type: "daily" },
-    { id: "r2", name: "Daily Ter", type: "daily" },
-    { id: "r3", name: "Daily Qua", type: "daily" },
-    { id: "r4", name: "Daily Qui", type: "daily" },
-    { id: "r5", name: "Daily Sex", type: "daily" },
-    { id: "r6", name: "Weekly", type: "weekly" },
-    { id: "r7", name: "RMR", type: "rmr" },
-  ];
+  // Ritual attendance state
+  const [rituals, setRituals] = useState<Ritual[]>([]);
+  const [showRitualAttendanceModal, setShowRitualAttendanceModal] = useState(false);
+
+  // Load active rituals on mount
+  useEffect(() => {
+    loadActiveRituals();
+  }, []);
+
+  const loadActiveRituals = async () => {
+    try {
+      const activeRituals = await ritualService.getActiveRituals();
+      setRituals(activeRituals);
+    } catch (error) {
+      console.error("Error loading rituals:", error);
+      toast.error("Erro ao carregar rituais");
+    }
+  };
 
   const handleCreateTask = () => {
     if (!newTask.title || !newTask.description || newTask.points <= 0) {
@@ -219,6 +237,7 @@ export function AdminDashboard({
       toast.error("Erro ao deletar líder");
     }
   };
+
 
   return (
     <div className="space-y-6 max-w-6xl mx-auto">
@@ -676,39 +695,42 @@ export function AdminDashboard({
         <TabsContent value="rituals">
           <Card>
             <CardHeader>
-              <CardTitle>Matriz de Presença nos Rituais</CardTitle>
-              <CardDescription>
-                Marque a presença dos líderes nos rituais da semana
-              </CardDescription>
+              <div className="flex items-center justify-between">
+                <div>
+                  <CardTitle>Registro de Presença nos Rituais</CardTitle>
+                  <CardDescription>
+                    Registre a presença dos líderes nos rituais de forma rápida e prática
+                  </CardDescription>
+                </div>
+                <Button
+                  onClick={() => setShowRitualAttendanceModal(true)}
+                  className="gap-2"
+                >
+                  <CalendarCheck size={18} weight="bold" />
+                  Registrar Presença
+                </Button>
+              </div>
             </CardHeader>
             <CardContent>
-              <div className="overflow-x-auto">
-                <Table>
-                  <TableHeader>
-                    <TableRow>
-                      <TableHead className="w-48">Líder</TableHead>
-                      {rituals.map((ritual) => (
-                        <TableHead key={ritual.id} className="text-center">
-                          {ritual.name}
-                        </TableHead>
-                      ))}
-                    </TableRow>
-                  </TableHeader>
-                  <TableBody>
-                    {leaders.map((leader) => (
-                      <TableRow key={leader.id}>
-                        <TableCell className="font-medium">
-                          {leader.name}
-                        </TableCell>
-                        {rituals.map((ritual) => (
-                          <TableCell key={ritual.id} className="text-center">
-                            <Checkbox />
-                          </TableCell>
-                        ))}
-                      </TableRow>
-                    ))}
-                  </TableBody>
-                </Table>
+              <div className="text-center py-12">
+                <CalendarCheck size={64} className="mx-auto text-muted-foreground mb-4" />
+                <h3 className="text-lg font-semibold mb-2">
+                  Clique em "Registrar Presença" para começar
+                </h3>
+                <p className="text-sm text-muted-foreground max-w-md mx-auto">
+                  Escolha o ritual e marque rapidamente a presença, atraso ou ausência de cada líder.
+                  Os pontos serão calculados automaticamente com base na taxa de presença.
+                </p>
+              </div>
+
+              <div className="mt-4 p-4 bg-muted rounded-lg">
+                <p className="text-sm text-muted-foreground">
+                  <strong>Sistema de Pontuação:</strong> Presente = 1.0 ponto |
+                  Atrasado = 0.5 ponto | Ausente = 0 pontos
+                </p>
+                <p className="text-sm text-muted-foreground mt-1">
+                  Os pontos de rituais são calculados com base na taxa de presença dos últimos 30 dias.
+                </p>
               </div>
             </CardContent>
           </Card>
@@ -734,6 +756,17 @@ export function AdminDashboard({
         onSuccess={() => {
           // Recarregar lista de líderes (será atualizado via real-time)
           toast.success("Líder cadastrado! Atualize a página para ver.");
+        }}
+      />
+
+      {/* Modal de Registro de Presença em Rituais */}
+      <RitualAttendanceModal
+        isOpen={showRitualAttendanceModal}
+        onClose={() => setShowRitualAttendanceModal(false)}
+        leaders={leaders}
+        rituals={rituals}
+        onSuccess={() => {
+          toast.success("Presenças registradas com sucesso!");
         }}
       />
     </div>

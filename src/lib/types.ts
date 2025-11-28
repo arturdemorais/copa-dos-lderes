@@ -84,13 +84,18 @@ export interface Ritual {
   id: string;
   name: string;
   type: "daily" | "weekly" | "rmr";
+  date?: string; // Optional: for specific date instances
+  isActive?: boolean;
 }
 
+export type AttendanceStatus = "present" | "late" | "absent";
+
 export interface RitualAttendance {
+  id?: string;
   leaderId: string;
   ritualId: string;
   date: string;
-  present: boolean;
+  status: AttendanceStatus;
 }
 
 export interface TeamEvaluation {
